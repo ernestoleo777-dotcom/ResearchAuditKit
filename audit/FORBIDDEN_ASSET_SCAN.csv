@@ -1,0 +1,17 @@
+scan_id,asset_class,match_count,status,review_note
+FAS-01,archived_source_repository_identifier,0,PASS,no identifier present
+FAS-02,original_attachment_filenames,0,PASS,no attachment filename present
+FAS-03,archived_paper_identifier,0,PASS,no paper identifier present
+FAS-04,project_specific_ranking_terms,0,PASS,no project-specific ranking term present
+FAS-05,project_specific_robustness_terms,0,PASS,no project-specific robustness term present
+FAS-06,archived_candidate_or_front_counts,0,PASS,no archived count present
+FAS-07,archived_recommendation_coordinates,0,PASS,no archived coordinate present
+FAS-08,archived_numeric_data_values,0,PASS,fixtures use newly authored optimizer-configuration values
+FAS-09,serialized_model_files,0,PASS,no serialized model file present
+FAS-10,private_absolute_paths,0,PASS,no private absolute path present
+FAS-11,personal_names,0,PASS,no personal name present
+FAS-12,macos_home_paths,0,PASS,no macOS home path present
+FAS-13,archived_baseline_digest_content,0,PASS,no archived digest or hash inventory present
+FAS-14,unadjudicated_archived_outputs,0,PASS,no archived output present
+FAS-15,symlinks_to_source,0,PASS,no symbolic link present
+

@@ -1,0 +1,11 @@
+concept_id,generic_concept,source_conceptual_location,new_module,copied_code,copied_data,copied_claim
+SCM-01,scientific asset classification,restructure_governance policy documents,research_audit_kit.integrity.policy,false,false,false
+SCM-02,versioned relative-path baseline,restructure_governance baseline design,research_audit_kit.integrity.baseline,false,false,false
+SCM-03,volatile warning separation,restructure_governance integrity policy,research_audit_kit.integrity.volatility,false,false,false
+SCM-04,pre-run and post-run hash verification,final_archive transferable-components description,research_audit_kit.integrity.verification,false,false,false
+SCM-05,joint-support audit,final_archive transferable-components description,research_audit_kit.support,false,false,false
+SCM-06,Pareto support contamination,final_archive transferable-components description,research_audit_kit.optimization_audit,false,false,false
+SCM-07,leakage-safe validation,final_archive transferable-components description,research_audit_kit.validation,false,false,false
+SCM-08,gate-based decision semantics,final_archive negative-result governance description,research_audit_kit.governance.gates,false,false,false
+SCM-09,protocol-deviation isolation,final_archive protocol-boundary description,research_audit_kit.governance.deviations,false,false,false
+SCM-10,machine-readable terminal decision,final_archive archive-status design,research_audit_kit.reporting.machine_readable,false,false,false
