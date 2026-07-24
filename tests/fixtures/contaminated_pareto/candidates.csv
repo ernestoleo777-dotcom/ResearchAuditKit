@@ -1,0 +1,7 @@
+candidate_id,quality_cost,latency,support_status,selected,claimed_pareto
+c-a,1.0,4.0,OBSERVED_EXACT,true,true
+c-b,2.0,2.0,CONDITIONALLY_SUPPORTED,false,true
+c-c,4.0,1.0,CONDITIONALLY_REJECTED,true,true
+c-d,3.5,3.5,MARGINALLY_SUPPORTED_JOINTLY_UNOBSERVED,false,false
+c-e,5.0,5.0,OUTSIDE_MARGINAL_RANGE,false,false
+

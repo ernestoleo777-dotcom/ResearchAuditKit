@@ -1,0 +1,6 @@
+trial,architecture,optimizer,momentum,depth
+t1,compact,adam,0.0,3
+t2,compact,sgd,0.8,3
+t3,wide,adam,0.0,5
+t4,wide,sgd,0.9,5
+

@@ -1,0 +1,10 @@
+run_id,architecture,optimizer,momentum,depth
+r01,compact,adam,0.0,3
+r02,compact,adam,0.0,5
+r03,compact,sgd,0.8,3
+r04,compact,sgd,0.9,5
+r05,wide,adam,0.0,3
+r06,wide,adam,0.0,5
+r07,wide,sgd,0.8,3
+r08,wide,sgd,0.9,5
+

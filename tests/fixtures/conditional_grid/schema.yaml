@@ -1,0 +1,13 @@
+branches:
+  adaptive:
+    when:
+      optimizer: [adam]
+    require:
+      momentum: [0.0]
+  stochastic:
+    when:
+      optimizer: [sgd]
+    require:
+      momentum:
+        min: 0.5
+
