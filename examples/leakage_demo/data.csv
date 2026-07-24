@@ -1,0 +1,5 @@
+row_id,architecture,dataset_group,timestamp
+l1,compact,g-one,2025-02-01
+l2,wide,g-one,2025-02-02
+l3,compact,g-two,2025-02-03
+

@@ -1,0 +1,8 @@
+gate:
+  id: example_effect
+  criteria:
+    - metric: change_abs
+      pass: {gte: 0.05}
+      inconclusive: {gte: 0.02, lt: 0.05}
+      fail: {lt: 0.02}
+

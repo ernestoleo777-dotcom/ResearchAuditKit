@@ -1,0 +1,5 @@
+row_id,coordinate_id,role,split_family,fold_id,seed,group_label,dataset_hash
+l1,z1,train,grouped,f0,21,g-one,example
+l2,z2,test,grouped,f0,21,g-one,example
+l3,z3,test,grouped,f0,21,g-two,example
+

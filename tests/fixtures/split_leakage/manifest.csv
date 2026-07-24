@@ -1,0 +1,6 @@
+row_id,coordinate_id,role,split_family,fold_id,seed,group_label,dataset_hash
+a1,coord-a,train,grouped,f0,13,g-alpha,fixture-hash
+a2,coord-b,test,grouped,f0,13,g-alpha,fixture-hash
+b1,coord-c,calibration,grouped,f0,13,g-beta,fixture-hash
+b1,coord-c,test,grouped,f0,13,g-beta,fixture-hash
+
