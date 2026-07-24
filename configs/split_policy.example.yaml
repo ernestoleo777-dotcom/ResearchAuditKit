@@ -1,0 +1,9 @@
+split:
+  id_column: row_id
+  coordinate_columns: [architecture, optimizer, depth]
+  group_column: dataset_group
+  time_column: timestamp
+  branch_column: optimizer
+  calibration_role: calibration
+  test_role: test
+

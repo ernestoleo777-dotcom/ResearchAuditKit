@@ -1,0 +1,13 @@
+branches:
+  momentum_active:
+    when:
+      optimizer: [sgd]
+    require:
+      momentum:
+        min: 0.1
+  momentum_inactive:
+    when:
+      optimizer: [adam]
+    require:
+      momentum: [0.0]
+
