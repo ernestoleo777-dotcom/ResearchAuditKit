@@ -8,7 +8,7 @@ from pathlib import Path
 
 from ..exceptions import BaselineExistsError
 from ..io.csv_io import write_csv_rows
-from .hashing import manifest_self_exclusions, sha256_file
+from .hashing import sha256_file
 from .inventory import build_inventory
 from .policy import IntegrityPolicy
 
@@ -22,7 +22,14 @@ BASELINE_FIELDS = [
     "sha256",
     "category",
     "policy_json",
+    "forced_overwrite",
 ]
+
+
+def _atomic_write_text(path: Path, text: str) -> None:
+    temporary = path.with_name(path.name + ".tmp")
+    temporary.write_text(text, encoding="utf-8")
+    temporary.replace(path)
 
 
 def freeze_baseline(
@@ -40,12 +47,16 @@ def freeze_baseline(
         raise BaselineExistsError(f"Baseline exists: {target}")
     identifier = baseline_id or datetime.now(timezone.utc).strftime("baseline-%Y%m%dT%H%M%SZ")
     omitted: set[str] = set()
-    if target.is_absolute() and target.parent.resolve() == base:
-        omitted |= manifest_self_exclusions(target)
-    elif not target.is_absolute():
-        candidate = (Path.cwd() / target).resolve()
-        if candidate.parent == base:
-            omitted |= manifest_self_exclusions(candidate)
+    candidate = target.resolve()
+    try:
+        relative_target = candidate.relative_to(base).as_posix()
+        omitted = {
+            relative_target,
+            relative_target + ".sha256",
+            relative_target + ".tmp",
+        }
+    except ValueError:
+        omitted = set()
     inventory = build_inventory(base, policy, omit_paths=omitted)
     created = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
     policy_json = json.dumps(policy.to_dict(), sort_keys=True, separators=(",", ":"))
@@ -60,12 +71,13 @@ def freeze_baseline(
             "sha256": row["sha256"],
             "category": row["category"],
             "policy_json": policy_json,
+            "forced_overwrite": str(bool(force)).lower(),
         }
         for row in inventory
     ]
     write_csv_rows(target, rows, BASELINE_FIELDS, overwrite=True)
     digest = sha256_file(target)
-    companion.write_text(f"{digest}  {target.name}\n", encoding="utf-8")
+    _atomic_write_text(companion, f"{digest}  {target.name}\n")
     return {
         "baseline_id": identifier,
         "policy_id": policy.policy_id,
@@ -74,4 +86,3 @@ def freeze_baseline(
         "forced_overwrite": bool(force),
         "root_identifier": base.name,
     }
-

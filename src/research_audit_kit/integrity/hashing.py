@@ -7,16 +7,23 @@ import json
 from pathlib import Path
 from typing import Any, Iterable
 
+from ..exceptions import IntegrityFailure
+
 
 def sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
 def sha256_file(path: str | Path, chunk_size: int = 1024 * 1024) -> str:
+    target = Path(path)
+    before = target.stat()
     digest = hashlib.sha256()
-    with Path(path).open("rb") as handle:
+    with target.open("rb") as handle:
         while chunk := handle.read(chunk_size):
             digest.update(chunk)
+    after = target.stat()
+    if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns):
+        raise IntegrityFailure(f"file changed while hashing: {target.name}")
     return digest.hexdigest()
 
 
@@ -34,4 +41,3 @@ def relative_file_set_hash(root: str | Path, paths: Iterable[str]) -> str:
 def manifest_self_exclusions(manifest: str | Path) -> set[str]:
     name = Path(manifest).name
     return {name, name + ".sha256", name + ".tmp"}
-

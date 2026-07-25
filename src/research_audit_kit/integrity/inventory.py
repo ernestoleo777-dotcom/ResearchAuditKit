@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+import os
 from pathlib import Path
 from typing import Iterable
 
-from ..exceptions import UnsafePathError
+from ..exceptions import InputValidationError, UnsafePathError, UnsupportedFormatError
 from ..io.csv_io import write_csv_rows
 from ..io.json_io import write_json
-from .hashing import sha256_file
+from .hashing import sha256_bytes, sha256_file
 from .policy import IntegrityPolicy
 
 INVENTORY_FIELDS = [
@@ -41,10 +42,45 @@ def build_inventory(
         raise NotADirectoryError(base)
     omitted = set(omit_paths)
     rows: list[dict[str, object]] = []
-    for path in sorted(p for p in base.rglob("*") if p.is_file()):
-        relative = safe_relative(base, path)
-        if relative in omitted or relative.endswith(".tmp"):
+    casefolded: dict[str, str] = {}
+    for path in sorted(base.rglob("*")):
+        relative_lexical = path.relative_to(base).as_posix()
+        if any(
+            relative_lexical == omitted_path
+            or relative_lexical.startswith(omitted_path.rstrip("/") + "/")
+            for omitted_path in omitted
+        ) or relative_lexical.endswith(".tmp"):
             continue
+        if path.is_symlink():
+            resolved = path.resolve(strict=False)
+            try:
+                resolved.relative_to(base)
+            except ValueError as exc:
+                raise UnsafePathError(f"symlink escapes repository root: {relative_lexical}") from exc
+            stat = path.lstat()
+            rows.append(
+                {
+                    "path": relative_lexical,
+                    "size_bytes": stat.st_size,
+                    "modified_at": datetime.fromtimestamp(stat.st_mtime, timezone.utc).isoformat(),
+                    "sha256": sha256_bytes(os.readlink(path).encode("utf-8")),
+                    "category": "unclassified_file",
+                    "gate_status": "EXCLUDED_OR_WARNING",
+                    "exclusion_reason": "symlink recorded but target was not followed",
+                }
+            )
+            continue
+        if path.is_dir():
+            continue
+        if not path.is_file():
+            raise UnsupportedFormatError(f"unsupported filesystem object: {relative_lexical}")
+        relative = safe_relative(base, path)
+        folded = relative.casefold()
+        if folded in casefolded and casefolded[folded] != relative:
+            raise InputValidationError(
+                f"case-insensitive path collision: {casefolded[folded]!r} and {relative!r}"
+            )
+        casefolded[folded] = relative
         category, reason = policy.classify(relative)
         stat = path.stat()
         gate_status = "INCLUDED" if category == "scientific_asset" else "EXCLUDED_OR_WARNING"
@@ -82,4 +118,3 @@ def write_inventory(rows: list[dict[str, object]], out_dir: str | Path) -> tuple
     csv_path = write_csv_rows(target / "inventory.csv", rows, INVENTORY_FIELDS)
     json_path = write_json(target / "inventory.json", {"assets": rows})
     return csv_path, json_path
-

@@ -32,6 +32,8 @@ class IntegrityPolicy:
 
     @classmethod
     def from_dict(cls, value: dict[str, Any]) -> "IntegrityPolicy":
+        if not isinstance(value, dict):
+            raise PolicyError("policy document must be a mapping")
         body = value.get("policy", value)
         if not isinstance(body, dict) or not body.get("id"):
             raise PolicyError("policy.id is required")
@@ -80,4 +82,3 @@ class IntegrityPolicy:
         if any(_matches(relative_path, pattern) for pattern in self.include_patterns):
             return "scientific_asset", "matched include pattern"
         return "unclassified_file", "no policy pattern matched"
-

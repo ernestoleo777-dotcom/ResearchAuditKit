@@ -90,3 +90,21 @@ def test_cli_verify_detects_change(tmp_path):
     result = run_cli("verify", "--root", repo, "--baseline", baseline, "--out", tmp_path / "verify")
     assert result.returncode != 0
 
+
+def test_cli_malformed_yaml_has_no_traceback(tmp_path):
+    policy = tmp_path / "broken.yaml"
+    policy.write_text("policy: [unterminated")
+    result = run_cli("inventory", "--root", ROOT / "examples/integrity_demo", "--policy", policy, "--out", tmp_path / "out")
+    assert result.returncode != 0
+    assert "Traceback" not in result.stderr
+
+
+def test_inventory_output_inside_root_does_not_self_pollute(tmp_path):
+    repo = tmp_path / "repo"
+    shutil.copytree(ROOT / "examples/integrity_demo", repo)
+    out = repo / "generated-audit"
+    command = ("inventory", "--root", repo, "--policy", ROOT / "configs/integrity_policy.example.yaml", "--out", out)
+    assert run_cli(*command).returncode == 0
+    first = (out / "inventory.csv").read_text()
+    assert run_cli(*command).returncode == 0
+    assert (out / "inventory.csv").read_text() == first

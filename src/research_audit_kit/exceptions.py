@@ -5,7 +5,11 @@ class AuditError(Exception):
     """Base class for controlled audit failures."""
 
 
-class PolicyError(AuditError):
+class ConfigurationError(AuditError):
+    """Raised when configuration is invalid or incomplete."""
+
+
+class PolicyError(ConfigurationError):
     """Raised when a policy is missing required semantics."""
 
 
@@ -20,3 +24,14 @@ class BaselineExistsError(AuditError):
 class InputValidationError(AuditError):
     """Raised for invalid user data or configuration."""
 
+
+class IntegrityFailure(AuditError):
+    """Raised when governed bytes change during an integrity operation."""
+
+
+class UnsupportedFormatError(AuditError):
+    """Raised when an input format cannot be safely interpreted."""
+
+
+class InternalInvariantError(AuditError):
+    """Raised when an internal contract is violated."""

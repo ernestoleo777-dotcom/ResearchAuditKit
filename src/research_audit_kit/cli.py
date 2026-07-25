@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 from pathlib import Path
 from typing import Any
 
+import yaml
+
+from .constants import __version__
 from .exceptions import AuditError, InputValidationError
 from .governance.claims import CLAIM_FIELDS, evaluate_claims
 from .governance.deviations import record_deviation
@@ -45,6 +49,14 @@ def _print_summary(summary: dict[str, Any]) -> None:
     print(json.dumps(summary, sort_keys=True))
 
 
+def _output_omit_paths(root: str | Path, output: str | Path) -> list[str]:
+    try:
+        relative = Path(output).resolve().relative_to(Path(root).resolve()).as_posix()
+    except ValueError:
+        return []
+    return [relative]
+
+
 def _run(args: argparse.Namespace) -> int:
     if args.command == "init":
         root = Path(args.root)
@@ -60,7 +72,11 @@ def _run(args: argparse.Namespace) -> int:
 
     if args.command == "inventory":
         policy = IntegrityPolicy.from_yaml(args.policy)
-        rows = build_inventory(args.root, policy)
+        rows = build_inventory(
+            args.root,
+            policy,
+            omit_paths=_output_omit_paths(args.root, args.out),
+        )
         write_inventory(rows, args.out)
         missing = sum(row["gate_status"] == "MISSING_REQUIRED" for row in rows)
         summary = {
@@ -160,7 +176,7 @@ def _run(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="rak", description="Audit scientific repository evidence-chain mechanics.")
-    parser.add_argument("--version", action="version", version="%(prog)s 0.1.0")
+    parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
 
     init = commands.add_parser("init", help="initialize local audit metadata")
@@ -233,11 +249,17 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         return _run(args)
-    except (AuditError, FileNotFoundError, NotADirectoryError, ValueError) as exc:
+    except (
+        AuditError,
+        OSError,
+        UnicodeError,
+        ValueError,
+        csv.Error,
+        yaml.YAMLError,
+    ) as exc:
         print(json.dumps({"status": "ERROR", "error": str(exc)}), file=sys.stderr)
         return 2
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

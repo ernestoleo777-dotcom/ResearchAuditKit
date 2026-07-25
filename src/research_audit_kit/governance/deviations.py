@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import csv
 from pathlib import Path
 from typing import Any, Mapping
 
 from ..exceptions import InputValidationError
+from ..io.csv_io import read_csv_rows, write_csv_rows
 
 DEVIATION_FIELDS = [
     "deviation_id",
@@ -37,16 +37,11 @@ def record_deviation(path: str | Path, value: Mapping[str, Any]) -> dict[str, st
     row = normalize_deviation(value)
     target.parent.mkdir(parents=True, exist_ok=True)
     existing_ids: set[str] = set()
+    existing_rows: list[dict[str, str]] = []
     if target.exists():
-        with target.open(newline="", encoding="utf-8") as handle:
-            existing_ids = {item["deviation_id"] for item in csv.DictReader(handle)}
+        existing_rows = read_csv_rows(target)
+        existing_ids = {item["deviation_id"] for item in existing_rows}
     if row["deviation_id"] in existing_ids:
         raise InputValidationError("deviation_id already exists; ledger is append-only")
-    write_header = not target.exists()
-    with target.open("a", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=DEVIATION_FIELDS)
-        if write_header:
-            writer.writeheader()
-        writer.writerow(row)
+    write_csv_rows(target, [*existing_rows, row], DEVIATION_FIELDS, overwrite=True)
     return row
-

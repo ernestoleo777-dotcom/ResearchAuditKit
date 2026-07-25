@@ -32,6 +32,8 @@ def _criterion_status(value: float, criterion: Mapping[str, Any]) -> str:
 
 
 def evaluate_gate(metrics: Mapping[str, Any], policy: Mapping[str, Any]) -> dict[str, Any]:
+    if not isinstance(metrics, Mapping) or not isinstance(policy, Mapping):
+        raise InputValidationError("metrics and gate policy must be mappings")
     gate = policy.get("gate", policy)
     gate_id = str(gate.get("id", "unnamed_gate"))
     if gate.get("blocked"):
@@ -61,4 +63,3 @@ def evaluate_gate(metrics: Mapping[str, Any], policy: Mapping[str, Any]) -> dict
     if status not in GATE_STATUSES:
         raise AssertionError(status)
     return {"gate_id": gate_id, "status": status, "criteria": results}
-
