@@ -1,0 +1,2 @@
+blocker_id,severity,scope,description,status,owner,next_action
+LICENSE-001,USER_DECISION,public_release,No formal open-source license has been selected,OPEN_PUBLICATION_BLOCKER,user,USER_SELECT_LICENSE_MIT_OR_APACHE_2_0

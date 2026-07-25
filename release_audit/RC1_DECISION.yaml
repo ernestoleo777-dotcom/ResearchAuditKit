@@ -1,0 +1,77 @@
+project:
+  name: ResearchAuditKit
+  phase: release_candidate_hardening
+  research_project: false
+  benchmark: false
+  paper_artifact: false
+
+source_protection:
+  source_repository_unchanged: true
+  archived_project_unchanged: true
+  scientific_baseline_match: true
+  volatile_warnings: 0
+
+package:
+  distribution_name: research-audit-kit
+  import_name: research_audit_kit
+  cli_entrypoint: rak
+  version: 0.1.0
+  wheel_built: true
+  sdist_built: true
+  wheel_install_passed: true
+  sdist_install_passed: true
+  artifact_hashes_recorded: true
+
+tests:
+  collected: 106
+  passed: 106
+  failed: 0
+  skipped: 0
+  xfailed: 0
+  duration_seconds: 0.92
+  compileall_passed: true
+
+documentation:
+  readme_commands_executed: 15
+  readme_commands_passed: 15
+  examples_total: 5
+  examples_passed: 5
+  claim_scan_passed: true
+
+security:
+  yaml_safe: true
+  shell_execution_absent: true
+  path_escape_protected: true
+  silent_overwrite_absent: true
+  privacy_scan_passed: true
+  network_calls_absent: true
+
+ci:
+  configuration_created: true
+  local_validation_passed: true
+  remote_execution_status: CI_CONFIGURATION_CREATED_NOT_REMOTE_EXECUTED
+
+license:
+  current_status: READY_FOR_USER_LICENSE_SELECTION
+  user_selection_required: true
+  recommended_option: Apache-2.0
+  license_file_created: false
+
+gates:
+  source_independence: PASS
+  package_build: PASS
+  clean_installation: PASS
+  cli_documentation: PASS
+  security_io_safety: PASS
+  test_quality: PASS
+  license_readiness: BLOCKED_BY_USER_DECISION
+
+decision:
+  engineering_status: RELEASE_CANDIDATE_READY
+  publication_status: BLOCKED_BY_LICENSE_SELECTION
+  github_publication_allowed: false
+  pypi_publication_allowed: false
+  unresolved_blockers:
+    - user license selection
+  recommended_next_action: USER_SELECT_LICENSE_MIT_OR_APACHE_2_0
+  confidence: high_engineering_license_pending

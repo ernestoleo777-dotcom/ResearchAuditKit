@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections import Counter
 from typing import Any, Iterable, Mapping, Sequence
 
+from ..constants import STATUS_FAIL, STATUS_PASS
 
 def _roles(manifest: list[Mapping[str, Any]], key: str) -> dict[str, set[str]]:
     result: dict[str, set[str]] = {}
@@ -63,9 +64,8 @@ def audit_split_leakage(
         "calibration_test_overlap": calibration_test_overlap,
     }
     detected = any(bool(value) for value in issues.values())
-    return {"status": "FAIL" if detected else "PASS", "issues": issues, "metadata_only": True}
+    return {"status": STATUS_FAIL if detected else STATUS_PASS, "issues": issues, "metadata_only": True}
 
 
 def file_overlap(train_files: Iterable[str], test_files: Iterable[str]) -> list[str]:
     return sorted(set(train_files) & set(test_files))
-

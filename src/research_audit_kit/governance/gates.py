@@ -4,7 +4,15 @@ from __future__ import annotations
 
 from typing import Any, Mapping
 
-from ..constants import GATE_STATUSES
+from ..constants import (
+    GATE_STATUSES,
+    STATUS_BLOCKED,
+    STATUS_FAIL,
+    STATUS_INCONCLUSIVE,
+    STATUS_PASS,
+    STATUS_SKIPPED_BY_GATE,
+    STATUS_UNADJUDICATED,
+)
 from ..exceptions import InputValidationError
 
 
@@ -25,10 +33,14 @@ def _condition(value: float, rules: Mapping[str, Any]) -> bool:
 
 
 def _criterion_status(value: float, criterion: Mapping[str, Any]) -> str:
-    for status, key in (("PASS", "pass"), ("INCONCLUSIVE", "inconclusive"), ("FAIL", "fail")):
+    for status, key in (
+        (STATUS_PASS, "pass"),
+        (STATUS_INCONCLUSIVE, "inconclusive"),
+        (STATUS_FAIL, "fail"),
+    ):
         if key in criterion and _condition(value, criterion[key]):
             return status
-    return "UNADJUDICATED"
+    return STATUS_UNADJUDICATED
 
 
 def evaluate_gate(metrics: Mapping[str, Any], policy: Mapping[str, Any]) -> dict[str, Any]:
@@ -37,14 +49,14 @@ def evaluate_gate(metrics: Mapping[str, Any], policy: Mapping[str, Any]) -> dict
     gate = policy.get("gate", policy)
     gate_id = str(gate.get("id", "unnamed_gate"))
     if gate.get("blocked"):
-        return {"gate_id": gate_id, "status": "BLOCKED", "criteria": []}
+        return {"gate_id": gate_id, "status": STATUS_BLOCKED, "criteria": []}
     if gate.get("enabled") is False:
-        return {"gate_id": gate_id, "status": "SKIPPED_BY_GATE", "criteria": []}
+        return {"gate_id": gate_id, "status": STATUS_SKIPPED_BY_GATE, "criteria": []}
     results: list[dict[str, Any]] = []
     for criterion in gate.get("criteria", []):
         metric = str(criterion.get("metric", ""))
         if metric not in metrics:
-            results.append({"metric": metric, "status": "UNADJUDICATED", "value": None})
+            results.append({"metric": metric, "status": STATUS_UNADJUDICATED, "value": None})
             continue
         try:
             value = float(metrics[metric])
@@ -52,14 +64,14 @@ def evaluate_gate(metrics: Mapping[str, Any], policy: Mapping[str, Any]) -> dict
             raise InputValidationError(f"metric {metric!r} must be numeric") from exc
         results.append({"metric": metric, "value": value, "status": _criterion_status(value, criterion)})
     statuses = {row["status"] for row in results}
-    if not results or "UNADJUDICATED" in statuses:
-        status = "UNADJUDICATED"
-    elif "FAIL" in statuses:
-        status = "FAIL"
-    elif "INCONCLUSIVE" in statuses:
-        status = "INCONCLUSIVE"
+    if not results or STATUS_UNADJUDICATED in statuses:
+        status = STATUS_UNADJUDICATED
+    elif STATUS_FAIL in statuses:
+        status = STATUS_FAIL
+    elif STATUS_INCONCLUSIVE in statuses:
+        status = STATUS_INCONCLUSIVE
     else:
-        status = "PASS"
+        status = STATUS_PASS
     if status not in GATE_STATUSES:
         raise AssertionError(status)
     return {"gate_id": gate_id, "status": status, "criteria": results}

@@ -1,0 +1,6 @@
+check_id,scope,check,expected,observed,status,notes
+SRC-001,scientific_baseline,governed_asset_match,33,33,PASS,aggregate only; no protected path inventory copied
+SRC-002,scientific_baseline,baseline_companion_digest,match,match,PASS,companion re-computed
+SRC-003,final_archive,payload_manifest,18,18,PASS,manifest and companion re-computed
+SRC-004,protected_source,nonvolatile_snapshot,510,510,PASS,closure-era nonvolatile snapshot rechecked
+SRC-005,protected_source,volatile_metadata,warning_only,0,PASS,volatile changes never fail the scientific gate

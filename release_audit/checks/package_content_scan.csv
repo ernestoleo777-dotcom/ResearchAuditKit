@@ -1,0 +1,17 @@
+artifact,rule,match_count,status,notes
+dist/research_audit_kit-0.1.0-py3-none-any.whl,no_release_or_phase0_audit,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0-py3-none-any.whl,no_test_example_doc_ci_trees,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0-py3-none-any.whl,no_build_cache_or_binary_assets,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0-py3-none-any.whl,contains_package,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0-py3-none-any.whl,contains_distribution_metadata,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0-py3-none-any.whl,no_private_absolute_path,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0-py3-none-any.whl,no_archived_source_identifier,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0-py3-none-any.whl,no_secret_key_marker,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0.tar.gz,no_release_or_phase0_audit,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0.tar.gz,no_test_example_doc_ci_trees,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0.tar.gz,no_build_cache_or_binary_assets,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0.tar.gz,contains_package,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0.tar.gz,contains_distribution_metadata,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0.tar.gz,no_private_absolute_path,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0.tar.gz,no_archived_source_identifier,0,PASS,archive member paths and readable payload scanned
+dist/research_audit_kit-0.1.0.tar.gz,no_secret_key_marker,0,PASS,archive member paths and readable payload scanned

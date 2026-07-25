@@ -1,8 +1,9 @@
+import os
 from pathlib import Path
 
 import pytest
 
-from research_audit_kit.exceptions import UnsafePathError
+from research_audit_kit.exceptions import UnsafePathError, UnsupportedFormatError
 from research_audit_kit.integrity.inventory import build_inventory, safe_relative, write_inventory
 
 
@@ -34,6 +35,26 @@ def test_symlink_root_escape_rejected(tmp_path, policy):
     outside.write_text("outside")
     (root / "escape.txt").symlink_to(outside)
     with pytest.raises(UnsafePathError):
+        build_inventory(root, policy)
+
+
+def test_broken_internal_symlink_is_recorded_without_following(tmp_path, policy):
+    root = tmp_path / "root"
+    root.mkdir()
+    (root / "README.md").write_text("fixture")
+    (root / "broken.csv").symlink_to(root / "missing.csv")
+    rows = build_inventory(root, policy)
+    row = next(item for item in rows if item["path"] == "broken.csv")
+    assert row["exclusion_reason"] == "symlink recorded but target was not followed"
+
+
+def test_fifo_is_rejected_as_unsupported_object(tmp_path, policy):
+    root = tmp_path / "root"
+    root.mkdir()
+    (root / "README.md").write_text("fixture")
+    fifo = root / "stream.csv"
+    os.mkfifo(fifo)
+    with pytest.raises(UnsupportedFormatError):
         build_inventory(root, policy)
 
 

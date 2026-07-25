@@ -1,0 +1,11 @@
+scan_id,asset_class,match_count,status,review_note
+FAS-RC1-01,archived_source_repository_identifier,0,PASS,no archived source identifier present
+FAS-RC1-02,original_attachment_or_paper_files,0,PASS,no attachment PDF DOCX XLSX or archive present
+FAS-RC1-03,serialized_model_files,0,PASS,no pickle joblib model or checkpoint present
+FAS-RC1-04,private_absolute_paths,0,PASS,no macOS home or temporary absolute path present
+FAS-RC1-05,personal_names_or_email,0,PASS,no personal identity or email present
+FAS-RC1-06,credentials_or_private_keys,0,PASS,no credential marker or private key present
+FAS-RC1-07,symlinks,0,PASS,no symlink present in release source tree
+FAS-RC1-08,archived_numeric_results,0,PASS,only newly authored synthetic fixtures present
+FAS-RC1-09,unadjudicated_legacy_outputs,0,PASS,no legacy output directory present
+FAS-RC1-10,binary_build_residue,0,PASS,build caches excluded; distributions separately audited under ignored dist

@@ -1,0 +1,2 @@
+file,line,matched_phrase,context,classification,action,status
+README.md,80,benchmark,"not a research project, dataset, benchmark, or paper artifact",NEGATED_SCOPE_BOUNDARY,retain explicit non-claim wording,PASS

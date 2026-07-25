@@ -6,6 +6,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
+from ..constants import STATUS_FAIL, STATUS_PASS, STATUS_PASS_WITH_WARNINGS
 from ..io.csv_io import read_csv_rows, write_csv_rows
 from ..io.json_io import write_json
 from .hashing import sha256_file
@@ -82,7 +83,7 @@ def verify_baseline(root: str | Path, baseline_path: str | Path) -> dict[str, ob
             for row in results
         )
     warnings = counts["VOLATILE_WARNING"] + counts["EXCLUDED_CHANGED"]
-    gate_status = "FAIL" if failure else ("PASS_WITH_WARNINGS" if warnings else "PASS")
+    gate_status = STATUS_FAIL if failure else (STATUS_PASS_WITH_WARNINGS if warnings else STATUS_PASS)
     return {
         "policy_id": policy.policy_id,
         "baseline_id": rows[0]["baseline_id"],
@@ -107,4 +108,3 @@ def write_verification(result: dict[str, object], out_dir: str | Path) -> tuple[
         {key: value for key, value in result.items() if key != "results"},
     )
     return csv_path, json_path
-

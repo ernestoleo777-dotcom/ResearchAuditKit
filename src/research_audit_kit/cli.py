@@ -11,7 +11,13 @@ from typing import Any
 
 import yaml
 
-from .constants import __version__
+from .constants import (
+    STATUS_BLOCKED,
+    STATUS_FAIL,
+    STATUS_PASS,
+    STATUS_UNADJUDICATED,
+    __version__,
+)
 from .exceptions import AuditError, InputValidationError
 from .governance.claims import CLAIM_FIELDS, evaluate_claims
 from .governance.deviations import record_deviation
@@ -65,7 +71,7 @@ def _run(args: argparse.Namespace) -> int:
         if state_dir.exists():
             raise AuditError(f"already initialized: {state_dir}")
         state_dir.mkdir(parents=True)
-        summary = {"command": "init", "status": "PASS", "policy_id": policy.policy_id}
+        summary = {"command": "init", "status": STATUS_PASS, "policy_id": policy.policy_id}
         write_json(state_dir / "project.json", summary)
         _print_summary(summary)
         return 0
@@ -81,7 +87,7 @@ def _run(args: argparse.Namespace) -> int:
         missing = sum(row["gate_status"] == "MISSING_REQUIRED" for row in rows)
         summary = {
             "command": "inventory",
-            "status": "FAIL" if missing else "PASS",
+            "status": STATUS_FAIL if missing else STATUS_PASS,
             "asset_count": len(rows),
             "missing_required": missing,
         }
@@ -101,7 +107,7 @@ def _run(args: argparse.Namespace) -> int:
         summary = {key: value for key, value in result.items() if key != "results"}
         summary["command"] = "verify"
         _print_summary(summary)
-        return 2 if result["gate_status"] == "FAIL" else 0
+        return 2 if result["gate_status"] == STATUS_FAIL else 0
 
     if args.command == "support-audit":
         schema = read_yaml(args.schema) if args.schema else None
@@ -147,18 +153,22 @@ def _run(args: argparse.Namespace) -> int:
         summary = {"command": "split-audit", **result}
         write_machine_summary(args.out, summary)
         _print_summary(summary)
-        return 2 if result["status"] == "FAIL" else 0
+        return 2 if result["status"] == STATUS_FAIL else 0
 
     if args.command == "gate":
         result = evaluate_gate(read_json(args.metrics), read_yaml(args.policy))
         summary = {"command": "gate", **result}
         write_machine_summary(args.out, summary)
         _print_summary(summary)
-        return 2 if result["status"] in {"FAIL", "BLOCKED", "UNADJUDICATED"} else 0
+        return 2 if result["status"] in {STATUS_FAIL, STATUS_BLOCKED, STATUS_UNADJUDICATED} else 0
 
     if args.command == "deviation" and args.deviation_command == "record":
         row = record_deviation(args.out, read_yaml(args.config))
-        summary = {"command": "deviation record", "status": "PASS", "deviation_id": row["deviation_id"]}
+        summary = {
+            "command": "deviation record",
+            "status": STATUS_PASS,
+            "deviation_id": row["deviation_id"],
+        }
         _print_summary(summary)
         return 0
 
@@ -167,7 +177,7 @@ def _run(args: argparse.Namespace) -> int:
         Path(args.out).mkdir(parents=True, exist_ok=True)
         fields = [*CLAIM_FIELDS, "evidence_records_found", "evidence_records_requested"]
         write_csv_rows(Path(args.out) / "claim_evaluation.csv", result, fields)
-        summary = {"command": "claims evaluate", "status": "PASS", "claim_count": len(result)}
+        summary = {"command": "claims evaluate", "status": STATUS_PASS, "claim_count": len(result)}
         write_machine_summary(args.out, summary)
         _print_summary(summary)
         return 0

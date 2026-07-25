@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Iterable, Mapping
 
+from ..constants import STATUS_FAIL, STATUS_PASS
 
 COMPONENTS = {"scaler", "feature_selector", "hyperparameter_tuner", "calibrator"}
 
@@ -25,13 +26,12 @@ def audit_fold_local_metadata(
         if not fitted:
             results[component] = "UNVERIFIED_FROM_METADATA"
         elif fitted & test:
-            results[component] = "FAIL"
+            results[component] = STATUS_FAIL
         elif fitted <= train:
-            results[component] = "PASS"
+            results[component] = STATUS_PASS
         else:
             results[component] = "UNVERIFIED_FROM_METADATA"
-    status = "FAIL" if "FAIL" in results.values() else (
-        "UNVERIFIED_FROM_METADATA" if not results or "UNVERIFIED_FROM_METADATA" in results.values() else "PASS"
+    status = STATUS_FAIL if STATUS_FAIL in results.values() else (
+        "UNVERIFIED_FROM_METADATA" if not results or "UNVERIFIED_FROM_METADATA" in results.values() else STATUS_PASS
     )
     return {"status": status, "components": results}
-
