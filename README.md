@@ -10,11 +10,19 @@ The toolkit does not decide that a scientific conclusion is correct. It does not
 
 ## Install
 
+From a source checkout:
+
 ```bash
 python -m pip install -e .
 ```
 
-Python 3.10+ and PyYAML are required. No network, GPU, database, or service is needed at runtime.
+For a built wheel:
+
+```bash
+python -m pip install dist/research_audit_kit-0.1.0-py3-none-any.whl
+```
+
+Python 3.10+ and PyYAML are required. Installation may resolve PyYAML from the configured package source; runtime commands themselves make no network calls. The quickstart below assumes a source checkout because it uses the repository's example files.
 
 ## Five-minute quickstart
 
@@ -47,8 +55,8 @@ Every command has `--help`, emits a machine-readable summary, and returns a nonz
 ```json
 {
   "command": "verify",
-  "gate_status": "PASS_WITH_WARNINGS",
-  "counts": {"MATCH": 3, "VOLATILE_WARNING": 1}
+  "gate_status": "PASS",
+  "counts": {"MATCH": 2}
 }
 ```
 
@@ -59,6 +67,7 @@ Every command has `--help`, emits a machine-readable summary, and returns a nonz
 - Leakage checks based only on metadata can return `UNVERIFIED_FROM_METADATA`.
 - User policies determine what is included and what causes failure.
 - Negative results are preserved as evidence; `FAIL` is not automatically a software defect.
+- Non-baseline report files are atomically replaced when a command is rerun against the same output directory. Baselines are the exception: they refuse overwrite unless `--force` is explicit, and the forced action is recorded in the baseline.
 
 See `docs/limitations.md` for the complete boundary.
 
@@ -69,4 +78,3 @@ Commands operate on local paths. The package performs no network calls and ships
 ## Project status
 
 Independent clean-room engineering prototype. It is a reproducibility utility, not a research project, dataset, benchmark, or paper artifact. License selection is pending; see `LICENSE_STATUS.md`.
-

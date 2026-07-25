@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "research-audit-kit"
-version = "0.1.0"
+dynamic = ["version"]
 description = "A lightweight toolkit for auditing scientific repository integrity, data support, experiment isolation, and evidence-backed research decisions."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["PyYAML>=6.0"]
+authors = [{name = "ResearchAuditKit contributors"}]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Environment :: Console",
@@ -25,6 +26,9 @@ rak = "research_audit_kit.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.dynamic]
+version = {attr = "research_audit_kit.constants.__version__"}
+
 [tool.pytest.ini_options]
 addopts = "-ra"
 testpaths = ["tests"]
@@ -32,4 +36,3 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py310"
-
