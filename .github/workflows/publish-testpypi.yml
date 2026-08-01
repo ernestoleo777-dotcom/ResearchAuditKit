@@ -1,0 +1,164 @@
+name: Publish audited RC to TestPyPI
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-audited-rc:
+    runs-on: ubuntu-latest
+    environment: testpypi
+    env:
+      EXPECTED_REPOSITORY: ernestoleo777-dotcom/ResearchAuditKit
+      EXPECTED_TAG: v0.1.0-rc.1
+      EXPECTED_COMMIT: 9ae2bfeead9cbf4c6779011b601666ffc0cff833
+      EXPECTED_WHEEL: research_audit_kit-0.1.0rc1-py3-none-any.whl
+      EXPECTED_WHEEL_SHA256: b5120bb0e4777baecfcff21eabba87953b7859ba65141e380fe067096b04455a
+      EXPECTED_SDIST: research_audit_kit-0.1.0rc1.tar.gz
+      EXPECTED_SDIST_SHA256: d5c2b9dc63d0f76db1006032a2eb3dfac8a80139370c90f2aae6a56bf9663e10
+      EXPECTED_VERSION: 0.1.0rc1
+      EXPECTED_DISTRIBUTION: research-audit-kit
+    steps:
+      - name: Verify dispatch context
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "$EXPECTED_REPOSITORY"
+          test "$GITHUB_REF" = "refs/heads/main"
+
+      - name: Read and verify GitHub prerelease metadata
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release view "$EXPECTED_TAG" --repo "$EXPECTED_REPOSITORY" \
+            --json tagName,isDraft,isPrerelease,assets > release.json
+          python - <<'PY'
+          import json
+
+          expected_assets = {
+              "research_audit_kit-0.1.0rc1-py3-none-any.whl": (
+                  "sha256:b5120bb0e4777baecfcff21eabba87953b7859ba65141e380fe067096b04455a"
+              ),
+              "research_audit_kit-0.1.0rc1.tar.gz": (
+                  "sha256:d5c2b9dc63d0f76db1006032a2eb3dfac8a80139370c90f2aae6a56bf9663e10"
+              ),
+              "SHA256SUMS": None,
+          }
+          with open("release.json", encoding="utf-8") as handle:
+              release = json.load(handle)
+          assert release["tagName"] == "v0.1.0-rc.1"
+          assert release["isPrerelease"] is True
+          assert release["isDraft"] is False
+          assets = {asset["name"]: asset for asset in release["assets"]}
+          assert set(assets) == set(expected_assets)
+          assert len(assets) == 3
+          for name, digest in expected_assets.items():
+              if digest is not None:
+                  assert assets[name]["digest"] == digest
+          PY
+
+      - name: Verify annotated tag target
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$EXPECTED_REPOSITORY/git/ref/tags/$EXPECTED_TAG" > tag-ref.json
+          tag_object_sha=$(python -c 'import json; print(json.load(open("tag-ref.json"))["object"]["sha"])')
+          [[ "$tag_object_sha" =~ ^[0-9a-f]{40}$ ]]
+          gh api "repos/$EXPECTED_REPOSITORY/git/tags/$tag_object_sha" > tag-object.json
+          python - <<'PY'
+          import json
+
+          with open("tag-object.json", encoding="utf-8") as handle:
+              tag = json.load(handle)
+          assert tag["tag"] == "v0.1.0-rc.1"
+          assert tag["object"]["type"] == "commit"
+          assert tag["object"]["sha"] == "9ae2bfeead9cbf4c6779011b601666ffc0cff833"
+          PY
+
+      - name: Download and checksum exact release assets
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir release-assets dist
+          gh release download "$EXPECTED_TAG" --repo "$EXPECTED_REPOSITORY" \
+            --dir release-assets --pattern "$EXPECTED_WHEEL"
+          gh release download "$EXPECTED_TAG" --repo "$EXPECTED_REPOSITORY" \
+            --dir release-assets --pattern "$EXPECTED_SDIST"
+          gh release download "$EXPECTED_TAG" --repo "$EXPECTED_REPOSITORY" \
+            --dir release-assets --pattern SHA256SUMS
+          python - <<'PY'
+          import hashlib
+          import re
+          from pathlib import Path
+
+          assets_dir = Path("release-assets")
+          expected = {
+              "research_audit_kit-0.1.0rc1-py3-none-any.whl": (
+                  "b5120bb0e4777baecfcff21eabba87953b7859ba65141e380fe067096b04455a"
+              ),
+              "research_audit_kit-0.1.0rc1.tar.gz": (
+                  "d5c2b9dc63d0f76db1006032a2eb3dfac8a80139370c90f2aae6a56bf9663e10"
+              ),
+          }
+          assert {path.name for path in assets_dir.iterdir()} == {*expected, "SHA256SUMS"}
+          checksum_lines = (assets_dir / "SHA256SUMS").read_text(encoding="utf-8").splitlines()
+          assert len(checksum_lines) == 2
+          observed = {}
+          for line in checksum_lines:
+              match = re.fullmatch(r"([0-9a-f]{64})  ([^/\\]+)", line)
+              assert match is not None
+              observed[match.group(2)] = match.group(1)
+          assert observed == expected
+          for name, digest in expected.items():
+              path = assets_dir / name
+              assert path.stat().st_size > 0
+              assert hashlib.sha256(path.read_bytes()).hexdigest() == digest
+          PY
+          (cd release-assets && sha256sum -c SHA256SUMS)
+          cp "release-assets/$EXPECTED_WHEEL" "release-assets/$EXPECTED_SDIST" dist/
+          test "$(find dist -maxdepth 1 -type f | wc -l)" = 2
+
+      - name: Verify package metadata before publishing
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import tarfile
+          import zipfile
+          from email import policy
+          from email.parser import BytesParser
+
+          def parse_metadata(payload):
+              return BytesParser(policy=policy.default).parsebytes(payload)
+
+          with zipfile.ZipFile("dist/research_audit_kit-0.1.0rc1-py3-none-any.whl") as wheel:
+              metadata_name = next(name for name in wheel.namelist() if name.endswith(".dist-info/METADATA"))
+              entry_points_name = next(name for name in wheel.namelist() if name.endswith(".dist-info/entry_points.txt"))
+              wheel_metadata = parse_metadata(wheel.read(metadata_name))
+              assert "rak = research_audit_kit.cli:main" in wheel.read(entry_points_name).decode("utf-8")
+          with tarfile.open("dist/research_audit_kit-0.1.0rc1.tar.gz") as source:
+              pkg_info_name = next(name for name in source.getnames() if name.endswith("/PKG-INFO"))
+              pkg_info = source.extractfile(pkg_info_name)
+              assert pkg_info is not None
+              source_metadata = parse_metadata(pkg_info.read())
+          for metadata in (wheel_metadata, source_metadata):
+              assert metadata["Name"] == "research-audit-kit"
+              assert metadata["Version"] == "0.1.0rc1"
+              assert metadata["Requires-Python"] == ">=3.10"
+              assert metadata["License-Expression"] == "Apache-2.0"
+          PY
+
+      - name: Publish verified RC assets to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: dist/
