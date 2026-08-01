@@ -4,11 +4,14 @@ import ast
 import hashlib
 import subprocess
 import sys
-import tomllib
 from pathlib import Path
 
+from packaging.requirements import Requirement
+import pytest
 import yaml
 from research_audit_kit import __version__
+
+from _toml_compat import TOML_BACKEND, tomllib
 
 ROOT = Path(__file__).parents[1]
 
@@ -74,3 +77,45 @@ def test_package_source_has_one_apache_spdx_header_per_file():
     assert len(source_files) == 43
     for path in source_files:
         assert path.read_text(encoding="utf-8").count("SPDX-License-Identifier: Apache-2.0") == 1
+
+
+def test_toml_compatibility_interface_and_backend():
+    assert callable(tomllib.load)
+    assert callable(tomllib.loads)
+    assert issubclass(tomllib.TOMLDecodeError, Exception)
+    assert TOML_BACKEND == ("tomli" if sys.version_info < (3, 11) else "tomllib")
+
+
+def test_toml_compatibility_parses_text_and_binary_file(tmp_path):
+    content = '[project]\nname = "example"\nenabled = true\n'
+    assert tomllib.loads(content)["project"] == {"name": "example", "enabled": True}
+    path = tmp_path / "example.toml"
+    path.write_bytes(content.encode("utf-8"))
+    with path.open("rb") as handle:
+        assert tomllib.load(handle)["project"]["name"] == "example"
+
+
+def test_toml_compatibility_rejects_invalid_toml():
+    with pytest.raises(tomllib.TOMLDecodeError):
+        tomllib.loads("[project\nname = 'example'")
+
+
+def test_tomli_is_conditional_dev_dependency_only():
+    metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    dev_requirements = [Requirement(item) for item in metadata["project"]["optional-dependencies"]["dev"]]
+    tomli = [requirement for requirement in dev_requirements if requirement.name == "tomli"]
+    assert len(tomli) == 1
+    assert tomli[0].marker is not None
+    assert tomli[0].marker.evaluate({"python_version": "3.10"})
+    assert not tomli[0].marker.evaluate({"python_version": "3.11"})
+    assert all(Requirement(item).name != "tomli" for item in metadata["project"]["dependencies"])
+
+
+def test_python_support_and_ci_dev_install_are_preserved():
+    metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    assert metadata["project"]["requires-python"] == ">=3.10"
+    workflow = yaml.safe_load((ROOT / ".github" / "workflows" / "ci.yml").read_text())
+    assert workflow["jobs"]["test"]["strategy"]["matrix"]["python-version"] == ["3.10", "3.11", "3.12"]
+    install_step = next(step for step in workflow["jobs"]["test"]["steps"] if step.get("name") == "Install local package and tests")
+    assert ".[dev]" in install_step["run"]
+    assert "pip install tomli" not in install_step["run"]

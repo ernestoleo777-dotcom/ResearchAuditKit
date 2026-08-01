@@ -9,6 +9,9 @@
 
 ## Unreleased
 
+- Add Python 3.10-compatible TOML parsing for release-metadata tests.
+- Declare the conditional test dependency on `tomli` for Python versions below 3.11.
+- Update CI to install the declared development extra.
 - Initialize independent package architecture.
 - Add integrity, support, optimization-result, validation, governance, reporting, and CLI utilities.
 - Add synthetic fixtures, examples, tests, and clean-room audit records.
