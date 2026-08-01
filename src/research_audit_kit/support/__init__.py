@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Empirical data-support auditing."""
 
 from .marginal import marginal_support

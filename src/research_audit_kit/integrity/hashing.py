@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Deterministic SHA-256 utilities."""
 
 from __future__ import annotations

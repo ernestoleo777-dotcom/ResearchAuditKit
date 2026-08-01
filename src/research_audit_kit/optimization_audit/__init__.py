@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Optimization-result auditing without truth claims."""
 
 from .pareto import nondominated_indices, validate_pareto_claims

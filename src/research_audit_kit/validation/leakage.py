@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Conservative metadata-based leakage checks."""
 
 from __future__ import annotations

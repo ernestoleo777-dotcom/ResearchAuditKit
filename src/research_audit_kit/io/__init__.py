@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Safe small-file I/O helpers."""
 
 from .csv_io import read_csv_rows, write_csv_rows

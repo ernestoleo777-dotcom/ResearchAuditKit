@@ -8,6 +8,7 @@ dynamic = ["version"]
 description = "A lightweight toolkit for auditing scientific repository integrity, data support, experiment isolation, and evidence-backed research decisions."
 readme = "README.md"
 requires-python = ">=3.10"
+license = "Apache-2.0"
 dependencies = ["PyYAML>=6.0"]
 authors = [{name = "ResearchAuditKit contributors"}]
 classifiers = [

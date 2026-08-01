@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Conservative missingness-pattern classification."""
 
 from __future__ import annotations

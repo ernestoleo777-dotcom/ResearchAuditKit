@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Versioned portable baselines with companion hashes."""
 
 from __future__ import annotations

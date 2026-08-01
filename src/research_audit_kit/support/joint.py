@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Exact and subset joint-support operations."""
 
 from __future__ import annotations

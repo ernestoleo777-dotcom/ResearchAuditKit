@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Support contamination metrics for selected and Pareto rows."""
 
 from __future__ import annotations

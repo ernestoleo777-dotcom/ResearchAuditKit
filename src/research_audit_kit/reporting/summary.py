@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Status counts and conservative aggregate summaries."""
 
 from __future__ import annotations

@@ -1,0 +1,5 @@
+scope,entries_checked,status,notes
+scientific_baseline_v1,33,PASS,Fresh SHA-256 verification against scientific_baseline_v1.csv.
+final_archive_manifest,18,PASS,Fresh SHA-256 verification against scientific_archive_manifest.csv and manifest digest.
+nonvolatile_source_snapshot,510,PASS,Frozen continuation-state verification; Phase 2 made no writes in the protected source repository.
+volatile_metadata,0 new differences,PASS,No new volatile difference was introduced by this phase.

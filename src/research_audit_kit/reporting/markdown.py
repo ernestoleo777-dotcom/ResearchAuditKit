@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Small deterministic Markdown rendering helpers."""
 
 from __future__ import annotations

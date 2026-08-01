@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Candidate support taxonomy without physical interpretation."""
 
 from __future__ import annotations

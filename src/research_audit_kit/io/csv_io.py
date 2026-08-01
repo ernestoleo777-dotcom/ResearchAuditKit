@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """CSV helpers with explicit overwrite behavior."""
 
 from __future__ import annotations

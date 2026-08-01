@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import ast
+import hashlib
 import subprocess
 import sys
 import tomllib
 from pathlib import Path
 
+import yaml
 from research_audit_kit import __version__
 
 ROOT = Path(__file__).parents[1]
@@ -47,3 +49,28 @@ def test_tracked_tree_has_no_forbidden_binary_assets():
     tracked = subprocess.check_output(["git", "ls-files"], cwd=ROOT, text=True).splitlines()
     forbidden_suffixes = {"." + "pkl", "." + "pickle", ".xlsx", ".xls", ".pdf"}
     assert not [path for path in tracked if Path(path).suffix.lower() in forbidden_suffixes]
+
+
+def test_apache_license_text_and_metadata_are_consistent():
+    license_bytes = (ROOT / "LICENSE").read_bytes()
+    assert hashlib.sha256(license_bytes).hexdigest() == "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    assert license_bytes.endswith(b"\n")
+    metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    assert metadata["project"]["license"] == "Apache-2.0"
+
+
+def test_license_documents_are_consistent():
+    assert "LICENSE_SELECTED_APACHE_2_0" in (ROOT / "LICENSE_STATUS.md").read_text()
+    assert "Licensed under the Apache License, Version 2.0." in (ROOT / "README.md").read_text()
+    citation = yaml.safe_load((ROOT / "CITATION.cff").read_text())
+    assert citation["license"] == "Apache-2.0"
+    notice = (ROOT / "license_release" / "NOTICE_DECISION.md").read_text()
+    assert "NOTICE_NOT_REQUIRED_FOR_CURRENT_CONTENTS" in notice
+    assert not (ROOT / "NOTICE").exists()
+
+
+def test_package_source_has_one_apache_spdx_header_per_file():
+    source_files = sorted((ROOT / "src" / "research_audit_kit").rglob("*.py"))
+    assert len(source_files) == 43
+    for path in source_files:
+        assert path.read_text(encoding="utf-8").count("SPDX-License-Identifier: Apache-2.0") == 1

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Deterministic declarative gate evaluation."""
 
 from __future__ import annotations

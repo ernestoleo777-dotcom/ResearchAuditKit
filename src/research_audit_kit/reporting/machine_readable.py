@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Machine-readable summary writer."""
 
 from __future__ import annotations

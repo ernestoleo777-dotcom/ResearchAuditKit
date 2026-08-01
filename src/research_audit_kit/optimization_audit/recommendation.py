@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Recommendation coordinate support audit."""
 
 from __future__ import annotations

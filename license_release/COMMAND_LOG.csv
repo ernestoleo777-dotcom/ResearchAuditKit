@@ -1,0 +1,10 @@
+step,command_or_workflow,status,notes
+preflight,git and path inspection,PASS,Only authorized Phase 2 changes found.
+license_consistency,PYTHONPATH=src pytest tests/test_release_metadata.py,PASS,8 tests passed.
+build,setuptools.build_meta wheel and sdist,PASS,No network dependency resolution.
+clean_install,editable wheel and sdist temporary environments,PASS,51 of 51 checks passed.
+full_tests,PYTHONPATH=src pytest -q,PASS,109 passed.
+compileall,python -m compileall -q src,PASS,No compile errors.
+readme_examples,README quickstart and five examples,PASS,9 of 9 checks passed.
+package_scan,wheel and sdist member scan,PASS,0 forbidden members.
+privacy_scan,tracked and Phase 2 file scan,PASS,0 findings.

@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Human- and machine-readable audit reporting."""
 
 from .markdown import markdown_table

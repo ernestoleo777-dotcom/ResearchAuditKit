@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Policy loading and task-independent file classification."""
 
 from __future__ import annotations

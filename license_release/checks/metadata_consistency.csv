@@ -1,0 +1,7 @@
+artifact,field,expected,actual,status,notes
+pyproject.toml,project.license,Apache-2.0,Apache-2.0,PASS,PEP 621 SPDX expression
+wheel,License-Expression,Apache-2.0,Apache-2.0,PASS,Core Metadata
+sdist,License-Expression,Apache-2.0,Apache-2.0,PASS,PKG-INFO
+README.md,license statement,Apache License 2.0,present,PASS,User documentation
+LICENSE_STATUS.md,status,LICENSE_SELECTED_APACHE_2_0,LICENSE_SELECTED_APACHE_2_0,PASS,Status documentation
+CITATION.cff,license,Apache-2.0,Apache-2.0,PASS,CFF metadata

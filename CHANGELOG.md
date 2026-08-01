@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0 — release-candidate preparation
+
+- Select Apache-2.0 and add the verified standard `LICENSE` text.
+- Add Apache-2.0 packaging metadata and document the current NOTICE decision.
+- Integrate SPDX license identifiers into maintained package source files.
+- Revalidate distribution license inclusion and prepare local GitHub handoff material.
+
 ## Unreleased
 
 - Initialize independent package architecture.

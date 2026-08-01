@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Preserve failed outcomes in YAML, CSV, and Markdown."""
 
 from __future__ import annotations

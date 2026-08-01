@@ -66,6 +66,8 @@ Every command has `--help`, emits a machine-readable summary, and returns a nonz
 - Support-contamination metrics do not measure true objective error.
 - Leakage checks based only on metadata can return `UNVERIFIED_FROM_METADATA`.
 - User policies determine what is included and what causes failure.
+- Passing a configured gate does not guarantee that all leakage has been detected.
+- The toolkit does not guarantee scientific conclusions, physical feasibility, or paper acceptance.
 - Negative results are preserved as evidence; `FAIL` is not automatically a software defect.
 - Non-baseline report files are atomically replaced when a command is rerun against the same output directory. Baselines are the exception: they refuse overwrite unless `--force` is explicit, and the forced action is recorded in the baseline.
 
@@ -75,6 +77,10 @@ See `docs/limitations.md` for the complete boundary.
 
 Commands operate on local paths. The package performs no network calls and ships only newly authored synthetic fixtures. Inventory and manifest outputs may reveal filenames and hashes; review them before sharing.
 
+## License
+
+Licensed under the Apache License, Version 2.0. See the repository-root [LICENSE](LICENSE) file for the complete terms.
+
 ## Project status
 
-Independent clean-room engineering prototype. It is a reproducibility utility, not a research project, dataset, benchmark, or paper artifact. License selection is pending; see `LICENSE_STATUS.md`.
+Release-candidate engineering tool licensed under Apache-2.0. No public remote or release has been created yet. It is a reproducibility utility, not a research project, dataset, benchmark, or paper artifact; see `LICENSE_STATUS.md`.

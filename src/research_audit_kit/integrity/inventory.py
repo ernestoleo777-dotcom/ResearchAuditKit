@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Recursive relative-path repository inventory."""
 
 from __future__ import annotations

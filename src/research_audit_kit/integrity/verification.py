@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Baseline verification with warnings separated from failures."""
 
 from __future__ import annotations

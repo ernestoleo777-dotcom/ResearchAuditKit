@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Split, leakage, preprocessing, and determinism audits."""
 
 from .split_manifest import build_split_manifest, dataset_hash

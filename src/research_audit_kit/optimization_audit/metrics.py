@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Published support-audit metric definitions."""
 
 from ..constants import SUPPORT_LIMITATION

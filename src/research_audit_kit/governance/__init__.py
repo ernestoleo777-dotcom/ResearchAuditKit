@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Preregistered gates, claims, deviations, and negative results."""
 
 from .gates import evaluate_gate

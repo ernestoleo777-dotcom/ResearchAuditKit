@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Scientific repository integrity APIs."""
 
 from .policy import IntegrityPolicy

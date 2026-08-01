@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Claim-status evaluation and vocabulary enforcement."""
 
 from __future__ import annotations

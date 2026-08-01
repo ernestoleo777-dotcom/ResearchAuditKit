@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 """Fold-local preprocessing metadata contracts."""
 
 from __future__ import annotations

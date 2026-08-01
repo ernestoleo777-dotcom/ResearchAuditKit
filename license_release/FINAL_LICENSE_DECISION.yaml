@@ -1,0 +1,66 @@
+project:
+  name: ResearchAuditKit
+  repository_type: independent_engineering_tool
+  research_project: false
+  paper_artifact: false
+  benchmark: false
+
+license:
+  selected: Apache-2.0
+  spdx_identifier: Apache-2.0
+  license_file_present: true
+  license_text_verified: true
+  custom_restrictions_found: false
+  notice_status: NOT_REQUIRED
+  copyright_holder_explicitly_declared: false
+  source_headers_scanned: 43
+  source_headers_compliant: 43
+  metadata_consistent: true
+  wheel_contains_license: true
+  sdist_contains_license: true
+  conflicting_licenses_found: false
+  third_party_blockers: false
+
+validation:
+  tests_collected: 109
+  tests_passed: 109
+  tests_failed: 0
+  tests_skipped: 0
+  tests_xfailed: 0
+  test_duration_seconds: 1.07
+  compileall_passed: true
+  wheel_built: true
+  sdist_built: true
+  editable_install_passed: true
+  wheel_install_passed: true
+  sdist_install_passed: true
+  cli_checks_total: 33
+  cli_checks_passed: 33
+  readme_checks_total: 3
+  readme_checks_passed: 3
+  examples_total: 5
+  examples_passed: 5
+  forbidden_assets_remaining: 0
+  privacy_scan_passed: true
+  source_repository_unchanged: true
+
+release_gates:
+  source_independence: PASS
+  package_build: PASS
+  clean_installation: PASS
+  cli_documentation: PASS
+  security_io_safety: PASS
+  test_quality: PASS
+  license_readiness: PASS
+
+publication:
+  engineering_status: RELEASE_CANDIDATE_READY
+  publication_status: READY_FOR_GITHUB_HANDOFF
+  github_handoff_ready: true
+  github_remote_created: false
+  pushed: false
+  tag_created: false
+  release_created: false
+  pypi_published: false
+  unresolved_blockers: []
+  recommended_next_action: USER_CREATE_EMPTY_GITHUB_REPOSITORY
