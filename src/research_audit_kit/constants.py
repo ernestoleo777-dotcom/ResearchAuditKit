@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Shared status vocabularies."""
 
-__version__ = "0.1.0"
+__version__ = "0.1.0rc1"
 
 STATUS_PASS = "PASS"
 STATUS_PASS_WITH_WARNINGS = "PASS_WITH_WARNINGS"

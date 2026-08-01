@@ -1,13 +1,11 @@
 # Changelog
 
-## 0.1.0 — release-candidate preparation
+## 0.1.0rc1 — Release Candidate 1
 
 - Select Apache-2.0 and add the verified standard `LICENSE` text.
 - Add Apache-2.0 packaging metadata and document the current NOTICE decision.
 - Integrate SPDX license identifiers into maintained package source files.
 - Revalidate distribution license inclusion and prepare local GitHub handoff material.
-
-## Unreleased
 
 - Add Python 3.10-compatible TOML parsing for release-metadata tests.
 - Declare the conditional test dependency on `tomli` for Python versions below 3.11.

@@ -19,7 +19,7 @@ python -m pip install -e .
 For a built wheel:
 
 ```bash
-python -m pip install dist/research_audit_kit-0.1.0-py3-none-any.whl
+python -m pip install dist/research_audit_kit-0.1.0rc1-py3-none-any.whl
 ```
 
 Python 3.10+ and PyYAML are required. Installation may resolve PyYAML from the configured package source; runtime commands themselves make no network calls. The quickstart below assumes a source checkout because it uses the repository's example files.
@@ -83,4 +83,4 @@ Licensed under the Apache License, Version 2.0. See the repository-root [LICENSE
 
 ## Project status
 
-Release-candidate engineering tool licensed under Apache-2.0. No public remote or release has been created yet. It is a reproducibility utility, not a research project, dataset, benchmark, or paper artifact; see `LICENSE_STATUS.md`.
+Release-candidate engineering tool licensed under Apache-2.0. The GitHub repository is public; no GitHub release or PyPI publication has been created yet. Its API is not yet committed to long-term stability. It is a reproducibility utility, not a research project, dataset, benchmark, or paper artifact; see `LICENSE_STATUS.md`.

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import hashlib
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -14,19 +15,38 @@ from research_audit_kit import __version__
 from _toml_compat import TOML_BACKEND, tomllib
 
 ROOT = Path(__file__).parents[1]
+CURRENT_RELEASE_VERSION = "0.1.0rc1"
 
 
 def test_single_version_source():
     metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
     assert "version" not in metadata["project"]
     assert metadata["tool"]["setuptools"]["dynamic"]["version"]["attr"].endswith(".__version__")
-    assert __version__ == "0.1.0"
+    assert __version__ == CURRENT_RELEASE_VERSION
 
 
 def test_cli_version_matches_package():
     result = subprocess.run([sys.executable, "-m", "research_audit_kit.cli", "--version"], cwd=ROOT, env={"PYTHONPATH": str(ROOT / "src")}, text=True, capture_output=True, check=False)
     assert result.returncode == 0
     assert result.stdout.strip().endswith(__version__)
+
+
+def test_release_candidate_documents_and_tag_mapping_are_consistent():
+    citation = yaml.safe_load((ROOT / "CITATION.cff").read_text())
+    assert citation["version"] == CURRENT_RELEASE_VERSION
+    assert f"## {CURRENT_RELEASE_VERSION} — Release Candidate 1" in (ROOT / "CHANGELOG.md").read_text()
+    assert "# ResearchAuditKit v0.1.0-rc.1" in (
+        ROOT / "license_release" / "RELEASE_NOTES_DRAFT.md"
+    ).read_text()
+
+    match = re.fullmatch(r"(?P<base>\d+\.\d+\.\d+)rc(?P<number>\d+)", __version__)
+    assert match is not None
+    assert f"v{match['base']}-rc.{match['number']}" == "v0.1.0-rc.1"
+
+
+def test_readme_current_wheel_example_uses_release_candidate_version():
+    readme = (ROOT / "README.md").read_text()
+    assert f"research_audit_kit-{CURRENT_RELEASE_VERSION}-py3-none-any.whl" in readme
 
 
 def test_readme_declares_all_cli_commands():
