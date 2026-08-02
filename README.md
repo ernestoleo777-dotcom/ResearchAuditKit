@@ -40,6 +40,10 @@ rak init --root REPO --policy POLICY
 rak inventory --root REPO --policy POLICY --out DIR
 rak freeze --root REPO --policy POLICY --baseline FILE [--force]
 rak verify --root REPO --baseline FILE --out DIR
+rak prediction-seal --input DECLARATION.json --out SEAL.json
+rak prediction-verify --input DECLARATION.json --seal SEAL.json --out DIR
+rak isolation-audit --root ROOT --manifest WORKSPACES.json --out DIR
+rak evidence-index --roles ROLES.json --records RECORDS.json --out DIR
 rak support-audit --data CSV --features a,b --discrete a,b --out DIR
 rak pareto-audit --candidates CSV --objectives loss:min,cost:min --support-column support_status --out DIR
 rak split-audit --data CSV --manifest CSV --id-column row_id --out DIR
@@ -72,6 +76,10 @@ Every command has `--help`, emits a machine-readable summary, and returns a nonz
 - Non-baseline report files are atomically replaced when a command is rerun against the same output directory. Baselines are the exception: they refuse overwrite unless `--force` is explicit, and the forced action is recorded in the baseline.
 
 See `docs/limitations.md` for the complete boundary.
+
+## Custody and isolation additions
+
+`prediction-seal` records a canonical opaque declaration and `prediction-verify` detects byte-level changes. `isolation-audit` checks only declared local workspace structure. `evidence-index` produces a deterministic role-labelled catalogue without evaluating evidence. These commands are local-only and do not establish prediction correctness, trusted timing, human separation, access-control enforcement, scientific validity, or claim support. See `docs/custody_isolation.md` and `examples/custody_demo/`.
 
 ## Data privacy
 

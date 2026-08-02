@@ -1,0 +1,12 @@
+{
+  "roles": [
+    {
+      "role_id": "author",
+      "role_label": "Synthetic author"
+    },
+    {
+      "role_id": "inspector",
+      "role_label": "Synthetic inspector"
+    }
+  ]
+}

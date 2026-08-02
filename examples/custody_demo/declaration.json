@@ -1,0 +1,15 @@
+{
+  "declaration_id": "demo-declaration",
+  "declared_at": "2026-01-01T00:00:00Z",
+  "predictions": [
+    {
+      "prediction_id": "demo-item",
+      "subject_ref": "items/demo",
+      "prediction_value": {
+        "label": "opaque-demo"
+      },
+      "producer_role": "author",
+      "method_version": "v1"
+    }
+  ]
+}

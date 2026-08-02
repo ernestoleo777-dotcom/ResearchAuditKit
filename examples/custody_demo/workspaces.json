@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "workspaces": [
+    {
+      "workspace_id": "author-space",
+      "role": "author",
+      "path": "author"
+    },
+    {
+      "workspace_id": "inspection-space",
+      "role": "inspector",
+      "path": "inspector"
+    }
+  ]
+}

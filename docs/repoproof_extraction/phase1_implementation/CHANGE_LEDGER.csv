@@ -1,0 +1,35 @@
+path,change_type,module,authorized,reason,public_contract_changed,runtime_changed,test_changed,documentation_changed,clean_room_status,action
+CHANGELOG.md,M,release_notes,yes,add Unreleased Phase 1 entries,yes,no,no,yes,clean_room_generic,retain
+README.md,M,documentation,yes,document new local commands,yes,no,no,yes,clean_room_generic,retain
+docs/limitations.md,M,documentation,yes,add claim boundaries,yes,no,no,yes,clean_room_generic,retain
+docs/custody_isolation.md,A,documentation,yes,document contracts and limitations,yes,no,no,yes,clean_room_generic,retain
+examples/custody_demo/README.md,A,examples,yes,document synthetic command smoke,yes,no,no,yes,clean_room_generic,retain
+examples/custody_demo/declaration.json,A,examples,yes,synthetic prediction input,yes,no,no,yes,clean_room_generic,retain
+examples/custody_demo/roles.json,A,examples,yes,synthetic role input,yes,no,no,yes,clean_room_generic,retain
+examples/custody_demo/records.json,A,examples,yes,synthetic evidence input,yes,no,no,yes,clean_room_generic,retain
+examples/custody_demo/workspaces.json,A,examples,yes,synthetic isolation input,yes,no,no,yes,clean_room_generic,retain
+examples/custody_demo/workspaces/author/.keep,A,examples,yes,synthetic workspace marker,no,no,no,yes,clean_room_generic,retain
+examples/custody_demo/workspaces/inspector/.keep,A,examples,yes,synthetic workspace marker,no,no,no,yes,clean_room_generic,retain
+src/research_audit_kit/cli.py,M,cli,yes,register four authorized commands,yes,yes,no,no,clean_room_generic,retain
+src/research_audit_kit/io/json_io.py,M,io,yes,reject duplicate JSON keys for new closed contracts,no,yes,no,no,clean_room_generic,retain
+src/research_audit_kit/integrity/portable.py,A,integrity,yes,validate opaque identifiers and safe relative paths,no,yes,no,no,clean_room_generic,retain
+src/research_audit_kit/integrity/prediction_seal.py,A,integrity,yes,seal and verify opaque declarations,yes,yes,no,no,clean_room_generic,retain
+src/research_audit_kit/integrity/isolation.py,A,integrity,yes,audit declared workspace boundaries,yes,yes,no,no,clean_room_generic,retain
+src/research_audit_kit/governance/evidence_index.py,A,governance,yes,index declared role metadata,yes,yes,no,no,clean_room_generic,retain
+tests/test_cli.py,M,tests,yes,cover new command contracts,no,no,yes,no,synthetic_only,retain
+tests/test_release_metadata.py,M,tests,yes,cover new CLI documentation and SPDX invariant,no,no,yes,no,clean_room_generic,retain
+tests/test_prediction_seal.py,A,tests,yes,synthetic seal contract and failures,no,no,yes,no,synthetic_only,retain
+tests/test_isolation.py,A,tests,yes,synthetic isolation contract and symlinks,no,no,yes,no,synthetic_only,retain
+tests/test_evidence_index.py,A,tests,yes,synthetic index contract and failures,no,no,yes,no,synthetic_only,retain
+docs/repoproof_extraction/phase1_implementation/AUTHORIZATION.md,A,implementation_evidence,yes,record user authorization,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/IMPLEMENTATION_SCOPE.md,A,implementation_evidence,yes,record allowed and excluded scope,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/CHANGE_LEDGER.csv,A,implementation_evidence,yes,record audited changes,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/CLEAN_ROOM_AUDIT.md,A,implementation_evidence,yes,record clean-room scan,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/CONTRACT_AUDIT.md,A,implementation_evidence,yes,record contract review,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/TEST_REPORT.md,A,implementation_evidence,yes,record local verification,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/PACKAGE_REPORT.md,A,implementation_evidence,yes,record build verification,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/SOURCE_PROTECTION_REPORT.md,A,implementation_evidence,yes,record source protection check,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/PHASE1_IMPLEMENTATION_DECISION.md,A,implementation_evidence,yes,record integration decision,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/PHASE1_IMPLEMENTATION_DECISION.json,A,implementation_evidence,yes,record machine-readable decision,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/PHASE1_FILE_MANIFEST.txt,A,implementation_evidence,yes,lock implementation files,no,no,no,yes,clean_room_record,retain
+docs/repoproof_extraction/phase1_implementation/PHASE1_FILE_MANIFEST.sha256,A,implementation_evidence,yes,lock file manifest,no,no,no,yes,clean_room_record,retain

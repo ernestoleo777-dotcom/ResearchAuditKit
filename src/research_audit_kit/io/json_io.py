@@ -7,9 +7,28 @@ import json
 from pathlib import Path
 from typing import Any
 
+from ..exceptions import InputValidationError
+
 
 def read_json(path: str | Path) -> Any:
     return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def read_json_strict(path: str | Path, *, duplicate_key_code: str) -> Any:
+    """Read JSON while rejecting duplicate object keys for closed contracts."""
+
+    def object_without_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        value: dict[str, Any] = {}
+        for key, item in pairs:
+            if key in value:
+                raise InputValidationError(f"{duplicate_key_code}: duplicate JSON key {key!r}")
+            value[key] = item
+        return value
+
+    return json.loads(
+        Path(path).read_text(encoding="utf-8"),
+        object_pairs_hook=object_without_duplicates,
+    )
 
 
 def write_json(path: str | Path, value: Any, *, overwrite: bool = True) -> Path:
@@ -24,4 +43,3 @@ def write_json(path: str | Path, value: Any, *, overwrite: bool = True) -> Path:
     )
     temporary.replace(target)
     return target
-

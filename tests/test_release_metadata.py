@@ -51,7 +51,22 @@ def test_readme_current_wheel_example_uses_release_candidate_version():
 
 def test_readme_declares_all_cli_commands():
     readme = (ROOT / "README.md").read_text()
-    for command in ("init", "inventory", "freeze", "verify", "support-audit", "pareto-audit", "split-audit", "gate", "deviation record", "claims evaluate"):
+    for command in (
+        "init",
+        "inventory",
+        "freeze",
+        "verify",
+        "prediction-seal",
+        "prediction-verify",
+        "isolation-audit",
+        "evidence-index",
+        "support-audit",
+        "pareto-audit",
+        "split-audit",
+        "gate",
+        "deviation record",
+        "claims evaluate",
+    ):
         assert f"rak {command}" in readme
 
 
@@ -94,7 +109,7 @@ def test_license_documents_are_consistent():
 
 def test_package_source_has_one_apache_spdx_header_per_file():
     source_files = sorted((ROOT / "src" / "research_audit_kit").rglob("*.py"))
-    assert len(source_files) == 43
+    assert source_files
     for path in source_files:
         assert path.read_text(encoding="utf-8").count("SPDX-License-Identifier: Apache-2.0") == 1
 

@@ -22,13 +22,20 @@ from .constants import (
 from .exceptions import AuditError, InputValidationError
 from .governance.claims import CLAIM_FIELDS, evaluate_claims
 from .governance.deviations import record_deviation
+from .governance.evidence_index import build_evidence_index, write_evidence_index
 from .governance.gates import evaluate_gate
 from .integrity.baseline import freeze_baseline
 from .integrity.inventory import build_inventory, write_inventory
+from .integrity.isolation import audit_isolation, write_isolation_audit
 from .integrity.policy import IntegrityPolicy
+from .integrity.prediction_seal import (
+    seal_prediction_declaration,
+    verify_prediction_seal,
+    write_prediction_seal,
+)
 from .integrity.verification import verify_baseline, write_verification
 from .io.csv_io import read_csv_rows, write_csv_rows
-from .io.json_io import read_json, write_json
+from .io.json_io import read_json, read_json_strict, write_json
 from .io.yaml_io import read_yaml
 from .optimization_audit.contamination import contamination_metrics
 from .optimization_audit.pareto import validate_pareto_claims
@@ -109,6 +116,58 @@ def _run(args: argparse.Namespace) -> int:
         summary["command"] = "verify"
         _print_summary(summary)
         return 2 if result["gate_status"] == STATUS_FAIL else 0
+
+    if args.command == "prediction-seal":
+        seal = seal_prediction_declaration(
+            read_json_strict(args.input, duplicate_key_code="PREDICTION_SEAL_INVALID_INPUT")
+        )
+        write_prediction_seal(seal, args.out, force=args.force)
+        summary = {
+            "command": "prediction-seal",
+            "status": STATUS_PASS,
+            "declaration_id": seal["declaration"]["declaration_id"],
+            "declaration_sha256": seal["declaration_sha256"],
+            "forced_overwrite": args.force,
+        }
+        _print_summary(summary)
+        return 0
+
+    if args.command == "prediction-verify":
+        result = verify_prediction_seal(
+            read_json_strict(args.input, duplicate_key_code="PREDICTION_SEAL_INVALID_INPUT"),
+            read_json_strict(args.seal, duplicate_key_code="PREDICTION_VERIFY_MALFORMED_SEAL"),
+        )
+        summary = {"command": "prediction-verify", **result}
+        write_machine_summary(args.out, summary)
+        _print_summary(summary)
+        return 2 if result["status"] == STATUS_FAIL else 0
+
+    if args.command == "isolation-audit":
+        result = audit_isolation(
+            args.root,
+            read_json_strict(args.manifest, duplicate_key_code="ISOLATION_INVALID_MANIFEST"),
+        )
+        write_isolation_audit(result, args.out)
+        summary = {"command": "isolation-audit", **result}
+        write_machine_summary(args.out, summary)
+        _print_summary(summary)
+        return 2 if result["status"] == STATUS_FAIL else 0
+
+    if args.command == "evidence-index":
+        result = build_evidence_index(
+            read_json_strict(args.roles, duplicate_key_code="EVIDENCE_INDEX_INVALID_ROLES"),
+            read_json_strict(args.records, duplicate_key_code="EVIDENCE_INDEX_INVALID_RECORDS"),
+        )
+        write_evidence_index(result, args.out)
+        summary = {
+            "command": "evidence-index",
+            "status": result["status"],
+            "counts": result["counts"],
+            "limitation": result["limitation"],
+        }
+        write_machine_summary(args.out, summary)
+        _print_summary(summary)
+        return 0
 
     if args.command == "support-audit":
         schema = read_yaml(args.schema) if args.schema else None
@@ -209,6 +268,26 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--root", required=True)
     verify.add_argument("--baseline", required=True)
     verify.add_argument("--out", required=True)
+
+    prediction_seal = commands.add_parser("prediction-seal", help="seal an opaque prediction declaration")
+    prediction_seal.add_argument("--input", required=True)
+    prediction_seal.add_argument("--out", required=True)
+    prediction_seal.add_argument("--force", action="store_true")
+
+    prediction_verify = commands.add_parser("prediction-verify", help="verify a prediction declaration seal")
+    prediction_verify.add_argument("--input", required=True)
+    prediction_verify.add_argument("--seal", required=True)
+    prediction_verify.add_argument("--out", required=True)
+
+    isolation = commands.add_parser("isolation-audit", help="audit declared local workspace isolation")
+    isolation.add_argument("--root", required=True)
+    isolation.add_argument("--manifest", required=True)
+    isolation.add_argument("--out", required=True)
+
+    evidence_index = commands.add_parser("evidence-index", help="build a role-based evidence index")
+    evidence_index.add_argument("--roles", required=True)
+    evidence_index.add_argument("--records", required=True)
+    evidence_index.add_argument("--out", required=True)
 
     support = commands.add_parser("support-audit", help="audit empirical feature support")
     support.add_argument("--data", required=True)

@@ -1,0 +1,12 @@
+{
+  "records": [
+    {
+      "evidence_id": "demo-note",
+      "role_id": "inspector",
+      "evidence_kind": "note",
+      "subject_ref": "items/demo",
+      "recorded_at": "2026-01-01T00:00:00Z",
+      "custody_status": "DECLARED"
+    }
+  ]
+}

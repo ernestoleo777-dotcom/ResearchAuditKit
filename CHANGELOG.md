@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Add local-only prediction sealing and verification for opaque declarations.
+- Add structural workspace isolation auditing and role-based evidence indexing.
+- Add clean-room synthetic tests and custody/isolation documentation with explicit non-scientific claim boundaries.
+
 ## 0.1.0rc1 — Release Candidate 1
 
 - Select Apache-2.0 and add the verified standard `LICENSE` text.
