@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from ..constants import STATUS_FAIL, STATUS_PASS
-from ..exceptions import InputValidationError
+from ..exceptions import BaselineExistsError, InputValidationError
 from ..io.json_io import write_json
 from .hashing import stable_object_hash
 from .portable import normalize_portable_reference
@@ -114,7 +114,10 @@ def seal_prediction_declaration(value: Mapping[str, Any]) -> dict[str, Any]:
 
 
 def write_prediction_seal(seal: Mapping[str, Any], path: str | Path, *, force: bool = False) -> Path:
-    return write_json(path, dict(seal), overwrite=force)
+    target = Path(path)
+    if target.exists() and not force:
+        raise BaselineExistsError("prediction seal already exists; pass --force to replace it")
+    return write_json(target, dict(seal), overwrite=True)
 
 
 def verify_prediction_seal(value: Mapping[str, Any], seal: Mapping[str, Any]) -> dict[str, Any]:

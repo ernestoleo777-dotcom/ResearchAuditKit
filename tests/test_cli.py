@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -41,9 +42,22 @@ def test_cli_phase1_custody_commands(tmp_path):
     declaration_path = tmp_path / "declaration.json"
     declaration_path.write_text(json.dumps(declaration))
     seal = tmp_path / "seal.json"
+    other_file = tmp_path / "unrelated.txt"
+    other_file.write_text("preserve this file\n")
     assert run_cli("prediction-seal", "--input", declaration_path, "--out", seal).returncode == 0
-    assert run_cli("prediction-seal", "--input", declaration_path, "--out", seal).returncode != 0
+    original_sha256 = hashlib.sha256(seal.read_bytes()).hexdigest()
+    collision = run_cli("prediction-seal", "--input", declaration_path, "--out", seal)
+    assert collision.returncode != 0
+    assert "prediction seal already exists" in json.loads(collision.stderr)["error"]
+    assert "--force" in json.loads(collision.stderr)["error"]
+    assert "Traceback" not in collision.stderr
+    assert hashlib.sha256(seal.read_bytes()).hexdigest() == original_sha256
+    assert other_file.read_text() == "preserve this file\n"
+    declaration["predictions"][0]["prediction_value"] = "updated opaque value"
+    declaration_path.write_text(json.dumps(declaration))
     assert run_cli("prediction-seal", "--input", declaration_path, "--out", seal, "--force").returncode == 0
+    assert hashlib.sha256(seal.read_bytes()).hexdigest() != original_sha256
+    assert other_file.read_text() == "preserve this file\n"
     verify = run_cli("prediction-verify", "--input", declaration_path, "--seal", seal, "--out", tmp_path / "verify")
     assert verify.returncode == 0
     assert json.loads((tmp_path / "verify" / "summary.json").read_text())["status"] == "PASS"
