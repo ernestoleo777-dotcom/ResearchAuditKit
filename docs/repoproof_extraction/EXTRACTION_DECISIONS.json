@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN",
+  "implementation_authorized": false,
+  "phase_1": [
+    {
+      "capability": "prediction_first_seal",
+      "decision": "NEW_GENERAL_MODULE",
+      "target_cli": ["rak prediction-seal", "rak prediction-verify"],
+      "decision_gate": {
+        "not_fully_covered_by_existing_rak": true,
+        "applicable_project_types": ["software release validation", "data-pipeline handoff", "machine-learning experiment tracking"],
+        "no_source_project_specific_state": true,
+        "synthetic_testable": true,
+        "does_not_read_scientific_results": true,
+        "lightweight_api": true,
+        "no_network_gpu_database": true,
+        "custody_pass_not_scientific_correctness": true
+      }
+    },
+    {
+      "capability": "workspace_isolation_audit",
+      "decision": "EXTEND_EXISTING_MODULE",
+      "target_cli": ["rak isolation-audit"],
+      "decision_gate": {
+        "not_fully_covered_by_existing_rak": true,
+        "applicable_project_types": ["software release validation", "data-pipeline handoff", "machine-learning experiment tracking"],
+        "no_source_project_specific_state": true,
+        "synthetic_testable": true,
+        "does_not_read_scientific_results": true,
+        "lightweight_api": true,
+        "no_network_gpu_database": true,
+        "custody_pass_not_scientific_correctness": true
+      }
+    },
+    {
+      "capability": "role_based_evidence_index",
+      "decision": "NEW_GENERAL_MODULE",
+      "target_cli": ["rak evidence-index"],
+      "decision_gate": {
+        "not_fully_covered_by_existing_rak": true,
+        "applicable_project_types": ["software release validation", "data-pipeline handoff", "machine-learning experiment tracking"],
+        "no_source_project_specific_state": true,
+        "synthetic_testable": true,
+        "does_not_read_scientific_results": true,
+        "lightweight_api": true,
+        "no_network_gpu_database": true,
+        "custody_pass_not_scientific_correctness": true
+      }
+    }
+  ],
+  "phase_2_candidate": {
+    "capability": "workspace_census_archive_controller",
+    "decision": "DOCUMENTATION_ONLY",
+    "restriction": "If reconsidered, begin with a read-only, relative-path census. Movement, copying, deletion, rollback execution, platform flags, and external-pointer handling remain out of scope."
+  },
+  "rejections": [
+    {
+      "capability": "authority_failure_taxonomy",
+      "decision": "REJECT_PROJECT_SPECIFIC",
+      "reason": "The permitted review did not establish a clean, non-scientific general interface."
+    }
+  ]
+}

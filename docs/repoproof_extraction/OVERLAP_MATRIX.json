@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "method": "Percentages are behavior-level estimates, not code similarity measurements. 100 means the planned behavior needs no new public capability.",
+  "candidates": [
+    {
+      "candidate_id": "content_baseline_verification",
+      "source_behavior": "Record a portable content inventory and verify later byte identity.",
+      "rak_existing_equivalent": "inventory, freeze, verify, relative-path handling, SHA-256, and machine-readable summaries",
+      "overlap_percentage": 100,
+      "unique_value": "None for Phase 1.",
+      "scientific_coupling": "none",
+      "path_coupling": "low in RAK; source implementation was high",
+      "project_specific_branches": "archive categories and historical custody labels",
+      "clean_room_rewrite_required": false,
+      "import_decision": "ALREADY_COVERED_DO_NOT_IMPORT"
+    },
+    {
+      "candidate_id": "prediction_first_seal",
+      "source_behavior": "Seal a declared prediction payload before later comparison or interpretation.",
+      "rak_existing_equivalent": "freeze seals files, but has no prediction-specific canonical record or verification contract",
+      "overlap_percentage": 55,
+      "unique_value": "Canonical, self-contained prediction declaration with mutation detection and no outcome handling.",
+      "scientific_coupling": "low; content is opaque and never interpreted",
+      "path_coupling": "none; references must be portable identifiers or relative paths",
+      "project_specific_branches": "none permitted",
+      "clean_room_rewrite_required": true,
+      "import_decision": "NEW_GENERAL_MODULE"
+    },
+    {
+      "candidate_id": "workspace_isolation_audit",
+      "source_behavior": "Audit custody/workspace boundaries, containment, and unsafe routing before relying on a workflow.",
+      "rak_existing_equivalent": "inventory's root containment and symlink-escape protections; split-audit's metadata isolation checks",
+      "overlap_percentage": 45,
+      "unique_value": "Declared multi-workspace boundary, overlap, and shared-path audit with role labels.",
+      "scientific_coupling": "none",
+      "path_coupling": "low after replacing source absolute paths with one supplied root and relative paths",
+      "project_specific_branches": "archive categories, platform flags, linked-worktree relocation, and hidden-directory behavior",
+      "clean_room_rewrite_required": true,
+      "import_decision": "EXTEND_EXISTING_MODULE"
+    },
+    {
+      "candidate_id": "role_based_evidence_index",
+      "source_behavior": "Index custody records by declared role and category without deciding scientific correctness.",
+      "rak_existing_equivalent": "claims evaluate checks evidence identifiers; deviation records carry isolation/adjudication fields",
+      "overlap_percentage": 40,
+      "unique_value": "Normalized role registry plus deterministic evidence index and role-level counts.",
+      "scientific_coupling": "none",
+      "path_coupling": "none; evidence references are relative or opaque identifiers",
+      "project_specific_branches": "archive role names, category priorities, and historical authority labels",
+      "clean_room_rewrite_required": true,
+      "import_decision": "NEW_GENERAL_MODULE"
+    },
+    {
+      "candidate_id": "deterministic_serialization",
+      "source_behavior": "Produce stable, reproducible controller records.",
+      "rak_existing_equivalent": "stable object hashing, sorted JSON writers, deterministic ordering tests, and baseline digests",
+      "overlap_percentage": 100,
+      "unique_value": "None; preserve current conventions.",
+      "scientific_coupling": "none",
+      "path_coupling": "none",
+      "project_specific_branches": "none needed",
+      "clean_room_rewrite_required": false,
+      "import_decision": "ALREADY_COVERED_DO_NOT_IMPORT"
+    },
+    {
+      "candidate_id": "authority_failure_taxonomy",
+      "source_behavior": "Describe historical authority ambiguity and failure states.",
+      "rak_existing_equivalent": "gate, claims, limitations, and explicit unadjudicated statuses",
+      "overlap_percentage": 25,
+      "unique_value": "No safely separable general value was established from permitted material.",
+      "scientific_coupling": "high",
+      "path_coupling": "none",
+      "project_specific_branches": "historical authority and evaluator concepts",
+      "clean_room_rewrite_required": true,
+      "import_decision": "REJECT_PROJECT_SPECIFIC"
+    },
+    {
+      "candidate_id": "git_custody_snapshot",
+      "source_behavior": "Record Git head, status and tag facts as archival custody metadata.",
+      "rak_existing_equivalent": "no Git-specific CLI; inventory and freeze cover content facts only",
+      "overlap_percentage": 15,
+      "unique_value": "Potential future provenance aid, outside Phase 1 scope.",
+      "scientific_coupling": "none",
+      "path_coupling": "medium; Git worktree layouts vary",
+      "project_specific_branches": "archive relocation and tag policies",
+      "clean_room_rewrite_required": true,
+      "import_decision": "DOCUMENTATION_ONLY"
+    },
+    {
+      "candidate_id": "workspace_census_archive_controller",
+      "source_behavior": "Census workspaces, produce a rename plan, block unsafe moves, and compare post-move custody facts.",
+      "rak_existing_equivalent": "inventory and verification cover a single root but do not orchestrate archive movement",
+      "overlap_percentage": 30,
+      "unique_value": "Potential Phase 2, read-only census only; no move, copy, deletion, or state workflow is approved.",
+      "scientific_coupling": "none",
+      "path_coupling": "high in source; must be removed before any future implementation",
+      "project_specific_branches": "platform-specific metadata, external pointers, relocation, rollback, and archive categories",
+      "clean_room_rewrite_required": true,
+      "import_decision": "DOCUMENTATION_ONLY"
+    }
+  ]
+}
