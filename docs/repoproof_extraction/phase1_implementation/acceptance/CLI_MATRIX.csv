@@ -1,0 +1,5 @@
+command,help,input_contract,outputs,error_recovery,machine_readable_result,status
+prediction-seal,PASS,strict declaration JSON,seal JSON,existing target is refused and names --force,stdout JSON,PASS
+prediction-verify,PASS,declaration JSON plus seal JSON,summary JSON,correct malformed or mismatched input and rerun,stdout and summary JSON,PASS
+isolation-audit,PASS,root plus strict workspace manifest,isolation_audit.json,correct local paths or shared declarations and rerun,stdout and summary JSON,PASS
+evidence-index,PASS,strict roles JSON plus records JSON,evidence_index.json evidence_index.csv summary.json,correct metadata and rerun,stdout and summary JSON,PASS

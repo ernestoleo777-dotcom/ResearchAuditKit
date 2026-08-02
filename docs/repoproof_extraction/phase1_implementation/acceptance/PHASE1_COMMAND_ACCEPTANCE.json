@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "phase": "phase1_command_acceptance",
+  "implementation_commit": "bced122b8ad8506cd9f35a72e217d1fa9ace45ea",
+  "p1_fix_commit": "346c0425ecae161dc57e9d7d057b2cdf18f52986",
+  "authoritative_acceptance_basis": "post_fix_green_ci",
+  "commands": {
+    "prediction_seal": {
+      "status": "PASS",
+      "positive_cases": 5,
+      "negative_cases": 8,
+      "ux_score": 5,
+      "overwrite_guidance": "PASS: existing target refusal names --force as the explicit replacement action"
+    },
+    "prediction_verify": {
+      "status": "PASS",
+      "positive_cases": 3,
+      "negative_cases": 3,
+      "ux_score": 4
+    },
+    "isolation_audit": {
+      "status": "PASS",
+      "positive_cases": 3,
+      "negative_cases": 6,
+      "ux_score": 4
+    },
+    "evidence_index": {
+      "status": "PASS",
+      "positive_cases": 3,
+      "negative_cases": 6,
+      "ux_score": 4
+    }
+  },
+  "boundaries": {
+    "scientific_correctness_claimed": false,
+    "trusted_timestamp_claimed": false,
+    "human_isolation_claimed": false,
+    "evidence_truth_claimed": false
+  },
+  "side_effects": {
+    "unexpected_files_created": 0,
+    "input_files_modified": 0,
+    "files_deleted": 0,
+    "network_access": 0
+  },
+  "verification": {
+    "local_tests_collected": 149,
+    "local_tests_passed": 149,
+    "local_tests_failed": 0,
+    "remote_ci_python_310": "PASS",
+    "remote_ci_python_311": "PASS",
+    "remote_ci_python_312": "PASS"
+  },
+  "release": {
+    "rc1_contains_phase1": false,
+    "current_declared_version": "0.1.0rc1",
+    "same_version_republication_allowed": false,
+    "proposed_next_version": "0.1.0rc2",
+    "proposed_next_tag": "v0.1.0-rc.2",
+    "release_authorized": false
+  },
+  "decision": {
+    "acceptance_status": "PHASE1_ACCEPTED_READY_FOR_RC2_PLANNING",
+    "fixes_required": 0,
+    "rc2_planning_allowed": true,
+    "next_action": "USER_AUTHORIZE_RC2_RELEASE_PLANNING"
+  }
+}

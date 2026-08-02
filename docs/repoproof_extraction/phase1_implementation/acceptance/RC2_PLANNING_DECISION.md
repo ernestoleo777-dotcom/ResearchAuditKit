@@ -1,0 +1,9 @@
+proposed_package_version = 0.1.0rc2
+proposed_git_tag = v0.1.0-rc.2
+phase1_included = TRUE
+rc1_modified = FALSE
+same_version_republication_allowed = FALSE
+rc2_authorized = FALSE
+testpypi_authorized = FALSE
+pypi_authorized = FALSE
+planning_status = READY_FOR_USER_AUTHORIZATION

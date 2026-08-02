@@ -1,0 +1,8 @@
+scenario,input_files_modified,unexpected_files_created,files_deleted,network_access,result
+normal_prediction_seal,0,0,0,0,PASS
+existing_output_without_force,0,0,0,0,PASS
+explicit_force_overwrite,0,0,0,0,PASS
+prediction_verify,0,0,0,0,PASS
+isolation_audit,0,0,0,0,PASS
+evidence_index,0,0,0,0,PASS
+static_runtime_boundary_scan,0,0,0,0,PASS

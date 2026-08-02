@@ -1,0 +1,10 @@
+capability,item_count,result
+prediction_seal,1,PASS
+prediction_seal,100,PASS
+prediction_seal,1000,PASS
+workspace_isolation_audit,1,PASS
+workspace_isolation_audit,100,PASS
+workspace_isolation_audit,1000,PASS
+role_based_evidence_index,1,PASS
+role_based_evidence_index,100,PASS
+role_based_evidence_index,1000,PASS

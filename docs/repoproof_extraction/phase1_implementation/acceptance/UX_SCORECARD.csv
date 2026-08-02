@@ -1,0 +1,41 @@
+command,dimension,score,evidence
+prediction-seal,discoverability,4,Listed in top-level help with a focused subcommand help page
+prediction-seal,help_clarity,4,Names required input and output arguments
+prediction-seal,input_clarity,4,Strict declaration errors identify the contract failure
+prediction-seal,error_message_clarity,5,Existing-output refusal says the target exists and directs explicit --force use
+prediction-seal,output_discoverability,4,Output path is user supplied and stdout carries the digest summary
+prediction-seal,machine_readable_usefulness,4,Success and handled errors are JSON
+prediction-seal,safety_boundary,5,Default refusal preserves an existing target
+prediction-seal,determinism,5,Canonical digest is stable for reordered declarations
+prediction-seal,documentation_sufficiency,4,Synthetic demo matches installed CLI
+prediction-seal,failure_recovery,5,The sole replacement action is explicit and named
+prediction-verify,discoverability,4,Listed in top-level help
+prediction-verify,help_clarity,4,Names declaration seal and output arguments
+prediction-verify,input_clarity,4,Malformed and mismatch conditions have stable failure codes
+prediction-verify,error_message_clarity,4,Handled failures are concise JSON
+prediction-verify,output_discoverability,4,Summary output is explicit
+prediction-verify,machine_readable_usefulness,4,Summary includes status and failure codes
+prediction-verify,safety_boundary,4,It compares supplied content without scoring outcomes
+prediction-verify,determinism,5,Equivalent sealed content verifies consistently
+prediction-verify,documentation_sufficiency,4,Synthetic demo provides a complete sequence
+prediction-verify,failure_recovery,4,Users can correct the supplied declaration or seal
+isolation-audit,discoverability,4,Listed in top-level help
+isolation-audit,help_clarity,4,Names root manifest and output arguments
+isolation-audit,input_clarity,4,Structural violations report stable codes
+isolation-audit,error_message_clarity,4,Handled failures identify malformed declarations
+isolation-audit,output_discoverability,4,Audit JSON is written to the supplied output directory
+isolation-audit,machine_readable_usefulness,4,Summary includes ordered findings and codes
+isolation-audit,safety_boundary,5,Audit-only behavior performs no filesystem remediation
+isolation-audit,determinism,5,Workspace findings are ordered deterministically
+isolation-audit,documentation_sufficiency,4,Synthetic demo uses valid local workspaces
+isolation-audit,failure_recovery,4,Users can correct manifest paths or sharing declarations
+evidence-index,discoverability,4,Listed in top-level help
+evidence-index,help_clarity,4,Names roles records and output arguments
+evidence-index,input_clarity,4,Role and record schemas reject undeclared fields
+evidence-index,error_message_clarity,4,Handled validation errors carry stable codes
+evidence-index,output_discoverability,4,JSON CSV and summary outputs have fixed documented names
+evidence-index,machine_readable_usefulness,5,Index CSV JSON counts and summary are supplied
+evidence-index,safety_boundary,4,Records are indexed without reading evidence content
+evidence-index,determinism,5,Roles records and counts are sorted
+evidence-index,documentation_sufficiency,4,Synthetic demo covers both input documents
+evidence-index,failure_recovery,4,Users can correct role IDs records or custody labels
