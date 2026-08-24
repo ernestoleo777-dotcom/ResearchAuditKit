@@ -29,8 +29,9 @@ rak --help
 rak inventory --help
 ```
 
-The expected source version is `0.1.0rc2`. This release candidate is not yet
-tagged or published.
+The expected source version is `0.1.0rc2`. Release availability and downloadable
+artifacts are authoritative on the GitHub Releases page; no PyPI distribution is
+claimed.
 
 ## 3. Run the synthetic demo
 

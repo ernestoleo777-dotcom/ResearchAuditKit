@@ -303,7 +303,8 @@ def test_version_and_status_are_consistent():
     assert f"CURRENT_VERSION = {__version__}" in project_status
     assert "CURRENT_RELEASE_CLASS = RELEASE_CANDIDATE" in project_status
     assert "STABLE_RELEASE = NONE" in project_status
-    assert "REMOTE_RELEASE = NOT_YET_PUBLISHED" in project_status
+    assert "DISTRIBUTION_AUTHORITY = GITHUB_RELEASES" in project_status
+    assert "PYPI_DISTRIBUTION = NONE" in project_status
     assert "CURRENT_VERSION = 0.1.0rc2" in (
         ROOT / "docs" / "rc2_readiness.md"
     ).read_text(encoding="utf-8")

@@ -5,9 +5,9 @@ provenance records, and evidence inventories in empirical ML projects.
 
 **Experimental — source version v0.1.0rc2 — release candidate — no stable release**
 
-The latest published GitHub release is the historical
-[`v0.1.0-rc.1`](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/tag/v0.1.0-rc.1).
-The RC2 source version has been prepared locally but is not yet tagged or published.
+Release status and downloadable artifacts are authoritative on the
+[GitHub Releases page](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases).
+ResearchAuditKit is not distributed through PyPI or TestPyPI.
 
 [![CI](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml/badge.svg)](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
@@ -156,12 +156,12 @@ ResearchAuditKit is an experimental, consumer-driven engineering asset.
 
 Licensed under the Apache License, Version 2.0.
 
-The source tree reports `0.1.0rc2`, an experimental release candidate prepared
-locally. RC2 has not been tagged or published, the latest published GitHub
-release remains RC1, and the API is not committed to long-term stability.
+The source tree reports `0.1.0rc2`, an experimental release candidate, and the
+API is not committed to long-term stability. Release status and downloadable
+artifacts are authoritative on the GitHub Releases page.
 
-Source-checkout installation is the supported evaluation path. No PyPI release
-or stable release is claimed.
+Source-checkout installation remains supported. No PyPI, TestPyPI, or stable
+release is claimed.
 
 Commands operate on local paths, but reports may reveal filenames and hashes.
 Review generated artifacts before sharing them. See [Project Status](PROJECT_STATUS.md),

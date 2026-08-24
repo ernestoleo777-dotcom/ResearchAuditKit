@@ -37,8 +37,7 @@ def test_release_candidate_documents_and_historical_rc1_are_consistent():
     citation = yaml.safe_load((ROOT / "CITATION.cff").read_text())
     assert citation["version"] == CURRENT_RELEASE_CANDIDATE_VERSION
     changelog = (ROOT / "CHANGELOG.md").read_text()
-    assert f"`{CURRENT_RELEASE_CANDIDATE_VERSION}`" in changelog
-    assert "Published: pending" in changelog
+    assert f"## {CURRENT_RELEASE_CANDIDATE_VERSION} — 2026-08-25" in changelog
     assert f"## {HISTORICAL_RC1_VERSION} — Release Candidate 1" in changelog
     assert "# ResearchAuditKit v0.1.0-rc.1" in (
         ROOT / "license_release" / "RELEASE_NOTES_DRAFT.md"
@@ -56,13 +55,16 @@ def test_readme_source_install_and_release_candidate_status_are_consistent():
     readme = (ROOT / "README.md").read_text()
     assert "python -m pip install -e ." in readme
     assert f"Experimental — source version v{CURRENT_RELEASE_CANDIDATE_VERSION}" in readme
-    assert "RC2 has not been tagged or published" in readme
-    assert "No PyPI release" in readme
+    assert "GitHub Releases page" in readme
+    assert "not distributed through PyPI or TestPyPI" in readme
 
 
 def test_rc2_candidate_manifest_is_non_self_referential_and_unpublished():
     path = ROOT / "release_audit" / "v0.1.0-rc.2" / "RC2_CANDIDATE_MANIFEST.json"
     manifest = json.loads(path.read_text(encoding="utf-8"))
+    assert manifest["authority_scope"] == "PREPUBLICATION_CANDIDATE_SNAPSHOT"
+    assert manifest["current_release_status_authority"] == "GITHUB_TAG_AND_RELEASE_ASSETS"
+    assert "not the post-release status authority" in manifest["snapshot_note"]
     assert manifest["version"] == CURRENT_RELEASE_CANDIDATE_VERSION
     assert manifest["candidate_commit"] == "RESOLVED_AFTER_COMMIT"
     assert manifest["candidate_tree"] == "RESOLVED_AFTER_COMMIT"
@@ -77,6 +79,30 @@ def test_rc2_candidate_manifest_is_non_self_referential_and_unpublished():
         "testpypi_published",
     ):
         assert manifest[flag] is False
+
+
+def test_public_release_status_text_is_time_invariant():
+    paths = (
+        ROOT / "README.md",
+        ROOT / "PROJECT_STATUS.md",
+        ROOT / "CHANGELOG.md",
+        ROOT / "docs" / "quickstart.md",
+        ROOT / "docs" / "rc2_readiness.md",
+        ROOT / "docs" / "releases" / "v0.1.0-rc.2.md",
+    )
+    text = "\n".join(path.read_text(encoding="utf-8") for path in paths).lower()
+    for stale in (
+        "not yet tagged",
+        "not tagged or published",
+        "locally prepared",
+        "publication pending",
+        "remote_release = not_yet_published",
+        "published: pending",
+    ):
+        assert stale not in text
+    assert "distribution_authority = github_releases" in text
+    assert "stable_release = none" in text
+    assert "pypi_distribution = none" in text
 
 
 def test_readme_declares_all_cli_commands():

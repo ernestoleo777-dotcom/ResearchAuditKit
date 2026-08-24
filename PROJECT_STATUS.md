@@ -6,13 +6,15 @@ OPERATING_MODE = CONSUMER_DRIVEN_MAINTENANCE
 CURRENT_VERSION = 0.1.0rc2
 CURRENT_RELEASE_CLASS = RELEASE_CANDIDATE
 STABLE_RELEASE = NONE
-REMOTE_RELEASE = NOT_YET_PUBLISHED
+DISTRIBUTION_AUTHORITY = GITHUB_RELEASES
+PYPI_DISTRIBUTION = NONE
 SCIENTIFIC_METHOD_CLAIM = NONE
 INDEPENDENT_PAPER_ROUTE = NONE
 ```
 
-`REMOTE_RELEASE` refers to the current RC2 candidate. The historical RC1 GitHub
-prerelease remains published; RC2 is not yet tagged or published.
+Release availability and downloadable artifacts are defined by the repository's
+GitHub Releases page. The project has no stable release and is not distributed
+through PyPI or TestPyPI.
 
 ResearchAuditKit supports mechanical, verifiable repository auditing, including:
 

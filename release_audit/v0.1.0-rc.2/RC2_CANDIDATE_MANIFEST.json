@@ -1,5 +1,8 @@
 {
   "schema_version": 1,
+  "authority_scope": "PREPUBLICATION_CANDIDATE_SNAPSHOT",
+  "current_release_status_authority": "GITHUB_TAG_AND_RELEASE_ASSETS",
+  "snapshot_note": "These flags describe the prepublication candidate snapshot and are not the post-release status authority.",
   "version": "0.1.0rc2",
   "tag_candidate": "v0.1.0-rc.2",
   "candidate_commit": "RESOLVED_AFTER_COMMIT",

@@ -1,16 +1,16 @@
-# RC2 Readiness Register
+# RC2 Release Gates
 
 ```text
-RC2_READINESS = LOCAL_CANDIDATE_PREPARED
-RELEASE_AUTHORIZATION = NONE
 CURRENT_VERSION = 0.1.0rc2
 CURRENT_RELEASE_CLASS = RELEASE_CANDIDATE
-REMOTE_RELEASE = NOT_YET_PUBLISHED
-EXACT_RELEASE_COMMIT_CI = PENDING
+STABLE_RELEASE = NONE
+DISTRIBUTION_AUTHORITY = GITHUB_RELEASES
+PYPI_DISTRIBUTION = NONE
 ```
 
-This register separates local release-candidate preparation from public release
-authorization. It does not declare RC2 published, stable, or production-ready.
+Release availability and downloadable artifacts are authoritative on the GitHub
+Releases page. This document records the durable gates for an RC2 prerelease; it
+does not declare the project stable or production-ready.
 
 ## Completed
 
@@ -19,33 +19,33 @@ authorization. It does not declare RC2 published, stable, or production-ready.
 - A synthetic three-minute demo exercises a PASS and an intentional exit-2 finding.
 - README, command, use-case, limitation, architecture, CI, release-delta, release-note,
   and distribution-audit documentation exists.
-- The preparation parent passed CI on Ubuntu with Python 3.10, 3.11, and 3.12.
+- The release process requires CI on Ubuntu with Python 3.10, 3.11, and 3.12.
 - Python 3.12 build-test dependencies are explicit and the full matrix is green.
 - Local candidate regression, build, distribution-content, and fresh-install checks
-  are required before the preparation commit is created.
+  are part of the release acceptance contract.
 
-## Blocked
+## Publication contract
 
-- Exact release-commit CI cannot exist until the local preparation commit is
-  reviewed and separately authorized for push.
-- The RC2 tag, GitHub prerelease, and any package-index publication require separate
-  owner authorization.
-- PyPI/TestPyPI ownership and trusted-publisher configuration require owner action.
+- The exact tag target must pass remote CI on Python 3.10, 3.11, and 3.12.
+- The tag must be annotated and peel to the exact CI-verified commit.
+- Wheel and sdist assets must be rebuilt from that commit, fresh-installed, and
+  bound to published checksums and a resolved release manifest.
+- The GitHub release must be a prerelease, not a stable release.
+- Package-index publication requires separate owner authorization.
 
-## Not attempted
+## Unverified or not provided
 
-- Creating or pushing `v0.1.0-rc.2`.
-- Creating an RC2 GitHub Release or publishing to PyPI/TestPyPI.
+- PyPI/TestPyPI distribution.
 - Full Windows filesystem, shell, and installation acceptance.
 - Performance or scale benchmarking.
 
 ## Release-critical
 
-- Owner review of the local release-preparation commit.
-- Green remote CI for the exact reviewed release commit on Python 3.10, 3.11, and
+- Green remote CI for the exact tagged release commit on Python 3.10, 3.11, and
   3.12.
-- Explicit authorization for the annotated tag and GitHub prerelease.
-- Rebuild and checksum verification against the exact authorized tag target.
+- Annotated-tag identity and GitHub prerelease metadata.
+- Rebuild, checksum, install, CLI, and demo verification against the exact tag
+  target and publicly downloaded assets.
 
 ## Noncritical
 

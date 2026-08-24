@@ -2,6 +2,10 @@
 
 Audit date: 2026-08-25
 
+Authority scope: prepublication distribution audit. This is a historical snapshot
+of preparation-time state, not the current release-status authority. Current tags,
+release metadata, and downloadable assets are authoritative on GitHub Releases.
+
 ## Package identity
 
 | Surface | Value |
@@ -33,7 +37,7 @@ commit CI, owner-reviewed tag, and owner-authorized GitHub prerelease. Creating 
 new publication workflow without configured environments and a publication
 decision would be speculative.
 
-## Existing release and environment state
+## Existing release and environment state at audit time
 
 - GitHub prerelease `v0.1.0-rc.1` exists with its historical wheel, sdist, and
   `SHA256SUMS` assets.

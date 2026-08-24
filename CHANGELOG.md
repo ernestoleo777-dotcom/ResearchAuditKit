@@ -1,13 +1,9 @@
 # Changelog
 
-## 0.1.0rc2 — Release candidate, publication pending
+## 0.1.0rc2 — 2026-08-25
 
-Prepared: 2026-08-25
-
-Published: pending
-
-- Finalize the local release-candidate source version as `0.1.0rc2`; no RC2 tag or
-  remote release exists yet.
+- Finalize version and publication metadata for the `v0.1.0-rc.2` GitHub
+  prerelease.
 - Add local-only prediction sealing and verification for opaque declarations.
 - Add structural workspace isolation auditing and role-based evidence indexing.
 - Reject duplicate keys in the closed JSON contracts used by the new commands and
