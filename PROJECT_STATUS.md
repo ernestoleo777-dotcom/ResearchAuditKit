@@ -3,10 +3,16 @@
 ```text
 ENGINEERING_ASSET = MAINTAINED
 OPERATING_MODE = CONSUMER_DRIVEN_MAINTENANCE
+CURRENT_VERSION = 0.1.0rc2
+CURRENT_RELEASE_CLASS = RELEASE_CANDIDATE
 STABLE_RELEASE = NONE
+REMOTE_RELEASE = NOT_YET_PUBLISHED
 SCIENTIFIC_METHOD_CLAIM = NONE
 INDEPENDENT_PAPER_ROUTE = NONE
 ```
+
+`REMOTE_RELEASE` refers to the current RC2 candidate. The historical RC1 GitHub
+prerelease remains published; RC2 is not yet tagged or published.
 
 ResearchAuditKit supports mechanical, verifiable repository auditing, including:
 

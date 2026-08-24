@@ -37,6 +37,9 @@ CURATED_DOCS = {
     "docs/support_audit.md",
     "docs/validation_audit.md",
     "docs/productization/EXISTING_PRODUCT_SURFACE.md",
+    "docs/releases/RC1_TO_RC2_DELTA.md",
+    "docs/releases/RC2_DISTRIBUTION_AUDIT.md",
+    "docs/releases/v0.1.0-rc.2.md",
 }
 
 
@@ -163,7 +166,7 @@ def test_every_readme_quickstart_command_executes_in_a_fresh_environment(tmp_pat
         timeout=120,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "rak 0.1.0rc2.dev0" in result.stdout
+    assert "rak 0.1.0rc2" in result.stdout
     assert '"status": "PASS"' in result.stdout
     assert '"status": "FAIL"' in result.stdout
 
@@ -291,12 +294,17 @@ def test_public_productization_text_has_no_private_or_secret_material():
 
 
 def test_version_and_status_are_consistent():
-    assert __version__ == "0.1.0rc2.dev0"
+    assert __version__ == "0.1.0rc2"
     citation = yaml.safe_load((ROOT / "CITATION.cff").read_text(encoding="utf-8"))
     assert citation["version"] == __version__
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert f"Experimental — v{__version__} — no stable release" in readme
-    assert "CURRENT_VERSION = 0.1.0rc2.dev0" in (
+    assert f"Experimental — source version v{__version__} — release candidate — no stable release" in readme
+    project_status = (ROOT / "PROJECT_STATUS.md").read_text(encoding="utf-8")
+    assert f"CURRENT_VERSION = {__version__}" in project_status
+    assert "CURRENT_RELEASE_CLASS = RELEASE_CANDIDATE" in project_status
+    assert "STABLE_RELEASE = NONE" in project_status
+    assert "REMOTE_RELEASE = NOT_YET_PUBLISHED" in project_status
+    assert "CURRENT_VERSION = 0.1.0rc2" in (
         ROOT / "docs" / "rc2_readiness.md"
     ).read_text(encoding="utf-8")
 
@@ -330,8 +338,8 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
     )
     assert result.returncode == 0, result.stdout + result.stderr
 
-    wheel = dist / "research_audit_kit-0.1.0rc2.dev0-py3-none-any.whl"
-    sdist = dist / "research_audit_kit-0.1.0rc2.dev0.tar.gz"
+    wheel = dist / "research_audit_kit-0.1.0rc2-py3-none-any.whl"
+    sdist = dist / "research_audit_kit-0.1.0rc2.tar.gz"
     assert wheel.is_file() and sdist.is_file()
 
     with zipfile.ZipFile(wheel) as archive:

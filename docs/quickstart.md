@@ -29,7 +29,8 @@ rak --help
 rak inventory --help
 ```
 
-The expected development version is `0.1.0rc2.dev0`.
+The expected source version is `0.1.0rc2`. This release candidate is not yet
+tagged or published.
 
 ## 3. Run the synthetic demo
 

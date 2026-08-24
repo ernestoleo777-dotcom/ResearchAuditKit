@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "version": "0.1.0rc2",
+  "tag_candidate": "v0.1.0-rc.2",
+  "candidate_commit": "RESOLVED_AFTER_COMMIT",
+  "candidate_tree": "RESOLVED_AFTER_COMMIT",
+  "preparation_parent_commit": "7936913552a4ac0d53529d64793e45e8820f3609",
+  "rc1_tag": "v0.1.0-rc.1",
+  "rc1_tag_object": "8aea415fe2908eb2466aa0cc9ca32a4e205b8d71",
+  "rc1_commit": "9ae2bfeead9cbf4c6779011b601666ffc0cff833",
+  "prepared_date": "2026-08-25",
+  "candidate_tree_inputs": {
+    "version_authority": "src/research_audit_kit/constants.py",
+    "metadata_authorities": [
+      "pyproject.toml",
+      "CITATION.cff",
+      "README.md",
+      "PROJECT_STATUS.md",
+      "CHANGELOG.md"
+    ],
+    "release_documents": [
+      "docs/releases/RC1_TO_RC2_DELTA.md",
+      "docs/releases/v0.1.0-rc.2.md",
+      "docs/releases/RC2_DISTRIBUTION_AUDIT.md"
+    ]
+  },
+  "test_results": {
+    "preparation_parent_ci": {
+      "run_id": 32748703567,
+      "commit": "7936913552a4ac0d53529d64793e45e8820f3609",
+      "python_3_10_ubuntu": "PASS",
+      "python_3_11_ubuntu": "PASS",
+      "python_3_12_ubuntu": "PASS",
+      "overall": "PASS",
+      "binding": "PREPARATION_EVIDENCE_ONLY"
+    },
+    "local_candidate_acceptance": {
+      "python_3_12_macos_arm64": "161 PASSED",
+      "python_3_13_macos_arm64": "161 PASSED",
+      "release_metadata": "17 PASSED",
+      "productization": "10 PASSED"
+    }
+  },
+  "supported_python_evidence": {
+    "python_3_10": "PREPARATION_PARENT_CI_PASS",
+    "python_3_11": "PREPARATION_PARENT_CI_PASS",
+    "python_3_12": "PREPARATION_PARENT_CI_PASS_AND_LOCAL_CANDIDATE_PASS",
+    "python_3_13": "LOCAL_CANDIDATE_PASS"
+  },
+  "expected_artifacts": [
+    "research_audit_kit-0.1.0rc2-py3-none-any.whl",
+    "research_audit_kit-0.1.0rc2.tar.gz"
+  ],
+  "artifact_hashes": "RESOLVED_AFTER_COMMIT_EXTERNAL_EVIDENCE",
+  "artifact_publication_status": "LOCAL_ONLY",
+  "pypi_status": "PYPI_OWNER_ACTION_REQUIRED",
+  "known_limitations": [
+    "Mechanical verification only",
+    "No scientific-validity, project-scoring, publication, or reproducibility guarantee",
+    "Exact release-commit remote CI is pending",
+    "Windows support is unverified",
+    "No external adoption or effectiveness evidence"
+  ],
+  "release_authorized": false,
+  "tag_created": false,
+  "github_release_created": false,
+  "pypi_published": false,
+  "testpypi_published": false
+}

@@ -1,20 +1,31 @@
 # Changelog
 
-## Unreleased
+## 0.1.0rc2 — Release candidate, publication pending
 
-- Declare the build frontend and backend tools used by package-content tests so the
-  Python 3.10-3.12 CI matrix does not depend on runner-preinstalled packaging tools.
-- Rework the public entry point around a tested three-minute source-checkout demo.
-- Add consolidated command, use-case, limitation, architecture, CI, and RC2-readiness documentation.
-- Add consumer-focused issue/PR templates and package curated public docs plus the synthetic integrity demo in the sdist.
-- Add no new runtime command, scientific interpretation, or decision-making capability.
-- Clarify the public scope as mechanical repository auditing rather than scientific or research-decision evaluation.
-- Mark the project as experimental and maintained in response to concrete consumer requirements.
-- Reconcile the unreleased development version as `0.1.0rc2.dev0` because `main` contains package and CLI behavior added after RC1.
-- Add no new scientific, predictive, recommendation, or decision-making capability.
+Prepared: 2026-08-25
+
+Published: pending
+
+- Finalize the local release-candidate source version as `0.1.0rc2`; no RC2 tag or
+  remote release exists yet.
 - Add local-only prediction sealing and verification for opaque declarations.
 - Add structural workspace isolation auditing and role-based evidence indexing.
+- Reject duplicate keys in the closed JSON contracts used by the new commands and
+  validate portable relative references.
+- Rework the public entry point around a tested three-minute source-checkout demo.
+- Add consolidated command, use-case, limitation, architecture, CI, release-delta,
+  and distribution documentation.
+- Add consumer-focused issue/PR templates and package curated public docs plus the
+  synthetic integrity demo in the sdist.
+- Declare the build frontend and backend tools used by package-content tests so the
+  Python 3.10-3.12 CI matrix does not depend on runner-preinstalled packaging tools.
+- Clarify the public scope as mechanical repository auditing rather than scientific
+  or research-decision evaluation.
+- Mark the project as experimental and maintained in response to concrete consumer
+  requirements.
 - Add clean-room synthetic tests and custody/isolation documentation with explicit non-scientific claim boundaries.
+- Add no scientific interpretation, predictive scoring, recommendation, or
+  decision-making capability.
 
 ## 0.1.0rc1 — Release Candidate 1
 

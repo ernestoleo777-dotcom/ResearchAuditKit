@@ -3,7 +3,11 @@
 An offline pre-release auditor for repository integrity, experiment isolation,
 provenance records, and evidence inventories in empirical ML projects.
 
-**Experimental — v0.1.0rc2.dev0 — no stable release**
+**Experimental — source version v0.1.0rc2 — release candidate — no stable release**
+
+The latest published GitHub release is the historical
+[`v0.1.0-rc.1`](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/tag/v0.1.0-rc.1).
+The RC2 source version has been prepared locally but is not yet tagged or published.
 
 [![CI](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml/badge.svg)](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
@@ -138,6 +142,9 @@ expected exit-2 case. A copy-paste workflow is available in
 - [Architecture](docs/architecture.md)
 - [CI integration](docs/ci_integration.md)
 - [RC2 readiness register](docs/rc2_readiness.md)
+- [RC2 release notes](docs/releases/v0.1.0-rc.2.md)
+- [RC1 to RC2 delta](docs/releases/RC1_TO_RC2_DELTA.md)
+- [RC2 distribution audit](docs/releases/RC2_DISTRIBUTION_AUDIT.md)
 - [Integrity model](docs/integrity_model.md)
 - [Custody and isolation](docs/custody_isolation.md)
 - [Empirical support audit](docs/support_audit.md)
@@ -149,10 +156,12 @@ ResearchAuditKit is an experimental, consumer-driven engineering asset.
 
 Licensed under the Apache License, Version 2.0.
 
-The current `0.1.0rc2.dev0` version is unreleased, a historical RC1 tag exists, and
-the API is not committed to long-term stability.
+The source tree reports `0.1.0rc2`, an experimental release candidate prepared
+locally. RC2 has not been tagged or published, the latest published GitHub
+release remains RC1, and the API is not committed to long-term stability.
 
-Source-checkout installation is the supported evaluation path; no stable PyPI release is claimed.
+Source-checkout installation is the supported evaluation path. No PyPI release
+or stable release is claimed.
 
 Commands operate on local paths, but reports may reveal filenames and hashes.
 Review generated artifacts before sharing them. See [Project Status](PROJECT_STATUS.md),

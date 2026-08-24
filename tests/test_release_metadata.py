@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import ast
 import hashlib
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -15,7 +16,7 @@ from research_audit_kit import __version__
 from _toml_compat import TOML_BACKEND, tomllib
 
 ROOT = Path(__file__).parents[1]
-CURRENT_DEVELOPMENT_VERSION = "0.1.0rc2.dev0"
+CURRENT_RELEASE_CANDIDATE_VERSION = "0.1.0rc2"
 HISTORICAL_RC1_VERSION = "0.1.0rc1"
 
 
@@ -23,7 +24,7 @@ def test_single_version_source():
     metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
     assert "version" not in metadata["project"]
     assert metadata["tool"]["setuptools"]["dynamic"]["version"]["attr"].endswith(".__version__")
-    assert __version__ == CURRENT_DEVELOPMENT_VERSION
+    assert __version__ == CURRENT_RELEASE_CANDIDATE_VERSION
 
 
 def test_cli_version_matches_package():
@@ -32,11 +33,12 @@ def test_cli_version_matches_package():
     assert result.stdout.strip().endswith(__version__)
 
 
-def test_development_version_documents_and_historical_rc1_are_consistent():
+def test_release_candidate_documents_and_historical_rc1_are_consistent():
     citation = yaml.safe_load((ROOT / "CITATION.cff").read_text())
-    assert citation["version"] == CURRENT_DEVELOPMENT_VERSION
+    assert citation["version"] == CURRENT_RELEASE_CANDIDATE_VERSION
     changelog = (ROOT / "CHANGELOG.md").read_text()
-    assert f"`{CURRENT_DEVELOPMENT_VERSION}`" in changelog
+    assert f"`{CURRENT_RELEASE_CANDIDATE_VERSION}`" in changelog
+    assert "Published: pending" in changelog
     assert f"## {HISTORICAL_RC1_VERSION} — Release Candidate 1" in changelog
     assert "# ResearchAuditKit v0.1.0-rc.1" in (
         ROOT / "license_release" / "RELEASE_NOTES_DRAFT.md"
@@ -44,17 +46,37 @@ def test_development_version_documents_and_historical_rc1_are_consistent():
 
     parsed = Version(__version__)
     assert parsed.is_prerelease
-    assert parsed.is_devrelease
+    assert not parsed.is_devrelease
     assert parsed.base_version == "0.1.0"
     assert parsed.pre == ("rc", 2)
-    assert parsed.dev == 0
+    assert parsed.dev is None
 
 
-def test_readme_source_install_and_development_status_are_consistent():
+def test_readme_source_install_and_release_candidate_status_are_consistent():
     readme = (ROOT / "README.md").read_text()
     assert "python -m pip install -e ." in readme
-    assert f"Experimental — v{CURRENT_DEVELOPMENT_VERSION} — no stable release" in readme
-    assert "no stable PyPI release is claimed" in readme
+    assert f"Experimental — source version v{CURRENT_RELEASE_CANDIDATE_VERSION}" in readme
+    assert "RC2 has not been tagged or published" in readme
+    assert "No PyPI release" in readme
+
+
+def test_rc2_candidate_manifest_is_non_self_referential_and_unpublished():
+    path = ROOT / "release_audit" / "v0.1.0-rc.2" / "RC2_CANDIDATE_MANIFEST.json"
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    assert manifest["version"] == CURRENT_RELEASE_CANDIDATE_VERSION
+    assert manifest["candidate_commit"] == "RESOLVED_AFTER_COMMIT"
+    assert manifest["candidate_tree"] == "RESOLVED_AFTER_COMMIT"
+    assert manifest["preparation_parent_commit"] == "7936913552a4ac0d53529d64793e45e8820f3609"
+    assert manifest["rc1_tag"] == "v0.1.0-rc.1"
+    assert manifest["rc1_commit"] == "9ae2bfeead9cbf4c6779011b601666ffc0cff833"
+    for flag in (
+        "release_authorized",
+        "tag_created",
+        "github_release_created",
+        "pypi_published",
+        "testpypi_published",
+    ):
+        assert manifest[flag] is False
 
 
 def test_readme_declares_all_cli_commands():

@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If this software is useful, cite the software repository. No associated paper or DOI is claimed."
 title: ResearchAuditKit
 type: software
-version: 0.1.0rc2.dev0
+version: 0.1.0rc2
 license: Apache-2.0
 authors:
   - name: ResearchAuditKit contributors
