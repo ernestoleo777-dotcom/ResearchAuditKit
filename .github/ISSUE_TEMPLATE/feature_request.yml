@@ -1,0 +1,43 @@
+name: Feature request
+description: Propose a concrete consumer workflow or compatibility need.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: consumer
+    attributes:
+      label: Consumer and use case
+      description: Who needs this, at what repository stage, and what mechanical task is blocked?
+    validations:
+      required: true
+  - type: textarea
+    id: current_workflow
+    attributes:
+      label: Current workflow and workaround
+      description: Show the current command/input/output sequence and why it is insufficient.
+    validations:
+      required: true
+  - type: textarea
+    id: requested_contract
+    attributes:
+      label: Requested observable contract
+      description: Describe inputs, outputs, exit behavior, and compatibility constraints without prescribing a speculative framework.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Synthetic acceptance example
+      description: Provide a small privacy-safe PASS/failure example that could become a test.
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Scope boundary
+      options:
+        - label: The request concerns a mechanical repository or evidence-record workflow.
+          required: true
+        - label: The request does not ask the toolkit to judge scientific truth, novelty, publication merit, acceptance, or whether a project should continue.
+          required: true

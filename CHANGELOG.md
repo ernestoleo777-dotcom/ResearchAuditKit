@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Rework the public entry point around a tested three-minute source-checkout demo.
+- Add consolidated command, use-case, limitation, architecture, CI, and RC2-readiness documentation.
+- Add consumer-focused issue/PR templates and package curated public docs plus the synthetic integrity demo in the sdist.
+- Add no new runtime command, scientific interpretation, or decision-making capability.
 - Clarify the public scope as mechanical repository auditing rather than scientific or research-decision evaluation.
 - Mark the project as experimental and maintained in response to concrete consumer requirements.
 - Reconcile the unreleased development version as `0.1.0rc2.dev0` because `main` contains package and CLI behavior added after RC1.

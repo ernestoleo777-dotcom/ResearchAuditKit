@@ -1,100 +1,160 @@
 # ResearchAuditKit
 
-> **Status: Experimental, consumer-driven maintenance.**
->
-> ResearchAuditKit verifies mechanical properties of research repositories, including integrity, isolation, custody, provenance, and evidence accounting.
->
-> It does not determine scientific validity, claim truth, project quality, publication merit, or whether a research route should continue.
+An offline pre-release auditor for repository integrity, experiment isolation,
+provenance records, and evidence inventories in empirical ML projects.
 
-> A lightweight toolkit for repository integrity, experiment isolation, evidence inventory, and auditable research records.
+**Experimental — v0.1.0rc2.dev0 — no stable release**
 
-ResearchAuditKit checks the mechanics of a scientific evidence chain: which files were governed, whether declared files changed, where candidate coordinates sit relative to observed support, whether result tables contain unsupported selections, whether split metadata indicates leakage, and whether declared gates were followed.
+[![CI](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml/badge.svg)](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-## What it does not do
+## Why ResearchAuditKit?
 
-The toolkit does not decide that a scientific conclusion is correct. It does not replace domain experts, experimental truth, or peer review. A joint-support failure is not evidence of physical impossibility. Matching hashes establish byte identity, not scientific validity. A gate `PASS` means only that the configured protocol criteria passed; it says nothing about venue acceptance.
+Research repositories often need a check that is narrower than scientific review
+but stricter than a visual inspection. ResearchAuditKit records governed files,
+detects missing or changed assets, checks declared isolation and provenance
+contracts, and emits machine-readable findings suitable for local or CI preflight.
+It runs locally and does not execute audited repository code.
 
-## Install
+## Three-minute Quick Start
 
-From a source checkout:
+Start from a source checkout with Python 3.10 or newer. PyYAML is the only runtime
+dependency; installation may resolve it from your configured package source. The
+audit commands themselves make no network calls.
 
+<!-- quickstart-commands:start -->
 ```bash
 python -m pip install -e .
+rak --version
+export RAK_DEMO_ROOT="$(mktemp -d)"
+set -e
+rak inventory --root examples/repository_integrity_demo/pass_repo --policy examples/repository_integrity_demo/policy.yaml --out "$RAK_DEMO_ROOT/pass"
+set +e
+rak inventory --root examples/repository_integrity_demo/issue_repo --policy examples/repository_integrity_demo/policy.yaml --out "$RAK_DEMO_ROOT/issue"
+RAK_ISSUE_CODE=$?
+set -e
+test "$RAK_ISSUE_CODE" -eq 2
+python -m json.tool "$RAK_DEMO_ROOT/pass/summary.json"
+python -m json.tool "$RAK_DEMO_ROOT/issue/summary.json"
+```
+<!-- quickstart-commands:end -->
+
+The second inventory intentionally returns exit code 2 because its synthetic
+repository omits a policy-required `README.md`. Outputs remain under the temporary
+directory named by `RAK_DEMO_ROOT`. See the
+[step-by-step quickstart](docs/quickstart.md) and
+[demo notes](examples/repository_integrity_demo/README.md).
+
+## Example Output
+
+These summaries are the real stable projections produced by the quickstart demo.
+The PASS case contains all three governed files:
+
+```json
+{
+  "asset_count": 3,
+  "command": "inventory",
+  "missing_required": 0,
+  "status": "PASS"
+}
 ```
 
-For a built wheel:
+The intentional issue is detected mechanically:
 
-```bash
-python -m pip install dist/research_audit_kit-0.1.0rc2.dev0-py3-none-any.whl
+```json
+{
+  "asset_count": 3,
+  "command": "inventory",
+  "missing_required": 1,
+  "status": "FAIL"
+}
 ```
 
-Python 3.10+ and PyYAML are required. Installation may resolve PyYAML from the configured package source; runtime commands themselves make no network calls. The quickstart below assumes a source checkout because it uses the repository's example files.
+The complete inventory also records the missing path as `MISSING_REQUIRED`.
+Checkout-dependent modification times and hashes are not presented as
+byte-identical output.
 
-## Five-minute quickstart
+## What It Checks
 
-```bash
-rak inventory --root examples/integrity_demo --policy configs/integrity_policy.example.yaml --out /tmp/rak-inventory
-rak freeze --root examples/integrity_demo --policy configs/integrity_policy.example.yaml --baseline /tmp/demo-baseline.csv
-rak verify --root examples/integrity_demo --baseline /tmp/demo-baseline.csv --out /tmp/rak-verify
-rak support-audit --data examples/conditional_support_demo/data.csv --features architecture,optimizer,momentum,depth --discrete architecture,optimizer,momentum,depth --schema configs/support_schema.example.yaml --out /tmp/rak-support
-```
+- repository inventories, required files, portable baselines, and byte changes;
+- declared workspace isolation and relative-path safety;
+- opaque declaration seals and supplied custody/provenance records;
+- evidence inventories and claim-to-evidence references;
+- empirical feature support and supplied Pareto/support labels;
+- split metadata for declared leakage indicators;
+- user-configured gates and protocol-deviation records.
 
-## CLI
+Every result is local to the supplied files, metadata, and policy.
+
+## What It Does Not Check
+
+ResearchAuditKit does not determine scientific validity, claim truth, causal
+validity, novelty, project quality, publication merit, acceptance probability, or
+whether a research route should continue. It does not provide a general
+reproducibility guarantee, execute models, inspect undocumented processing, or
+establish an external timestamp or authority. A `PASS` means only that the
+configured mechanical checks passed.
+
+## Commands
 
 ```text
 rak init --root REPO --policy POLICY
 rak inventory --root REPO --policy POLICY --out DIR
 rak freeze --root REPO --policy POLICY --baseline FILE [--force]
 rak verify --root REPO --baseline FILE --out DIR
-rak prediction-seal --input DECLARATION.json --out SEAL.json
+rak prediction-seal --input DECLARATION.json --out SEAL.json [--force]
 rak prediction-verify --input DECLARATION.json --seal SEAL.json --out DIR
 rak isolation-audit --root ROOT --manifest WORKSPACES.json --out DIR
 rak evidence-index --roles ROLES.json --records RECORDS.json --out DIR
 rak support-audit --data CSV --features a,b --discrete a,b --out DIR
-rak pareto-audit --candidates CSV --objectives loss:min,cost:min --support-column support_status --out DIR
-rak split-audit --data CSV --manifest CSV --id-column row_id --out DIR
+rak pareto-audit --candidates CSV --objectives loss:min,cost:min --support-column COLUMN --out DIR
+rak split-audit --data CSV --manifest CSV --id-column ID --out DIR
 rak gate --metrics JSON --policy YAML --out DIR
 rak deviation record --config YAML --out LEDGER.csv
 rak claims evaluate --claims CSV --evidence CSV --out DIR
 ```
 
-Every command has `--help`, emits a machine-readable summary, and returns a nonzero code for invalid input or a failed scientific gate. Warnings do not fail a command. Baselines are never overwritten unless `--force` is supplied; forced replacement is recorded.
+All commands provide `--help` and a one-line JSON summary on stdout. Exit code 0
+means the command completed without a failing mechanical gate; exit code 2 covers
+detected failures, invalid inputs, and handled operational errors. Some report-only
+commands describe findings without applying a failing gate. See the
+[command reference](docs/command_reference.md) for exact arguments, outputs, exit
+semantics, and overwrite behavior.
 
-## Output example
+## CI Integration
 
-```json
-{
-  "command": "verify",
-  "gate_status": "PASS",
-  "counts": {"MATCH": 2}
-}
-```
+The same synthetic demo can run in GitHub Actions without secrets, a GPU, or a
+published package. Install from the checked-out source and assert both the PASS and
+expected exit-2 case. A copy-paste workflow is available in
+[CI integration](docs/ci_integration.md).
 
-## Limits and claim boundary
+## Documentation
 
-- Empirical support is a property of supplied data and rules, not a physical law.
-- Support-contamination metrics do not measure true objective error.
-- Leakage checks based only on metadata can return `UNVERIFIED_FROM_METADATA`.
-- User policies determine what is included and what causes failure.
-- Passing a configured gate does not guarantee that all leakage has been detected.
-- The toolkit does not guarantee scientific conclusions, physical feasibility, or paper acceptance.
-- Negative results are preserved as evidence; `FAIL` is not automatically a software defect.
-- Non-baseline report files are atomically replaced when a command is rerun against the same output directory. Baselines are the exception: they refuse overwrite unless `--force` is explicit, and the forced action is recorded in the baseline.
+- [Quickstart](docs/quickstart.md)
+- [Command reference](docs/command_reference.md)
+- [Use cases](docs/use_cases.md)
+- [Limitations](docs/limitations.md)
+- [Architecture](docs/architecture.md)
+- [CI integration](docs/ci_integration.md)
+- [RC2 readiness register](docs/rc2_readiness.md)
+- [Integrity model](docs/integrity_model.md)
+- [Custody and isolation](docs/custody_isolation.md)
+- [Empirical support audit](docs/support_audit.md)
+- [Validation audit](docs/validation_audit.md)
 
-See `docs/limitations.md` for the complete boundary.
+## Development Status
 
-## Custody and isolation additions
+ResearchAuditKit is an experimental, consumer-driven engineering asset.
 
-`prediction-seal` records a canonical opaque declaration and `prediction-verify` detects byte-level changes. `isolation-audit` checks only declared local workspace structure. `evidence-index` produces a deterministic role-labelled catalogue without evaluating evidence. These commands are local-only and do not establish prediction correctness, trusted timing, human separation, access-control enforcement, scientific validity, or claim support. See `docs/custody_isolation.md` and `examples/custody_demo/`.
+Licensed under the Apache License, Version 2.0.
 
-## Data privacy
+The current `0.1.0rc2.dev0` version is unreleased, a historical RC1 tag exists, and
+the API is not committed to long-term stability.
 
-Commands operate on local paths. The package performs no network calls and ships only newly authored synthetic fixtures. Inventory and manifest outputs may reveal filenames and hashes; review them before sharing.
+Source-checkout installation is the supported evaluation path; no stable PyPI release is claimed.
 
-## License
-
-Licensed under the Apache License, Version 2.0. See the repository-root [LICENSE](LICENSE) file for the complete terms.
-
-## Project status
-
-Experimental engineering asset under consumer-driven maintenance, licensed under Apache-2.0. The current package version, `0.1.0rc2.dev0`, is unreleased; a historical RC1 tag exists, and no stable release exists. Its API is not yet committed to long-term stability. It is a mechanical repository-auditing utility, not a scientific evaluator, research project, dataset, benchmark, or paper artifact. See [PROJECT_STATUS.md](PROJECT_STATUS.md) and [LICENSE_STATUS.md](LICENSE_STATUS.md).
+Commands operate on local paths, but reports may reveal filenames and hashes.
+Review generated artifacts before sharing them. See [Project Status](PROJECT_STATUS.md),
+[Contributing](CONTRIBUTING.md), [Security](SECURITY.md), and the repository-root
+[license](LICENSE).

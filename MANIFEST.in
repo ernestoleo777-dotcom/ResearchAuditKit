@@ -13,6 +13,19 @@ prune release_audit
 prune tests
 prune examples
 prune docs
+include docs/quickstart.md
+include docs/command_reference.md
+include docs/use_cases.md
+include docs/limitations.md
+include docs/architecture.md
+include docs/ci_integration.md
+include docs/rc2_readiness.md
+include docs/integrity_model.md
+include docs/custody_isolation.md
+include docs/support_audit.md
+include docs/validation_audit.md
+include docs/productization/EXISTING_PRODUCT_SURFACE.md
+recursive-include examples/repository_integrity_demo *.md *.yaml *.py *.csv *.json
 global-exclude .DS_Store
 global-exclude *.py[cod]
 global-exclude *.pkl

@@ -50,9 +50,11 @@ def test_development_version_documents_and_historical_rc1_are_consistent():
     assert parsed.dev == 0
 
 
-def test_readme_current_wheel_example_uses_development_version():
+def test_readme_source_install_and_development_status_are_consistent():
     readme = (ROOT / "README.md").read_text()
-    assert f"research_audit_kit-{CURRENT_DEVELOPMENT_VERSION}-py3-none-any.whl" in readme
+    assert "python -m pip install -e ." in readme
+    assert f"Experimental — v{CURRENT_DEVELOPMENT_VERSION} — no stable release" in readme
+    assert "no stable PyPI release is claimed" in readme
 
 
 def test_readme_declares_all_cli_commands():
