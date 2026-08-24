@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Clarify the public scope as mechanical repository auditing rather than scientific or research-decision evaluation.
+- Mark the project as experimental and maintained in response to concrete consumer requirements.
+- Reconcile the unreleased development version as `0.1.0rc2.dev0` because `main` contains package and CLI behavior added after RC1.
+- Add no new scientific, predictive, recommendation, or decision-making capability.
 - Add local-only prediction sealing and verification for opaque declarations.
 - Add structural workspace isolation auditing and role-based evidence indexing.
 - Add clean-room synthetic tests and custody/isolation documentation with explicit non-scientific claim boundaries.

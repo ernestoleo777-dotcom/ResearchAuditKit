@@ -1,6 +1,12 @@
 # ResearchAuditKit
 
-> A lightweight toolkit for auditing scientific repository integrity, data support, experiment isolation, and evidence-backed research decisions.
+> **Status: Experimental, consumer-driven maintenance.**
+>
+> ResearchAuditKit verifies mechanical properties of research repositories, including integrity, isolation, custody, provenance, and evidence accounting.
+>
+> It does not determine scientific validity, claim truth, project quality, publication merit, or whether a research route should continue.
+
+> A lightweight toolkit for repository integrity, experiment isolation, evidence inventory, and auditable research records.
 
 ResearchAuditKit checks the mechanics of a scientific evidence chain: which files were governed, whether declared files changed, where candidate coordinates sit relative to observed support, whether result tables contain unsupported selections, whether split metadata indicates leakage, and whether declared gates were followed.
 
@@ -19,7 +25,7 @@ python -m pip install -e .
 For a built wheel:
 
 ```bash
-python -m pip install dist/research_audit_kit-0.1.0rc1-py3-none-any.whl
+python -m pip install dist/research_audit_kit-0.1.0rc2.dev0-py3-none-any.whl
 ```
 
 Python 3.10+ and PyYAML are required. Installation may resolve PyYAML from the configured package source; runtime commands themselves make no network calls. The quickstart below assumes a source checkout because it uses the repository's example files.
@@ -91,4 +97,4 @@ Licensed under the Apache License, Version 2.0. See the repository-root [LICENSE
 
 ## Project status
 
-Release-candidate engineering tool licensed under Apache-2.0. The GitHub repository is public; no GitHub release or PyPI publication has been created yet. Its API is not yet committed to long-term stability. It is a reproducibility utility, not a research project, dataset, benchmark, or paper artifact; see `LICENSE_STATUS.md`.
+Experimental engineering asset under consumer-driven maintenance, licensed under Apache-2.0. The current package version, `0.1.0rc2.dev0`, is unreleased; a historical RC1 tag exists, and no stable release exists. Its API is not yet committed to long-term stability. It is a mechanical repository-auditing utility, not a scientific evaluator, research project, dataset, benchmark, or paper artifact. See [PROJECT_STATUS.md](PROJECT_STATUS.md) and [LICENSE_STATUS.md](LICENSE_STATUS.md).

@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import ast
 import hashlib
-import re
 import subprocess
 import sys
 from pathlib import Path
 
 from packaging.requirements import Requirement
+from packaging.version import Version
 import pytest
 import yaml
 from research_audit_kit import __version__
@@ -15,14 +15,15 @@ from research_audit_kit import __version__
 from _toml_compat import TOML_BACKEND, tomllib
 
 ROOT = Path(__file__).parents[1]
-CURRENT_RELEASE_VERSION = "0.1.0rc1"
+CURRENT_DEVELOPMENT_VERSION = "0.1.0rc2.dev0"
+HISTORICAL_RC1_VERSION = "0.1.0rc1"
 
 
 def test_single_version_source():
     metadata = tomllib.loads((ROOT / "pyproject.toml").read_text())
     assert "version" not in metadata["project"]
     assert metadata["tool"]["setuptools"]["dynamic"]["version"]["attr"].endswith(".__version__")
-    assert __version__ == CURRENT_RELEASE_VERSION
+    assert __version__ == CURRENT_DEVELOPMENT_VERSION
 
 
 def test_cli_version_matches_package():
@@ -31,22 +32,27 @@ def test_cli_version_matches_package():
     assert result.stdout.strip().endswith(__version__)
 
 
-def test_release_candidate_documents_and_tag_mapping_are_consistent():
+def test_development_version_documents_and_historical_rc1_are_consistent():
     citation = yaml.safe_load((ROOT / "CITATION.cff").read_text())
-    assert citation["version"] == CURRENT_RELEASE_VERSION
-    assert f"## {CURRENT_RELEASE_VERSION} — Release Candidate 1" in (ROOT / "CHANGELOG.md").read_text()
+    assert citation["version"] == CURRENT_DEVELOPMENT_VERSION
+    changelog = (ROOT / "CHANGELOG.md").read_text()
+    assert f"`{CURRENT_DEVELOPMENT_VERSION}`" in changelog
+    assert f"## {HISTORICAL_RC1_VERSION} — Release Candidate 1" in changelog
     assert "# ResearchAuditKit v0.1.0-rc.1" in (
         ROOT / "license_release" / "RELEASE_NOTES_DRAFT.md"
     ).read_text()
 
-    match = re.fullmatch(r"(?P<base>\d+\.\d+\.\d+)rc(?P<number>\d+)", __version__)
-    assert match is not None
-    assert f"v{match['base']}-rc.{match['number']}" == "v0.1.0-rc.1"
+    parsed = Version(__version__)
+    assert parsed.is_prerelease
+    assert parsed.is_devrelease
+    assert parsed.base_version == "0.1.0"
+    assert parsed.pre == ("rc", 2)
+    assert parsed.dev == 0
 
 
-def test_readme_current_wheel_example_uses_release_candidate_version():
+def test_readme_current_wheel_example_uses_development_version():
     readme = (ROOT / "README.md").read_text()
-    assert f"research_audit_kit-{CURRENT_RELEASE_VERSION}-py3-none-any.whl" in readme
+    assert f"research_audit_kit-{CURRENT_DEVELOPMENT_VERSION}-py3-none-any.whl" in readme
 
 
 def test_readme_declares_all_cli_commands():
@@ -105,6 +111,11 @@ def test_license_documents_are_consistent():
     notice = (ROOT / "license_release" / "NOTICE_DECISION.md").read_text()
     assert "NOTICE_NOT_REQUIRED_FOR_CURRENT_CONTENTS" in notice
     assert not (ROOT / "NOTICE").exists()
+
+
+def test_public_project_status_is_in_source_distribution_manifest():
+    manifest_entries = (ROOT / "MANIFEST.in").read_text().splitlines()
+    assert "include PROJECT_STATUS.md" in manifest_entries
 
 
 def test_package_source_has_one_apache_spdx_header_per_file():

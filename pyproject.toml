@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "research-audit-kit"
 dynamic = ["version"]
-description = "A lightweight toolkit for auditing scientific repository integrity, data support, experiment isolation, and evidence-backed research decisions."
+description = "A lightweight toolkit for repository integrity, experiment isolation, evidence inventory, and auditable research records."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "Apache-2.0"

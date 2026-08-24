@@ -1,6 +1,7 @@
 include README.md
 include LICENSE
 include LICENSE_STATUS.md
+include PROJECT_STATUS.md
 include CHANGELOG.md
 include CONTRIBUTING.md
 include SECURITY.md
