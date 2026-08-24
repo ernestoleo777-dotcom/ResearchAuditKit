@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Document CoordCap as the first verified, self-owned public consumer of the RC2
+  GitHub Release wheel and bind the record to its exact commit and successful
+  `rak inventory` workflow run.
+- Clarify that this public integration is mechanical evidence only and does not
+  establish scientific validity, general reproducibility, independent demand, or
+  use by an unrelated organization.
+- No runtime, CLI, API, packaging, version, tag, or release change.
+
 ## 0.1.0rc2 — 2026-08-25
 
 - Finalize version and publication metadata for the `v0.1.0-rc.2` GitHub

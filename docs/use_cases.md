@@ -41,6 +41,13 @@ or configured gates in CI and act on documented exit codes. Time, filesystem
 metadata, and baseline identifiers can vary, so compare stable status/count fields
 when byte identity is not part of the contract.
 
+CoordCap provides the first verified public example of this use case. Its pinned
+RC2 workflow verifies the published wheel hash and runs `rak inventory` as a
+mechanical repository-integrity preflight. The exact commit and successful CI run
+are recorded in [public integrations](public_integrations.md). The consumer is
+self-owned; this evidence does not establish use by an unrelated organization,
+scientific correctness, or a general reproducibility guarantee.
+
 ## Out of scope
 
 Roadmap ideas are not current functionality. There is no all-in-one audit command,

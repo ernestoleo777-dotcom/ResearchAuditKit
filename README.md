@@ -133,6 +133,22 @@ published package. Install from the checked-out source and assert both the PASS 
 expected exit-2 case. A copy-paste workflow is available in
 [CI integration](docs/ci_integration.md).
 
+## Public integrations
+
+[CoordCap](https://github.com/ernestoleo777-dotcom/CoordCap) is the first verified
+public integration. At consumer
+[commit `719ee4e`](https://github.com/ernestoleo777-dotcom/CoordCap/commit/719ee4e34aeb07357d097bb2bc0df1b80141e62a),
+its GitHub Actions workflow pins ResearchAuditKit `v0.1.0-rc.2`, verifies the
+GitHub Release wheel SHA-256, and runs `rak inventory`. The cited automatic
+[workflow run](https://github.com/ernestoleo777-dotcom/CoordCap/actions/runs/32759394362)
+passed.
+
+This is a `PUBLIC_INTEGRATION`, the `FIRST_VERIFIED_PUBLIC_CONSUMER`, and a
+`SELF_OWNED_PUBLIC_CONSUMER`. It demonstrates a released mechanical
+repository-integrity preflight in a real public repository. It does not establish
+scientific validity, general reproducibility, independent demand, or use by an
+unrelated organization. See the [public integration evidence](docs/public_integrations.md).
+
 ## Documentation
 
 - [Quickstart](docs/quickstart.md)
@@ -141,6 +157,7 @@ expected exit-2 case. A copy-paste workflow is available in
 - [Limitations](docs/limitations.md)
 - [Architecture](docs/architecture.md)
 - [CI integration](docs/ci_integration.md)
+- [Public integrations](docs/public_integrations.md)
 - [RC2 readiness register](docs/rc2_readiness.md)
 - [RC2 release notes](docs/releases/v0.1.0-rc.2.md)
 - [RC1 to RC2 delta](docs/releases/RC1_TO_RC2_DELTA.md)
