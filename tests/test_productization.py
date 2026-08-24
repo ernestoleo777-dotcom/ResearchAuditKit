@@ -312,13 +312,16 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
     )
     dist = tmp_path / "dist"
     dist.mkdir()
-    script = (
-        "from setuptools import build_meta; "
-        f"build_meta.build_wheel({str(dist)!r}); "
-        f"build_meta.build_sdist({str(dist)!r})"
-    )
     result = subprocess.run(
-        [sys.executable, "-c", script],
+        [
+            sys.executable,
+            "-m",
+            "build",
+            "--no-isolation",
+            "--outdir",
+            str(dist),
+            ".",
+        ],
         cwd=checkout,
         text=True,
         capture_output=True,

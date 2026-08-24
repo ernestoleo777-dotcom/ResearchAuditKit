@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Declare the build frontend and backend tools used by package-content tests so the
+  Python 3.10-3.12 CI matrix does not depend on runner-preinstalled packaging tools.
 - Rework the public entry point around a tested three-minute source-checkout demo.
 - Add consolidated command, use-case, limitation, architecture, CI, and RC2-readiness documentation.
 - Add consumer-focused issue/PR templates and package curated public docs plus the synthetic integrity demo in the sdist.
