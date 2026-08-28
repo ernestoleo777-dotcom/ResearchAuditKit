@@ -10,7 +10,15 @@ ResearchAuditKit is a local-first release-engineering and integrity toolkit for 
 
 ## Audit and freeze an ML repository before public release
 
-From this owner-review source checkout:
+Install the current published RC2 authority by immutable asset URL and digest:
+
+```bash
+python -m pip install \
+  "https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/download/v0.1.0-rc.2/research_audit_kit-0.1.0rc2-py3-none-any.whl#sha256=71f905f3e39907c72c18e3d3207004f424c001238b103235a16484e1acace0fb"
+rak --version  # rak 0.1.0rc2
+```
+
+RC2 does not contain the hero command. From this unpublished owner-review source checkout:
 
 ```bash
 python -m pip install -e .
