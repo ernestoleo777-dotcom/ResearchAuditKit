@@ -10,8 +10,6 @@ jobs:
   action-e2e:
     name: Composite Action end to end
     runs-on: ubuntu-latest
-    env:
-      TARGET_EXECUTION_CANARY: ${{ runner.temp }}/researchauditkit-target-code-executed
     steps:
       # actions/checkout v5 (immutable major-tag commit verified 2026-08-28)
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -21,7 +19,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          fixture_root="$RUNNER_TEMP/action e2e ; quoted"
+          fixture_root=$(mktemp -d "$RUNNER_TEMP/action e2e ; quoted.XXXXXX")
+          canary_path="$fixture_root/target-code-executed"
           safe_target="$fixture_root/research target ; quoted"
           policy_dir="$fixture_root/policy files"
           invalid_target="$fixture_root/invalid policy target"
@@ -89,10 +88,13 @@ jobs:
           printf 'invalid-target=%s\n' "$invalid_target" >>"$GITHUB_OUTPUT"
           printf 'symlink-target=%s\n' "$symlink_target" >>"$GITHUB_OUTPUT"
           printf 'outside-target=%s\n' "$outside_target" >>"$GITHUB_OUTPUT"
+          printf 'canary-path=%s\n' "$canary_path" >>"$GITHUB_OUTPUT"
 
       - id: default-pass
         name: Default-policy PASS with human output
         uses: ./
+        env:
+          TARGET_EXECUTION_CANARY: ${{ steps.fixtures.outputs.canary-path }}
         with:
           path: examples/audit_demo/pass_repo
           output-format: human
@@ -100,6 +102,8 @@ jobs:
       - id: explicit-pass-first
         name: Explicit-policy PASS with quoted paths and JSON
         uses: ./
+        env:
+          TARGET_EXECUTION_CANARY: ${{ steps.fixtures.outputs.canary-path }}
         with:
           path: ${{ steps.fixtures.outputs.safe-target }}
           policy: ${{ steps.fixtures.outputs.policy-path }}
@@ -108,6 +112,8 @@ jobs:
       - id: explicit-pass-second
         name: Repeat canonical JSON
         uses: ./
+        env:
+          TARGET_EXECUTION_CANARY: ${{ steps.fixtures.outputs.canary-path }}
         with:
           path: ${{ steps.fixtures.outputs.safe-target }}
           policy: ${{ steps.fixtures.outputs.policy-path }}
@@ -116,6 +122,8 @@ jobs:
       - id: warning-visible
         name: WARNING below default failure threshold
         uses: ./
+        env:
+          TARGET_EXECUTION_CANARY: ${{ steps.fixtures.outputs.canary-path }}
         with:
           path: examples/audit_demo/warning_repo
           output-format: human
@@ -124,6 +132,8 @@ jobs:
         name: WARNING at strict failure threshold
         continue-on-error: true
         uses: ./
+        env:
+          TARGET_EXECUTION_CANARY: ${{ steps.fixtures.outputs.canary-path }}
         with:
           path: examples/audit_demo/warning_repo
           fail-on: warning
@@ -133,6 +143,8 @@ jobs:
         name: Configured RELEASE_BLOCKER
         continue-on-error: true
         uses: ./
+        env:
+          TARGET_EXECUTION_CANARY: ${{ steps.fixtures.outputs.canary-path }}
         with:
           path: examples/audit_demo/blocker_repo
           output-format: json
@@ -141,6 +153,8 @@ jobs:
         name: Invalid policy ABSTAIN
         continue-on-error: true
         uses: ./
+        env:
+          TARGET_EXECUTION_CANARY: ${{ steps.fixtures.outputs.canary-path }}
         with:
           path: ${{ steps.fixtures.outputs.invalid-target }}
           output-format: json
@@ -149,6 +163,8 @@ jobs:
         name: Escaping required-file symlink ABSTAIN
         continue-on-error: true
         uses: ./
+        env:
+          TARGET_EXECUTION_CANARY: ${{ steps.fixtures.outputs.canary-path }}
         with:
           path: ${{ steps.fixtures.outputs.symlink-target }}
           output-format: json
@@ -183,7 +199,7 @@ jobs:
           grep -F '**Status:** `PASS`' "$GITHUB_STEP_SUMMARY"
           grep -F '**Status:** `ABSTAIN`' "$GITHUB_STEP_SUMMARY"
 
-          test ! -e "$TARGET_EXECUTION_CANARY"
+          test ! -e "${{ steps.fixtures.outputs.canary-path }}"
           if grep -F '../outside-secret.txt' \
             "${{ steps.invalid-policy.outputs.result-file }}" "$GITHUB_STEP_SUMMARY"
           then
