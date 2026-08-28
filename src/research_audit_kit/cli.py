@@ -256,7 +256,12 @@ def _run(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="rak", description="Audit scientific repository evidence-chain mechanics.")
+    parser = argparse.ArgumentParser(
+        prog="rak",
+        description=(
+            "Local-first release-engineering and integrity checks for ML research repositories."
+        ),
+    )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
 
