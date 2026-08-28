@@ -21,6 +21,7 @@ def _run_action(tmp_path: Path, fixture: str, *, fail_on: str = "release-blocker
     env = os.environ.copy()
     env.update(
         {
+            "GITHUB_WORKSPACE": str(ROOT),
             "GITHUB_OUTPUT": str(outputs),
             "GITHUB_STEP_SUMMARY": str(summary),
             "RAK_ACTION_RESULT_FILE": str(result_file),
@@ -86,6 +87,41 @@ def test_action_warning_threshold_is_preserved(tmp_path: Path):
     completed, result_file, _, _ = _run_action(tmp_path, "warning_repo", fail_on="warning")
     assert completed.returncode == 2
     assert json.loads(result_file.read_text(encoding="utf-8"))["status"] == "WARNING"
+
+
+def test_action_does_not_import_a_target_shadow_package(tmp_path: Path):
+    target = tmp_path / "target"
+    shadow = target / "research_audit_kit"
+    shadow.mkdir(parents=True)
+    (target / "README.md").write_text("# Target\n", encoding="utf-8")
+    (target / "LICENSE").write_text("Test license\n", encoding="utf-8")
+    (shadow / "__init__.py").write_text(
+        "raise RuntimeError('target package executed')\n", encoding="utf-8"
+    )
+
+    result_file = tmp_path / "result.json"
+    env = os.environ.copy()
+    env.update(
+        {
+            "GITHUB_WORKSPACE": str(target),
+            "RAK_ACTION_RESULT_FILE": str(result_file),
+            "RAK_ACTION_ROOT": str(ROOT),
+            "RAK_INPUT_PATH": ".",
+            "RAK_PYTHON_COMMAND": sys.executable,
+            "RUNNER_TEMP": str(tmp_path),
+        }
+    )
+    completed = subprocess.run(
+        ["bash", str(ROOT / "action" / "run-audit.sh")],
+        cwd=target,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    assert json.loads(result_file.read_text(encoding="utf-8"))["status"] == "PASS"
 
 
 def test_summary_renderer_escapes_markdown_and_html():
