@@ -1,0 +1,198 @@
+name: Action end-to-end
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  action-e2e:
+    name: Composite Action end to end
+    runs-on: ubuntu-latest
+    env:
+      TARGET_EXECUTION_CANARY: ${{ runner.temp }}/researchauditkit-target-code-executed
+    steps:
+      # actions/checkout v5 (immutable major-tag commit verified 2026-08-28)
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+
+      - id: fixtures
+        name: Prepare inert audit targets and canaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          fixture_root="$RUNNER_TEMP/action e2e ; quoted"
+          safe_target="$fixture_root/research target ; quoted"
+          policy_dir="$fixture_root/policy files"
+          invalid_target="$fixture_root/invalid policy target"
+          symlink_target="$fixture_root/symlink policy target"
+          outside_target="$fixture_root/outside private.bin"
+          mkdir -p "$safe_target" "$policy_dir" "$invalid_target/.rak" "$symlink_target/.rak"
+
+          printf '# Safe research target\n' >"$safe_target/README.md"
+          printf 'Test license\n' >"$safe_target/LICENSE"
+          printf '%s\n' \
+            'policy:' \
+            '  id: explicit-pass' \
+            '  required_files:' \
+            '    - README.md' \
+            '    - LICENSE' >"$policy_dir/release policy.yaml"
+
+          cat >"$fixture_root/canary.py" <<'PY'
+          import os
+          from pathlib import Path
+
+          Path(os.environ["TARGET_EXECUTION_CANARY"]).write_text("executed", encoding="utf-8")
+          raise RuntimeError("target repository code executed")
+          PY
+
+          for relative in \
+            research_audit_kit/__init__.py \
+            yaml/__init__.py \
+            sitecustomize.py \
+            usercustomize.py \
+            json.py
+          do
+            mkdir -p "$(dirname "$relative")"
+            cp "$fixture_root/canary.py" "$relative"
+          done
+
+          for relative in setup.py canary_backend.py analysis.py run.sh notebook.ipynb
+          do
+            cp "$fixture_root/canary.py" "$safe_target/$relative"
+          done
+          printf '%s\n' \
+            '[build-system]' \
+            'requires = []' \
+            'build-backend = "canary_backend"' >"$safe_target/pyproject.toml"
+
+          printf '# Invalid policy target\n' >"$invalid_target/README.md"
+          printf 'Test license\n' >"$invalid_target/LICENSE"
+          printf '%s\n' \
+            'policy:' \
+            '  id: invalid-path' \
+            '  required_files:' \
+            '    - ../outside-secret.txt' >"$invalid_target/.rak/policy.yaml"
+
+          printf '# Symlink target\n' >"$symlink_target/README.md"
+          printf 'Test license\n' >"$symlink_target/LICENSE"
+          printf 'outside bytes\n' >"$outside_target"
+          ln -s "$outside_target" "$symlink_target/artifact.bin"
+          printf '%s\n' \
+            'policy:' \
+            '  id: escaping-symlink' \
+            '  required_files:' \
+            '    - artifact.bin' >"$symlink_target/.rak/policy.yaml"
+
+          printf 'safe-target=%s\n' "$safe_target" >>"$GITHUB_OUTPUT"
+          printf 'policy-path=%s\n' "$policy_dir/release policy.yaml" >>"$GITHUB_OUTPUT"
+          printf 'invalid-target=%s\n' "$invalid_target" >>"$GITHUB_OUTPUT"
+          printf 'symlink-target=%s\n' "$symlink_target" >>"$GITHUB_OUTPUT"
+          printf 'outside-target=%s\n' "$outside_target" >>"$GITHUB_OUTPUT"
+
+      - id: default-pass
+        name: Default-policy PASS with human output
+        uses: ./
+        with:
+          path: examples/audit_demo/pass_repo
+          output-format: human
+
+      - id: explicit-pass-first
+        name: Explicit-policy PASS with quoted paths and JSON
+        uses: ./
+        with:
+          path: ${{ steps.fixtures.outputs.safe-target }}
+          policy: ${{ steps.fixtures.outputs.policy-path }}
+          output-format: json
+
+      - id: explicit-pass-second
+        name: Repeat canonical JSON
+        uses: ./
+        with:
+          path: ${{ steps.fixtures.outputs.safe-target }}
+          policy: ${{ steps.fixtures.outputs.policy-path }}
+          output-format: json
+
+      - id: warning-visible
+        name: WARNING below default failure threshold
+        uses: ./
+        with:
+          path: examples/audit_demo/warning_repo
+          output-format: human
+
+      - id: warning-blocked
+        name: WARNING at strict failure threshold
+        continue-on-error: true
+        uses: ./
+        with:
+          path: examples/audit_demo/warning_repo
+          fail-on: warning
+          output-format: json
+
+      - id: release-blocker
+        name: Configured RELEASE_BLOCKER
+        continue-on-error: true
+        uses: ./
+        with:
+          path: examples/audit_demo/blocker_repo
+          output-format: json
+
+      - id: invalid-policy
+        name: Invalid policy ABSTAIN
+        continue-on-error: true
+        uses: ./
+        with:
+          path: ${{ steps.fixtures.outputs.invalid-target }}
+          output-format: json
+
+      - id: escaping-symlink
+        name: Escaping required-file symlink ABSTAIN
+        continue-on-error: true
+        uses: ./
+        with:
+          path: ${{ steps.fixtures.outputs.symlink-target }}
+          output-format: json
+
+      - name: Verify Action outputs, determinism, summaries, and canaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${{ steps.default-pass.outputs.status }}" = PASS
+          test "${{ steps.default-pass.outputs.exit-code }}" = 0
+          test "${{ steps.explicit-pass-first.outputs.status }}" = PASS
+          test "${{ steps.warning-visible.outputs.status }}" = WARNING
+          test "${{ steps.warning-visible.outputs.exit-code }}" = 0
+          test "${{ steps.warning-blocked.outcome }}" = failure
+          test "${{ steps.warning-blocked.outputs.exit-code }}" = 2
+          test "${{ steps.release-blocker.outcome }}" = failure
+          test "${{ steps.release-blocker.outputs.status }}" = RELEASE_BLOCKER
+          test "${{ steps.release-blocker.outputs.exit-code }}" = 2
+          test "${{ steps.invalid-policy.outcome }}" = failure
+          test "${{ steps.invalid-policy.outputs.status }}" = ABSTAIN
+          test "${{ steps.invalid-policy.outputs.exit-code }}" = 2
+          test "${{ steps.escaping-symlink.outcome }}" = failure
+          test "${{ steps.escaping-symlink.outputs.status }}" = ABSTAIN
+          test "${{ steps.escaping-symlink.outputs.exit-code }}" = 2
+
+          cmp \
+            "${{ steps.explicit-pass-first.outputs.result-file }}" \
+            "${{ steps.explicit-pass-second.outputs.result-file }}"
+          jq -e '.schema_version == "researchauditkit.audit/v1" and .status == "PASS"' \
+            "${{ steps.explicit-pass-first.outputs.result-file }}"
+          grep -F '## ResearchAuditKit audit' "$GITHUB_STEP_SUMMARY"
+          grep -F '**Status:** `PASS`' "$GITHUB_STEP_SUMMARY"
+          grep -F '**Status:** `ABSTAIN`' "$GITHUB_STEP_SUMMARY"
+
+          test ! -e "$TARGET_EXECUTION_CANARY"
+          if grep -F '../outside-secret.txt' \
+            "${{ steps.invalid-policy.outputs.result-file }}" "$GITHUB_STEP_SUMMARY"
+          then
+            printf '%s\n' 'Unsafe policy value was disclosed.' >&2
+            exit 1
+          fi
+          if grep -F "${{ steps.fixtures.outputs.outside-target }}" \
+            "${{ steps.escaping-symlink.outputs.result-file }}" "$GITHUB_STEP_SUMMARY"
+          then
+            printf '%s\n' 'Resolved outside path was disclosed.' >&2
+            exit 1
+          fi
