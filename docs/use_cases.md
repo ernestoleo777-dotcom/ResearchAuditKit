@@ -41,12 +41,17 @@ or configured gates in CI and act on documented exit codes. Time, filesystem
 metadata, and baseline identifiers can vary, so compare stable status/count fields
 when byte identity is not part of the contract.
 
-CoordCap provides the first verified public example of this use case. Its pinned
-RC2 workflow verifies the published wheel hash and runs `rak inventory` as a
-mechanical repository-integrity preflight. The exact commit and successful CI run
-are recorded in [public integrations](public_integrations.md). The consumer is
-self-owned; this evidence does not establish use by an unrelated organization,
-scientific correctness, or a general reproducibility guarantee.
+CoordCap provides the first verified public example of this use case. Its
+self-owned workflow pins the ResearchAuditKit v0.1.0-rc.3 Action to immutable
+commit `72ee132038a36d8678da11e86d3b953726a5e9a7`, applies its committed
+`.rak/policy.yaml`, and runs only `rak audit` with the `release-blocker`
+threshold and canonical JSON output. The [successful public-main
+run](https://github.com/ernestoleo777-dotcom/CoordCap/actions/runs/33190211004)
+returned aggregate `PASS` and rendered a GitHub Job Summary. The exact consumer
+commit and historical RC2 lineage are recorded in [public
+integrations](public_integrations.md). This evidence does not establish use by
+an unrelated organization, scientific correctness, or a general reproducibility
+guarantee.
 
 ## Out of scope
 

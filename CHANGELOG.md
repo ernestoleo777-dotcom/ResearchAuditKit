@@ -2,7 +2,10 @@
 
 ## Unreleased
 
-No changes recorded after the RC3 release candidate.
+- Documentation: refresh the existing self-owned CoordCap integration evidence
+  from its historical RC2 wheel/`rak inventory` stage to the immutable RC3
+  Action/`rak audit` integration and successful public-main run. This remains
+  one consumer and does not establish independent external adoption.
 
 ## 0.1.0rc3 — 2026-08-28
 

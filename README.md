@@ -153,7 +153,19 @@ These advanced commands require their documented inputs and are not guessed or a
 
 ## Public integration evidence
 
-[CoordCap](https://github.com/ernestoleo777-dotcom/CoordCap) is the one verified public consumer. It is explicitly classified `SELF_OWNED_PUBLIC_CONSUMER`; its commit-bound RC2 integration runs `rak inventory`. It has not yet established use of the RC3 Action. This is not independent adoption. See [public integration evidence](docs/public_integrations.md).
+[CoordCap](https://github.com/ernestoleo777-dotcom/CoordCap) is the first and
+currently only verified public consumer. At its [consumer merge
+commit](https://github.com/ernestoleo777-dotcom/CoordCap/commit/14cef46b3813e20ee26266faebb72a72aad7ac76),
+this self-owned integration—not independent external adoption—pins the
+[v0.1.0-rc.3](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/tag/v0.1.0-rc.3)
+Action to its [immutable release
+commit](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/commit/72ee132038a36d8678da11e86d3b953726a5e9a7),
+runs `rak audit` with the committed
+`.rak/policy.yaml`, and uses ResearchAuditKit only as a mechanical
+repository-integrity preflight. The [successful public-main
+run](https://github.com/ernestoleo777-dotcom/CoordCap/actions/runs/33190211004)
+reported aggregate `PASS` and rendered a GitHub Job Summary. See [public
+integration evidence](docs/public_integrations.md).
 
 ## Documentation
 
