@@ -1,0 +1,7 @@
+ResearchAuditKit audit
+Target: pass_repo
+Policy: built-in (rak-generic-release-v1)
+Result: PASS
+Findings: PASS=6 WARNING=0 RELEASE_BLOCKER=0 NOT_APPLICABLE=2 UNRESOLVED=0
+- No warnings, unresolved checks, or release blockers.
+Boundary: PASS is mechanical only; it is not scientific correctness or certification.

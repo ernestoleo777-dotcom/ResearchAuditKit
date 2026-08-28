@@ -1,0 +1,9 @@
+policy:
+  id: synthetic-release-policy-v1
+  include_patterns:
+    - "**/*"
+  exclude_patterns: []
+  volatile_patterns: []
+  required_files:
+    - artifacts/model.bin
+  unexpected_scientific_file_policy: warn

@@ -1,0 +1,7 @@
+ResearchAuditKit audit
+Target: blocker_repo
+Policy: project (synthetic-release-policy-v1)
+Result: RELEASE_BLOCKER
+Findings: PASS=7 WARNING=0 RELEASE_BLOCKER=1 NOT_APPLICABLE=0 UNRESOLVED=0
+- RELEASE_BLOCKER policy.required-file [artifacts/model.bin]: A file required by the declared policy is missing.
+Boundary: PASS is mechanical only; it is not scientific correctness or certification.
