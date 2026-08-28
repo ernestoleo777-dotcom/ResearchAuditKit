@@ -45,6 +45,7 @@ CURATED_DOCS = {
     "docs/releases/RC1_TO_RC2_DELTA.md",
     "docs/releases/RC2_DISTRIBUTION_AUDIT.md",
     "docs/releases/v0.1.0-rc.2.md",
+    "docs/releases/v0.1.0-rc.3.md",
 }
 
 
@@ -309,16 +310,17 @@ def test_public_productization_text_has_no_private_or_secret_material():
 
 
 def test_version_and_status_are_consistent():
-    assert __version__ == "0.1.0rc3.dev0"
+    assert __version__ == "0.1.0rc3"
     citation = yaml.safe_load((ROOT / "CITATION.cff").read_text(encoding="utf-8"))
-    assert citation["version"] == "0.1.0rc2"
+    assert citation["version"] == "0.1.0rc3"
+    assert str(citation["date-released"]) == "2026-08-28"
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert f"development source version v{__version__} — unpublished — no stable release" in readme
+    assert f"release candidate v{__version__} — GitHub prerelease — no stable release" in readme
     project_status = (ROOT / "PROJECT_STATUS.md").read_text(encoding="utf-8")
     assert f"DISTRIBUTION_SOURCE_VERSION = {__version__}" in project_status
-    assert "LATEST_PUBLIC_RELEASE = 0.1.0rc2" in project_status
-    assert "FUTURE_RELEASE_TARGET = v0.1.0-rc.3" in project_status
-    assert "RC3_RELEASED = FALSE" in project_status
+    assert "RELEASE_TARGET = v0.1.0-rc.3" in project_status
+    assert "RELEASE_CLASS = GITHUB_PRERELEASE" in project_status
+    assert "RC3_RELEASED = VERIFY_GITHUB_RELEASES" in project_status
     assert "STABLE_RELEASED = FALSE" in project_status
     assert "STABLE_RELEASE = NONE" in project_status
     assert "DISTRIBUTION_AUTHORITY = GITHUB_RELEASES" in project_status
@@ -357,8 +359,8 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
     )
     assert result.returncode == 0, result.stdout + result.stderr
 
-    wheel = dist / "research_audit_kit-0.1.0rc3.dev0-py3-none-any.whl"
-    sdist = dist / "research_audit_kit-0.1.0rc3.dev0.tar.gz"
+    wheel = dist / "research_audit_kit-0.1.0rc3-py3-none-any.whl"
+    sdist = dist / "research_audit_kit-0.1.0rc3.tar.gz"
     assert wheel.is_file() and sdist.is_file()
 
     with zipfile.ZipFile(wheel) as archive:

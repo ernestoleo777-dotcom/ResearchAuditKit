@@ -2,7 +2,7 @@
 
 ResearchAuditKit is a local-first release-engineering and integrity toolkit for ML research repositories.
 
-**Experimental — development source version v0.1.0rc3.dev0 — unpublished — no stable release**
+**Experimental — release candidate v0.1.0rc3 — GitHub prerelease — no stable release**
 
 [![CI](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml/badge.svg)](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
@@ -10,16 +10,19 @@ ResearchAuditKit is a local-first release-engineering and integrity toolkit for 
 
 ## Audit and freeze an ML repository before public release
 
-Install the current published RC2 authority by immutable asset URL and digest:
+The [GitHub Releases page](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases)
+is the distribution authority. After the `v0.1.0-rc.3`
+prerelease is published, install its wheel from the versioned release and verify
+it against the accompanying `SHA256SUMS` and `RC3_RELEASE_MANIFEST.json`:
 
 ```bash
 python -m pip install \
-  "https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/download/v0.1.0-rc.2/research_audit_kit-0.1.0rc2-py3-none-any.whl#sha256=71f905f3e39907c72c18e3d3207004f424c001238b103235a16484e1acace0fb"
-rak --version  # rak 0.1.0rc2
+  "https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/download/v0.1.0-rc.3/research_audit_kit-0.1.0rc3-py3-none-any.whl"
+rak --version  # rak 0.1.0rc3
 ```
 
-RC2 does not contain the hero command. This unpublished owner-review source
-checkout identifies its differently composed distribution as `0.1.0rc3.dev0`:
+Before publication, install the reviewed source checkout directly; its
+distribution identity is already the release candidate `0.1.0rc3`:
 
 ```bash
 python -m pip install -e .
@@ -28,7 +31,11 @@ rak audit .
 
 `rak audit` inventories local files, applies universally observable checks, detects an optional `.rak/policy.yaml`, and reports mechanical warnings or release blockers. It does not execute repository code, upload source, call a network service, use a model, or require a GPU.
 
-> **Publication status:** the current public distribution authority is the [GitHub Releases page](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases), specifically release [`v0.1.0-rc.2`](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/tag/v0.1.0-rc.2), whose wheel SHA-256 is `71f905f3e39907c72c18e3d3207004f424c001238b103235a16484e1acace0fb`. RC2 does **not** contain `rak audit`. This branch is an unpublished owner-review candidate; do not represent the hero command or Action as publicly released until a matching immutable artifact exists.
+> **Publication status:** source version alone does not establish public
+> availability. Verify that [`v0.1.0-rc.3`](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/tag/v0.1.0-rc.3)
+> exists as a published GitHub prerelease before treating `rak audit` or the
+> Action as released. RC2 remains historical and does not contain either
+> interface. No stable, PyPI, or TestPyPI release exists.
 
 Real terminal output from the committed `pass_repo` fixture:
 
@@ -103,15 +110,23 @@ SARIF is deferred because its result/severity model cannot preserve `NOT_APPLICA
 
 ## GitHub Action
 
-An unpublished composite Action source is included for owner review. It
-self-provisions a fixed Python runtime and hash-locked PyYAML dependency, runs
-only `rak audit`, writes a GitHub Job Summary, preserves CLI exit status,
-requests no token, and does not install or execute target code. Bootstrap uses
-official Action and package infrastructure; the audit itself remains local and
-uploads no repository content. The Action must be pinned to an immutable
-commit/tag. See [GitHub Action integration](docs/github_action.md); do not use a
-nonexistent RC3 tag or represent the Action as publicly released before a
-separately authorized release.
+The composite Action self-provisions a fixed Python runtime and hash-locked
+PyYAML dependency, runs only `rak audit`, writes a GitHub Job Summary, preserves
+CLI exit status, requests no token, and does not install or execute target code.
+Bootstrap requires official Action and package infrastructure; the audit itself
+remains local and uploads no repository content. After confirming the RC3
+prerelease exists, use the exact versioned ref:
+
+```yaml
+- uses: ernestoleo777-dotcom/ResearchAuditKit@v0.1.0-rc.3
+  with:
+    path: .
+    fail-on: release-blocker
+```
+
+No mutable `v0`, `v0.1`, `main`, or `latest` Action alias is published. Users
+seeking maximum immutability may replace the tag with its resolved commit SHA.
+See [GitHub Action integration](docs/github_action.md).
 
 ## Advanced commands
 
@@ -138,7 +153,7 @@ These advanced commands require their documented inputs and are not guessed or a
 
 ## Public integration evidence
 
-[CoordCap](https://github.com/ernestoleo777-dotcom/CoordCap) is the one verified public consumer. It is explicitly classified `SELF_OWNED_PUBLIC_CONSUMER`; its commit-bound RC2 integration runs `rak inventory`, not the unpublished hero command. This is not independent adoption. See [public integration evidence](docs/public_integrations.md).
+[CoordCap](https://github.com/ernestoleo777-dotcom/CoordCap) is the one verified public consumer. It is explicitly classified `SELF_OWNED_PUBLIC_CONSUMER`; its commit-bound RC2 integration runs `rak inventory`. It has not yet established use of the RC3 Action. This is not independent adoption. See [public integration evidence](docs/public_integrations.md).
 
 ## Documentation
 

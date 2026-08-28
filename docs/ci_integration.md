@@ -20,14 +20,17 @@ jobs:
     steps:
       # actions/checkout v5, pinned to an immutable commit
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-      - uses: ernestoleo777-dotcom/ResearchAuditKit@<IMMUTABLE_REF_CONTAINING_AUDIT>
+      - uses: ernestoleo777-dotcom/ResearchAuditKit@v0.1.0-rc.3
         with:
           path: .
           fail-on: release-blocker
           output-format: human
 ```
 
-The placeholder is intentionally not a working publication instruction. The current public RC2 artifact does not contain `rak audit`, and this task creates no tag or release. Replace it only after owner review and an immutable publication decision.
+The exact RC3 ref is usable only after the corresponding annotated tag and
+GitHub prerelease exist. RC2 does not contain `rak audit` or `action.yml`. No
+mutable major/minor/latest alias is provided; a resolved commit SHA provides the
+strongest pin.
 
 The composite Action provisions its own fixed Python and hash-locked PyYAML
 runtime, requests no token, uploads no repository content, executes no

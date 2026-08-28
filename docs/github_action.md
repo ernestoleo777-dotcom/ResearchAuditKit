@@ -1,6 +1,8 @@
 # GitHub Action integration
 
-The repository contains an unpublished composite Action for owner review. It is source-prepared, not tagged, released, or listed in GitHub Marketplace.
+The repository contains the RC3 composite Action source. GitHub Releases is the
+availability authority: confirm that `v0.1.0-rc.3` exists before using the ref.
+The Action is not listed in GitHub Marketplace.
 
 ## Safety contract
 
@@ -29,9 +31,9 @@ used, and target-project code is not executed.
 | Python runtime | `3.12.14` |
 | Runtime dependency | `PyYAML==6.0.3`, wheel hashes in `action/requirements.lock` |
 
-## Publication-gated example
+## Versioned prerelease example
 
-Do not copy this placeholder until the owner publishes an immutable ref containing the reviewed vertical slice:
+Use this only after the `v0.1.0-rc.3` GitHub prerelease is published:
 
 ```yaml
 permissions:
@@ -40,17 +42,17 @@ permissions:
 steps:
   # actions/checkout v5, pinned to an immutable commit
   - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
-  - uses: ernestoleo777-dotcom/ResearchAuditKit@<IMMUTABLE_REF_CONTAINING_AUDIT>
+  - uses: ernestoleo777-dotcom/ResearchAuditKit@v0.1.0-rc.3
     with:
       path: .
       fail-on: release-blocker
       output-format: human
 ```
 
-The placeholder is future-form only. Public `v0.1.0-rc.2` contains neither
-`rak audit` nor `action.yml`; `v0.1.0-rc.3` does not yet exist. A separately
-authorized RC3 release must supply the immutable ResearchAuditKit ref before
-consumers can use this interface.
+Source preparation does not prove publication. Confirm the versioned tag and
+prerelease on GitHub before use. Public `v0.1.0-rc.2` contains neither `rak
+audit` nor `action.yml`. No mutable major/minor/latest Action alias exists; for
+maximum immutability, resolve the RC3 annotated tag and pin that commit SHA.
 
 ## Inputs and outputs
 
