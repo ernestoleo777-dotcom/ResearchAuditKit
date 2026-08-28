@@ -9,6 +9,7 @@ errors emit JSON on stderr and return 2. Output paths are created as needed.
 
 | Command | Required arguments | Optional arguments | Written output | Exit and overwrite behavior |
 | --- | --- | --- | --- | --- |
+| `rak audit` | none; optional positional `PATH` defaults to `.` | `--policy`, `--format human\|json`, `--output`, `--fail-on release-blocker\|warning` | none unless `--output` writes canonical `researchauditkit.audit/v1` JSON | 0 on PASS and default WARNING; 2 on RELEASE_BLOCKER, ABSTAIN/UNRESOLVED, input error, or WARNING with `--fail-on warning`. Output file is atomically replaced. |
 | `rak init` | `--root ROOT --policy POLICY` | none | `ROOT/.rak/project.json` | 0 on creation; 2 if `.rak` exists or input fails. Never replaces existing state. |
 | `rak inventory` | `--root ROOT --policy POLICY --out DIR` | none | `inventory.csv`, `inventory.json`, `summary.json`, `summary.yaml` | 0 when required files are present; 2 when any are missing or input fails. Reports are atomically replaced. |
 | `rak freeze` | `--root ROOT --policy POLICY --baseline FILE` | `--force` | baseline CSV and `FILE.sha256` | 0 on success; 2 on error. Existing baseline/companion is refused unless `--force`; forced replacement is recorded. |
@@ -26,7 +27,8 @@ errors emit JSON on stderr and return 2. Output paths are created as needed.
 
 ## Machine-readable status boundary
 
-Statuses include `PASS`, `PASS_WITH_WARNINGS`, `INCONCLUSIVE`, `FAIL`, `BLOCKED`,
+Statuses include `PASS`, `WARNING`, `RELEASE_BLOCKER`, `NOT_APPLICABLE`,
+`UNRESOLVED`, `ABSTAIN`, `PASS_WITH_WARNINGS`, `INCONCLUSIVE`, `FAIL`, `BLOCKED`,
 `SKIPPED_BY_GATE`, and `UNADJUDICATED`, plus command-specific finding codes. Their
 meaning is defined by the local command and policy. A status is not a scientific,
 publication, or project-quality judgment.

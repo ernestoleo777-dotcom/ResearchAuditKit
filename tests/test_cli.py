@@ -27,6 +27,7 @@ def run_cli(*args):
 def test_cli_help():
     result = run_cli("--help")
     assert result.returncode == 0
+    assert "Local-first release-engineering and integrity checks" in result.stdout
     assert "support-audit" in result.stdout
     assert "prediction-seal" in result.stdout
     assert "isolation-audit" in result.stdout

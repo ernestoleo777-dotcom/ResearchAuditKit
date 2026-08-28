@@ -3,8 +3,12 @@
 ```text
 ENGINEERING_ASSET = MAINTAINED
 OPERATING_MODE = CONSUMER_DRIVEN_MAINTENANCE
-CURRENT_VERSION = 0.1.0rc2
-CURRENT_RELEASE_CLASS = RELEASE_CANDIDATE
+DISTRIBUTION_SOURCE_VERSION = 0.1.0rc3
+RELEASE_TARGET = v0.1.0-rc.3
+RELEASE_CLASS = GITHUB_PRERELEASE
+RELEASE_AVAILABILITY_AUTHORITY = GITHUB_RELEASES
+RC3_RELEASED = VERIFY_GITHUB_RELEASES
+STABLE_RELEASED = FALSE
 STABLE_RELEASE = NONE
 DISTRIBUTION_AUTHORITY = GITHUB_RELEASES
 PYPI_DISTRIBUTION = NONE
@@ -17,9 +21,12 @@ PUBLIC_CONSUMER_COUNT = 1
 INDEPENDENT_EXTERNAL_CONSUMER_COUNT = 0
 ```
 
-Release availability and downloadable artifacts are defined by the repository's
-GitHub Releases page. The project has no stable release and is not distributed
-through PyPI or TestPyPI.
+Release availability and downloadable artifacts are defined only by the
+repository's GitHub Releases page. This source tree is prepared as the
+`0.1.0rc3` candidate for annotated tag `v0.1.0-rc.3`; the source tree alone does
+not establish that the tag or prerelease has been published. `CITATION.cff`
+describes that RC3 release candidate. The project has no stable release and is
+not distributed through PyPI or TestPyPI.
 
 ResearchAuditKit supports mechanical, verifiable repository auditing, including:
 

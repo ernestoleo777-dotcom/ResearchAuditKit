@@ -25,6 +25,7 @@ from .governance.deviations import record_deviation
 from .governance.evidence_index import build_evidence_index, write_evidence_index
 from .governance.gates import evaluate_gate
 from .integrity.baseline import freeze_baseline
+from .integrity.audit import audit_exit_code, audit_repository, format_audit_human
 from .integrity.inventory import build_inventory, write_inventory
 from .integrity.isolation import audit_isolation, write_isolation_audit
 from .integrity.policy import IntegrityPolicy
@@ -72,6 +73,16 @@ def _output_omit_paths(root: str | Path, output: str | Path) -> list[str]:
 
 
 def _run(args: argparse.Namespace) -> int:
+    if args.command == "audit":
+        result = audit_repository(args.path, policy_path=args.policy, output_path=args.output)
+        if args.output:
+            write_json(args.output, result)
+        if args.output_format == "json":
+            print(json.dumps(result, indent=2, sort_keys=True))
+        else:
+            print(format_audit_human(result))
+        return audit_exit_code(result, fail_on=args.fail_on)
+
     if args.command == "init":
         root = Path(args.root)
         policy = IntegrityPolicy.from_yaml(args.policy)
@@ -245,9 +256,21 @@ def _run(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="rak", description="Audit scientific repository evidence-chain mechanics.")
+    parser = argparse.ArgumentParser(
+        prog="rak",
+        description=(
+            "Local-first release-engineering and integrity checks for ML research repositories."
+        ),
+    )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
+
+    audit = commands.add_parser("audit", help="audit a repository for mechanical release blockers")
+    audit.add_argument("path", nargs="?", default=".")
+    audit.add_argument("--policy")
+    audit.add_argument("--format", dest="output_format", choices=("human", "json"), default="human")
+    audit.add_argument("--output")
+    audit.add_argument("--fail-on", choices=("release-blocker", "warning"), default="release-blocker")
 
     init = commands.add_parser("init", help="initialize local audit metadata")
     init.add_argument("--root", required=True)

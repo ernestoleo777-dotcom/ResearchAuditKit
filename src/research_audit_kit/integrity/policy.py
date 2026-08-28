@@ -10,6 +10,7 @@ from typing import Any
 
 from ..exceptions import PolicyError
 from ..io.yaml_io import read_yaml
+from .portable import validate_required_file_paths
 
 
 def _matches(path: str, pattern: str) -> bool:
@@ -41,12 +42,13 @@ class IntegrityPolicy:
         unexpected = body.get("unexpected_scientific_file_policy", "fail")
         if unexpected not in {"fail", "warn", "ignore"}:
             raise PolicyError("unexpected_scientific_file_policy must be fail, warn, or ignore")
+        required_files = validate_required_file_paths(body.get("required_files", []))
         return cls(
             policy_id=str(body["id"]),
             include_patterns=tuple(body.get("include_patterns", ["**/*"])),
             exclude_patterns=tuple(body.get("exclude_patterns", [])),
             volatile_patterns=tuple(body.get("volatile_patterns", [])),
-            required_files=tuple(body.get("required_files", [])),
+            required_files=required_files,
             warning_only_classes=tuple(body.get("warning_only_classes", ["volatile_metadata"])),
             failure_classes=tuple(body.get("failure_classes", ["scientific_asset"])),
             unexpected_scientific_file_policy=unexpected,

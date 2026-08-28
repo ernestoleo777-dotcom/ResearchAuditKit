@@ -1,0 +1,7 @@
+ResearchAuditKit audit
+Target: warning_repo
+Policy: built-in (rak-generic-release-v1)
+Result: WARNING
+Findings: PASS=5 WARNING=1 RELEASE_BLOCKER=0 NOT_APPLICABLE=2 UNRESOLVED=0
+- WARNING repository.license [LICENSE]: No repository-root license file was found.
+Boundary: PASS is mechanical only; it is not scientific correctness or certification.

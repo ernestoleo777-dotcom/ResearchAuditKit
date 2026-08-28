@@ -26,4 +26,6 @@ jobs:
       - name: Compile package
         run: python -m compileall -q src
       - name: Smoke CLI
-        run: rak --help
+        run: |
+          rak --version
+          rak --help

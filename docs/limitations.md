@@ -5,6 +5,12 @@ and policies. Its results are deliberately narrower than scientific review.
 
 ## Interpretation boundary
 
+- The zero-configuration audit checks only path/inventory safety, root README and
+  license presence, symlinks, and declared required files. It does not infer
+  missing scientific intent or inspect Git/LFS, dependency, environment, model,
+  dataset, or notebook semantics.
+- `NOT_APPLICABLE` is not a pass, and `UNRESOLVED` produces aggregate `ABSTAIN`.
+  Neither may be rewritten as evidence that a release is complete.
 - Policies are user-authored and can omit important assets or choose weak rules.
 - Hashes establish byte identity only, not semantic correctness or authorship.
 - Empirical support is a property of supplied data/rules, not a physical or causal
@@ -55,6 +61,12 @@ and policies. Its results are deliberately narrower than scientific review.
 
 ## Output boundary
 
+- `researchauditkit.audit/v1` omits timestamps and absolute target paths for stable
+  local-tool interoperability. Its content digest covers inventory paths, sizes,
+  bytes, classifications, and statuses—not filesystem modification times.
+- Invalid `policy.required_files` values fail before inventory construction. The
+  diagnostic exposes only the list index and stable reason code, not the rejected
+  path or any resolved outside target.
 - Report files can reveal repository paths, filenames, sizes, hashes, and supplied
   metadata. Review them before sharing.
 - Ordinary report files are replaced on rerun. Baselines and prediction seals are

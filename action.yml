@@ -1,0 +1,64 @@
+name: ResearchAuditKit repository audit
+description: Run a local mechanical release audit without executing target repository code.
+author: ResearchAuditKit contributors
+
+inputs:
+  path:
+    description: Repository path to audit, relative to the checked-out workspace.
+    required: false
+    default: "."
+  policy:
+    description: Optional policy path. Empty enables .rak/policy.yaml auto-detection.
+    required: false
+    default: ""
+  fail-on:
+    description: "Failure threshold: release-blocker or warning."
+    required: false
+    default: release-blocker
+  output-format:
+    description: "CLI stdout format: human or json."
+    required: false
+    default: human
+
+outputs:
+  status:
+    description: Canonical audit status from researchauditkit.audit/v1.
+    value: ${{ steps.audit.outputs.status }}
+  result-file:
+    description: Runner-local path to the canonical JSON result.
+    value: ${{ steps.audit.outputs.result-file }}
+  exit-code:
+    description: ResearchAuditKit CLI exit code (0 or 2).
+    value: ${{ steps.audit.outputs.exit-code }}
+
+runs:
+  using: composite
+  steps:
+    - id: setup-python
+      name: Provision Action-owned Python
+      # actions/setup-python v6 (immutable major-tag commit verified 2026-08-28)
+      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+      with:
+        python-version: "3.12.14"
+    - id: bootstrap
+      name: Bootstrap isolated ResearchAuditKit runtime
+      shell: bash
+      env:
+        RAK_ACTION_ROOT: ${{ github.action_path }}
+      run: bash "$RAK_ACTION_ROOT/action/bootstrap.sh"
+    - id: audit
+      name: Run ResearchAuditKit audit
+      shell: bash
+      env:
+        RAK_ACTION_ROOT: ${{ github.action_path }}
+        RAK_ACTION_RUNTIME_DIR: ${{ steps.bootstrap.outputs.runtime-dir }}
+        RAK_PYTHON_COMMAND: ${{ steps.bootstrap.outputs.python-command }}
+        RAK_INPUT_FAIL_ON: ${{ inputs['fail-on'] }}
+        RAK_INPUT_FORMAT: ${{ inputs['output-format'] }}
+        RAK_INPUT_PATH: ${{ inputs.path }}
+        RAK_INPUT_POLICY: ${{ inputs.policy }}
+      run: bash "$RAK_ACTION_ROOT/action/run-audit.sh"
+
+branding:
+  icon: check-square
+  color: blue

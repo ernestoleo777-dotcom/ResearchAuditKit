@@ -12,7 +12,7 @@ body:
     attributes:
       label: ResearchAuditKit version
       description: Paste the output of `rak --version` and identify the commit if installed from source.
-      placeholder: rak 0.1.0rc2.dev0 at commit ...
+      placeholder: rak 0.1.0rc3 at commit ...
     validations:
       required: true
   - type: input

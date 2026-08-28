@@ -1,8 +1,8 @@
-# CI Integration
+# CI integration
 
-The following GitHub Actions workflow installs from the checked-out source and
-runs the same synthetic PASS/finding demo as the README. It uses real `rak`
-commands, needs no secret, and does not reference an unpublished package index.
+## Prepared composite Action
+
+The preferred post-publication interface is an immutable Action ref:
 
 ```yaml
 name: ResearchAuditKit preflight
@@ -15,42 +15,62 @@ permissions:
   contents: read
 
 jobs:
-  repository-integrity:
+  repository-audit:
+    runs-on: ubuntu-latest
+    steps:
+      # actions/checkout v5, pinned to an immutable commit
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: ernestoleo777-dotcom/ResearchAuditKit@v0.1.0-rc.3
+        with:
+          path: .
+          fail-on: release-blocker
+          output-format: human
+```
+
+The exact RC3 ref is usable only after the corresponding annotated tag and
+GitHub prerelease exist. RC2 does not contain `rak audit` or `action.yml`. No
+mutable major/minor/latest alias is provided; a resolved commit SHA provides the
+strongest pin.
+
+The composite Action provisions its own fixed Python and hash-locked PyYAML
+runtime, requests no token, uploads no repository content, executes no
+target-project code, and preserves the CLI exit code. It writes canonical JSON
+under runner temporary storage and renders non-PASS findings into GitHub Job
+Summary. Bootstrap uses external Action and package infrastructure; audit
+execution itself is local and requires no hosted ResearchAuditKit service.
+
+## Source-checkout CI before publication
+
+For branch review, install the checked-out source and invoke the same CLI directly:
+
+```yaml
+name: ResearchAuditKit branch review
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  repository-audit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Install from this checkout
+      - name: Install this review checkout
         run: python -m pip install -e .
-      - name: Run synthetic repository preflight
-        shell: bash
-        run: |
-          set -euo pipefail
-          output_dir="$(mktemp -d)"
-          rak inventory \
-            --root examples/repository_integrity_demo/pass_repo \
-            --policy examples/repository_integrity_demo/policy.yaml \
-            --out "$output_dir/pass"
-          set +e
-          rak inventory \
-            --root examples/repository_integrity_demo/issue_repo \
-            --policy examples/repository_integrity_demo/policy.yaml \
-            --out "$output_dir/issue"
-          issue_code=$?
-          set -e
-          test "$issue_code" -eq 2
-          python -m json.tool "$output_dir/pass/summary.json"
-          python -m json.tool "$output_dir/issue/summary.json"
+      - name: Audit repository
+        run: rak audit . --format json --output "$RUNNER_TEMP/rak-audit.json"
 ```
 
-The job passes only when the complete fixture returns 0 and the intentionally
-incomplete fixture returns 2. Replace the synthetic roots and policy with your own
-repository paths only after reviewing the [command reference](command_reference.md)
-and [limitations](limitations.md).
+This source-checkout workflow applies to ResearchAuditKit's own review branch. A consumer must not substitute an unpinned branch for the required immutable Action ref.
 
-Do not treat every report-only command as a CI gate: `support-audit`,
-`pareto-audit`, `evidence-index`, and `claims evaluate` return 0 for valid reports
-and communicate findings in their output. Select commands and status fields that
-match the intended mechanical contract.
+## Exit policy
+
+The default fails on `RELEASE_BLOCKER` and `ABSTAIN/UNRESOLVED`; warnings remain visible but do not fail. Set `fail-on: warning` only when the repository owner has deliberately chosen that stricter policy. A Job Summary is an interface, not a certification badge.
+
+Advanced report-only commands retain their documented behavior and are not invoked by the Action. See the [command reference](command_reference.md) before composing additional CI gates.

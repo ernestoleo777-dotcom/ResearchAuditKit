@@ -14,6 +14,18 @@ class PolicyError(ConfigurationError):
     """Raised when a policy is missing required semantics."""
 
 
+class RequiredFilePathError(PolicyError):
+    """Raised when one policy.required_files entry is unsafe."""
+
+    def __init__(self, *, index: int, reason_code: str):
+        self.index = index
+        self.reason_code = reason_code
+        self.error_code = f"POLICY_REQUIRED_FILE_PATH_{reason_code}"
+        super().__init__(
+            f"{self.error_code}: policy.required_files[{index}]: invalid non-confined path"
+        )
+
+
 class UnsafePathError(AuditError):
     """Raised when a path escapes its declared root."""
 

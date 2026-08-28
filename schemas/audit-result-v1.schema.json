@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/ernestoleo777-dotcom/ResearchAuditKit/schemas/audit-result-v1.schema.json",
+  "additionalProperties": false,
+  "properties": {
+    "command": {"const": "audit"},
+    "counts": {
+      "additionalProperties": false,
+      "properties": {
+        "NOT_APPLICABLE": {"minimum": 0, "type": "integer"},
+        "PASS": {"minimum": 0, "type": "integer"},
+        "RELEASE_BLOCKER": {"minimum": 0, "type": "integer"},
+        "UNRESOLVED": {"minimum": 0, "type": "integer"},
+        "WARNING": {"minimum": 0, "type": "integer"}
+      },
+      "required": ["PASS", "WARNING", "RELEASE_BLOCKER", "NOT_APPLICABLE", "UNRESOLVED"],
+      "type": "object"
+    },
+    "findings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "check_id": {"minLength": 1, "type": "string"},
+          "location": {"minLength": 1, "type": "string"},
+          "message": {"minLength": 1, "type": "string"},
+          "status": {
+            "enum": ["PASS", "WARNING", "RELEASE_BLOCKER", "NOT_APPLICABLE", "UNRESOLVED"]
+          }
+        },
+        "required": ["check_id", "location", "message", "status"],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "inventory": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_count": {"minimum": 0, "type": "integer"},
+        "content_sha256": {"type": ["string", "null"]}
+      },
+      "required": ["asset_count", "content_sha256"],
+      "type": "object"
+    },
+    "limitations": {"items": {"type": "string"}, "minItems": 1, "type": "array"},
+    "policy": {
+      "additionalProperties": false,
+      "properties": {
+        "available": {"type": "boolean"},
+        "mode": {"enum": ["built-in", "project", "unresolved"]},
+        "path": {"type": ["string", "null"]},
+        "policy_id": {"type": ["string", "null"]}
+      },
+      "required": ["available", "mode", "path", "policy_id"],
+      "type": "object"
+    },
+    "schema_version": {"const": "researchauditkit.audit/v1"},
+    "status": {"enum": ["PASS", "WARNING", "RELEASE_BLOCKER", "ABSTAIN"]},
+    "target": {
+      "additionalProperties": false,
+      "properties": {"root_identifier": {"minLength": 1, "type": "string"}},
+      "required": ["root_identifier"],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "command",
+    "status",
+    "target",
+    "policy",
+    "counts",
+    "findings",
+    "inventory",
+    "limitations"
+  ],
+  "title": "ResearchAuditKit audit result v1",
+  "type": "object"
+}

@@ -6,7 +6,10 @@ include CHANGELOG.md
 include CONTRIBUTING.md
 include SECURITY.md
 include CITATION.cff
+include action.yml
+recursive-include action *.sh *.py *.lock
 recursive-include configs *.yaml
+recursive-include schemas *.json
 recursive-include src *.py
 prune audit
 prune release_audit
@@ -14,6 +17,10 @@ prune tests
 prune examples
 prune docs
 include docs/quickstart.md
+include docs/audit_command.md
+include docs/research_release_workflow.md
+include docs/github_action.md
+include docs/extension_boundaries.md
 include docs/command_reference.md
 include docs/use_cases.md
 include docs/limitations.md
@@ -27,6 +34,7 @@ include docs/validation_audit.md
 include docs/productization/EXISTING_PRODUCT_SURFACE.md
 recursive-include docs/releases *.md
 recursive-include examples/repository_integrity_demo *.md *.yaml *.py *.csv *.json
+recursive-include examples/audit_demo *
 global-exclude .DS_Store
 global-exclude *.py[cod]
 global-exclude *.pkl
