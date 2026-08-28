@@ -2,13 +2,22 @@
 
 ## Unreleased
 
+- Add the zero-configuration `rak audit [PATH]` front door with conservative
+  built-in policy, optional `.rak/policy.yaml`, human output, and versioned
+  `researchauditkit.audit/v1` JSON.
+- Organize the primary product journey as `AUDIT → FREEZE → VERIFY → GATE` while
+  preserving every existing command and schema.
+- Prepare an unpublished composite GitHub Action that performs no install/upload,
+  does not execute target code, preserves CLI exit status, and writes a safe Job
+  Summary.
+- Add deterministic PASS, WARNING, and RELEASE_BLOCKER fixtures and replays.
 - Document CoordCap as the first verified, self-owned public consumer of the RC2
   GitHub Release wheel and bind the record to its exact commit and successful
   `rak inventory` workflow run.
 - Clarify that this public integration is mechanical evidence only and does not
   establish scientific validity, general reproducibility, independent demand, or
   use by an unrelated organization.
-- No runtime, CLI, API, packaging, version, tag, or release change.
+- No version, tag, release, push, Marketplace, or package publication change.
 
 ## 0.1.0rc2 — 2026-08-25
 

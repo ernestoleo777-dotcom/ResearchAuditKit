@@ -1,83 +1,50 @@
 # Quickstart
 
-This walkthrough starts from a clean clone, installs the development version, and
-runs a synthetic PASS plus an intentionally detected repository problem. It does
-not require a GPU, model API, secret, or research dataset.
+This walkthrough exercises the unpublished owner-review source checkout. The current public RC2 artifact does not contain `rak audit`; no publication is claimed.
 
-## 1. Clone and create an environment
+## Install the checkout
 
 ```bash
-git clone https://github.com/ernestoleo777-dotcom/ResearchAuditKit.git
-cd ResearchAuditKit
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install -e .
 ```
 
-On Windows PowerShell, activate with `.venv\Scripts\Activate.ps1` and replace the
-POSIX temporary-directory commands below with paths under `$env:TEMP`.
+Python 3.10–3.12 is the supported CI matrix. Installation may resolve PyYAML from the configured package source; audit execution itself is offline and local.
 
-The supported evaluation path is installation from a source checkout. No stable
-PyPI release is claimed. Installation may access the configured package source to
-resolve PyYAML; audit commands make no runtime network calls.
-
-## 2. Inspect the installed CLI
+## Audit the current repository
 
 ```bash
 rak --version
-rak --help
-rak inventory --help
+rak audit .
 ```
 
-The expected source version is `0.1.0rc2`. Release availability and downloadable
-artifacts are authoritative on the GitHub Releases page; no PyPI distribution is
-claimed.
+No configuration is required. The command applies the built-in policy and reports whether `.rak/policy.yaml` was available.
 
-## 3. Run the synthetic demo
+## Replay PASS, WARNING, and RELEASE_BLOCKER
 
 ```bash
-export RAK_DEMO_ROOT="$(mktemp -d)"
-set -e
-rak inventory --root examples/repository_integrity_demo/pass_repo --policy examples/repository_integrity_demo/policy.yaml --out "$RAK_DEMO_ROOT/pass"
+rak audit examples/audit_demo/pass_repo
+rak audit examples/audit_demo/warning_repo
 set +e
-rak inventory --root examples/repository_integrity_demo/issue_repo --policy examples/repository_integrity_demo/policy.yaml --out "$RAK_DEMO_ROOT/issue"
-RAK_ISSUE_CODE=$?
+rak audit examples/audit_demo/blocker_repo
+blocker_code=$?
 set -e
-test "$RAK_ISSUE_CODE" -eq 2
+test "$blocker_code" -eq 2
 ```
 
-The first command returns 0. The second returns 2 because `policy.yaml` requires a
-repository-root `README.md` and `issue_repo` intentionally omits it. The nonzero
-code is an expected audit result in this example, not a crash.
+The blocker fixture's `.rak/policy.yaml` requires `artifacts/model.bin`, which is intentionally absent. The warning fixture omits a license but returns 0 under the default threshold.
 
-## 4. Inspect and interpret output
+## Write canonical JSON
 
 ```bash
-python -m json.tool "$RAK_DEMO_ROOT/pass/summary.json"
-python -m json.tool "$RAK_DEMO_ROOT/issue/summary.json"
-python -m json.tool "$RAK_DEMO_ROOT/issue/inventory.json"
+output_dir="$(mktemp -d)"
+rak audit examples/audit_demo/pass_repo --format json --output "$output_dir/audit.json"
+python -m json.tool "$output_dir/audit.json"
 ```
 
-The stable summaries should match
-[`expected/pass_summary.json`](../examples/repository_integrity_demo/expected/pass_summary.json)
-and
-[`expected/issue_summary.json`](../examples/repository_integrity_demo/expected/issue_summary.json).
-The issue inventory contains a `README.md` row with gate status
-`MISSING_REQUIRED`.
+The result conforms to [`researchauditkit.audit/v1`](../schemas/audit-result-v1.schema.json). It contains no timestamp or absolute target path, so reruns over the same paths, bytes, and policy are stable.
 
-Inventory rows also contain file modification times, sizes, and SHA-256 hashes.
-Those fields legitimately depend on checkout metadata and file content; the demo
-does not claim byte-identical inventories across filesystems.
+## Continue through the lifecycle
 
-## 5. Understand exit status
-
-- `0`: the command completed and no failing mechanical gate applied.
-- `2`: a configured mechanical failure, invalid input, or handled operational
-  error occurred.
-
-Some report-only commands always return 0 for valid input even when their output
-contains descriptive findings. Consult the [command reference](command_reference.md)
-before using a command as a CI gate.
-
-The demo establishes only that the supplied policy detected a missing required
-file. It says nothing about scientific validity or the quality of a project.
+After reviewing the audit, use a deliberate project policy with `rak freeze`, preserve the baseline, run `rak verify` against later states, and apply `rak gate` only when a separately authored metrics/gate contract exists. See the [workflow guide](research_release_workflow.md).

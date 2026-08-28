@@ -1,106 +1,99 @@
 # ResearchAuditKit
 
-An offline pre-release auditor for repository integrity, experiment isolation,
-provenance records, and evidence inventories in empirical ML projects.
+ResearchAuditKit is a local-first release-engineering and integrity toolkit for ML research repositories.
 
 **Experimental — source version v0.1.0rc2 — release candidate — no stable release**
-
-Release status and downloadable artifacts are authoritative on the
-[GitHub Releases page](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases).
-ResearchAuditKit is not distributed through PyPI or TestPyPI.
 
 [![CI](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml/badge.svg)](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-## Why ResearchAuditKit?
+## Audit and freeze an ML repository before public release
 
-Research repositories often need a check that is narrower than scientific review
-but stricter than a visual inspection. ResearchAuditKit records governed files,
-detects missing or changed assets, checks declared isolation and provenance
-contracts, and emits machine-readable findings suitable for local or CI preflight.
-It runs locally and does not execute audited repository code.
+From this owner-review source checkout:
 
-## Three-minute Quick Start
+```bash
+python -m pip install -e .
+rak audit .
+```
 
-Start from a source checkout with Python 3.10 or newer. PyYAML is the only runtime
-dependency; installation may resolve it from your configured package source. The
-audit commands themselves make no network calls.
+`rak audit` inventories local files, applies universally observable checks, detects an optional `.rak/policy.yaml`, and reports mechanical warnings or release blockers. It does not execute repository code, upload source, call a network service, use a model, or require a GPU.
+
+> **Publication status:** the current public distribution authority is the [GitHub Releases page](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases), specifically release [`v0.1.0-rc.2`](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/tag/v0.1.0-rc.2), whose wheel SHA-256 is `71f905f3e39907c72c18e3d3207004f424c001238b103235a16484e1acace0fb`. RC2 does **not** contain `rak audit`. This branch is an unpublished owner-review candidate; do not represent the hero command or Action as publicly released until a matching immutable artifact exists.
+
+Real terminal output from the committed `pass_repo` fixture:
+
+```text
+ResearchAuditKit audit
+Target: pass_repo
+Policy: built-in (rak-generic-release-v1)
+Result: PASS
+Findings: PASS=6 WARNING=0 RELEASE_BLOCKER=0 NOT_APPLICABLE=2 UNRESOLVED=0
+- No warnings, unresolved checks, or release blockers.
+Boundary: PASS is mechanical only; it is not scientific correctness or certification.
+```
+
+`PASS` means only that the applicable local mechanical checks passed. It is not scientific correctness, reproducibility certification, paper validation, peer review, or an acceptance recommendation.
+
+## Research-release lifecycle
+
+```text
+AUDIT → FREEZE → VERIFY → GATE
+```
+
+| Stage | Command | Purpose |
+| --- | --- | --- |
+| Audit | `rak audit .` | Find universally observable warnings/blockers and apply an optional project policy. |
+| Freeze | `rak freeze ...` | Create a portable, policy-bound content baseline. |
+| Verify | `rak verify ...` | Compare current governed bytes with the frozen baseline. |
+| Gate | `rak gate ...` | Evaluate user-declared metrics against a user-declared gate policy. |
+
+See the [workflow guide](docs/research_release_workflow.md) for consumed evidence, emitted records, and non-claims at each stage.
+
+## Replay the hero workflow
+
+The script below runs the current checkout, a clean fixture, a warning fixture, and an intentional configured blocker. It writes no audit output into the target repositories.
 
 <!-- quickstart-commands:start -->
 ```bash
 python -m pip install -e .
 rak --version
-export RAK_DEMO_ROOT="$(mktemp -d)"
-set -e
-rak inventory --root examples/repository_integrity_demo/pass_repo --policy examples/repository_integrity_demo/policy.yaml --out "$RAK_DEMO_ROOT/pass"
+rak audit .
+rak audit examples/audit_demo/pass_repo
+rak audit examples/audit_demo/warning_repo
 set +e
-rak inventory --root examples/repository_integrity_demo/issue_repo --policy examples/repository_integrity_demo/policy.yaml --out "$RAK_DEMO_ROOT/issue"
-RAK_ISSUE_CODE=$?
+rak audit examples/audit_demo/blocker_repo
+RAK_BLOCKER_CODE=$?
 set -e
-test "$RAK_ISSUE_CODE" -eq 2
-python -m json.tool "$RAK_DEMO_ROOT/pass/summary.json"
-python -m json.tool "$RAK_DEMO_ROOT/issue/summary.json"
+test "$RAK_BLOCKER_CODE" -eq 2
 ```
 <!-- quickstart-commands:end -->
 
-The second inventory intentionally returns exit code 2 because its synthetic
-repository omits a policy-required `README.md`. Outputs remain under the temporary
-directory named by `RAK_DEMO_ROOT`. See the
-[step-by-step quickstart](docs/quickstart.md) and
-[demo notes](examples/repository_integrity_demo/README.md).
+The warning returns 0 under the default `--fail-on release-blocker`; use `--fail-on warning` to make warnings fail CI. `ABSTAIN`/`UNRESOLVED` and `RELEASE_BLOCKER` always return 2. See the [audit command contract](docs/audit_command.md) and [step-by-step quickstart](docs/quickstart.md).
 
-## Example Output
+## Project policy
 
-These summaries are the real stable projections produced by the quickstart demo.
-The PASS case contains all three governed files:
+With no configuration, `rak audit` applies the conservative built-in `rak-generic-release-v1` policy. A repository may provide `.rak/policy.yaml`, or pass `--policy PATH`, to replace inventory classification and declare required files. Universal path-safety, README/license presence, symlink reporting, and deterministic inventory checks still run.
 
-```json
-{
-  "asset_count": 3,
-  "command": "inventory",
-  "missing_required": 0,
-  "status": "PASS"
-}
+Copy [the documented default policy](configs/audit_policy.default.yaml) to inspect the exact built-in contract. Policy files are data; the audit never runs target-project dependencies.
+
+## Machine-readable output
+
+```bash
+rak audit . --format json --output audit-result.json
 ```
 
-The intentional issue is detected mechanically:
+The canonical additive schema is [`researchauditkit.audit/v1`](schemas/audit-result-v1.schema.json). Findings use `PASS`, `WARNING`, `RELEASE_BLOCKER`, `NOT_APPLICABLE`, or `UNRESOLVED`; the aggregate result uses `PASS`, `WARNING`, `RELEASE_BLOCKER`, or `ABSTAIN`. Ordering and the content digest are deterministic for identical paths, bytes, and policy.
 
-```json
-{
-  "asset_count": 3,
-  "command": "inventory",
-  "missing_required": 1,
-  "status": "FAIL"
-}
-```
+SARIF is deferred because its result/severity model cannot preserve `NOT_APPLICABLE`, `UNRESOLVED`, and the product's mechanical non-certification boundary without a documented mapping.
 
-The complete inventory also records the missing path as `MISSING_REQUIRED`.
-Checkout-dependent modification times and hashes are not presented as
-byte-identical output.
+## GitHub Action
 
-## What It Checks
+An unpublished composite Action source is included for owner review. It runs only `rak audit`, writes a GitHub Job Summary, preserves CLI exit status, requests no token, installs nothing, and does not execute target code. It must be pinned to an immutable commit/tag and requires Python 3.10+ plus PyYAML 6+ already available. See [GitHub Action integration](docs/github_action.md); do not advertise or publish it before a release artifact containing `rak audit` exists.
 
-- repository inventories, required files, portable baselines, and byte changes;
-- declared workspace isolation and relative-path safety;
-- opaque declaration seals and supplied custody/provenance records;
-- evidence inventories and claim-to-evidence references;
-- empirical feature support and supplied Pareto/support labels;
-- split metadata for declared leakage indicators;
-- user-configured gates and protocol-deviation records.
+## Advanced commands
 
-Every result is local to the supplied files, metadata, and policy.
-
-## What It Does Not Check
-
-ResearchAuditKit does not determine scientific validity, claim truth, causal
-validity, novelty, project quality, publication merit, acceptance probability, or
-whether a research route should continue. It does not provide a general
-reproducibility guarantee, execute models, inspect undocumented processing, or
-establish an external timestamp or authority. A `PASS` means only that the
-configured mechanical checks passed.
-
-## Commands
+The front-door workflow does not remove or rename any existing command:
 
 ```text
 rak init --root REPO --policy POLICY
@@ -119,68 +112,26 @@ rak deviation record --config YAML --out LEDGER.csv
 rak claims evaluate --claims CSV --evidence CSV --out DIR
 ```
 
-All commands provide `--help` and a one-line JSON summary on stdout. Exit code 0
-means the command completed without a failing mechanical gate; exit code 2 covers
-detected failures, invalid inputs, and handled operational errors. Some report-only
-commands describe findings without applying a failing gate. See the
-[command reference](docs/command_reference.md) for exact arguments, outputs, exit
-semantics, and overwrite behavior.
+These advanced commands require their documented inputs and are not guessed or automatically invoked by `rak audit`. Consult the [command reference](docs/command_reference.md).
 
-## CI Integration
+## Public integration evidence
 
-The same synthetic demo can run in GitHub Actions without secrets, a GPU, or a
-published package. Install from the checked-out source and assert both the PASS and
-expected exit-2 case. A copy-paste workflow is available in
-[CI integration](docs/ci_integration.md).
-
-## Public integrations
-
-[CoordCap](https://github.com/ernestoleo777-dotcom/CoordCap) is the first verified
-public integration. At consumer
-[commit `719ee4e`](https://github.com/ernestoleo777-dotcom/CoordCap/commit/719ee4e34aeb07357d097bb2bc0df1b80141e62a),
-its GitHub Actions workflow pins ResearchAuditKit `v0.1.0-rc.2`, verifies the
-GitHub Release wheel SHA-256, and runs `rak inventory`. The cited automatic
-[workflow run](https://github.com/ernestoleo777-dotcom/CoordCap/actions/runs/32759394362)
-passed.
-
-This is a `PUBLIC_INTEGRATION`, the `FIRST_VERIFIED_PUBLIC_CONSUMER`, and a
-`SELF_OWNED_PUBLIC_CONSUMER`. It demonstrates a released mechanical
-repository-integrity preflight in a real public repository. It does not establish
-scientific validity, general reproducibility, independent demand, or use by an
-unrelated organization. See the [public integration evidence](docs/public_integrations.md).
+[CoordCap](https://github.com/ernestoleo777-dotcom/CoordCap) is the one verified public consumer. It is explicitly classified `SELF_OWNED_PUBLIC_CONSUMER`; its commit-bound RC2 integration runs `rak inventory`, not the unpublished hero command. This is not independent adoption. See [public integration evidence](docs/public_integrations.md).
 
 ## Documentation
 
+- [Research-release workflow](docs/research_release_workflow.md)
+- [Audit command](docs/audit_command.md)
 - [Quickstart](docs/quickstart.md)
+- [GitHub Action](docs/github_action.md)
 - [Command reference](docs/command_reference.md)
-- [Use cases](docs/use_cases.md)
+- [CI integration](docs/ci_integration.md)
+- [Extension boundaries](docs/extension_boundaries.md)
 - [Limitations](docs/limitations.md)
 - [Architecture](docs/architecture.md)
-- [CI integration](docs/ci_integration.md)
 - [Public integrations](docs/public_integrations.md)
-- [RC2 readiness register](docs/rc2_readiness.md)
-- [RC2 release notes](docs/releases/v0.1.0-rc.2.md)
-- [RC1 to RC2 delta](docs/releases/RC1_TO_RC2_DELTA.md)
-- [RC2 distribution audit](docs/releases/RC2_DISTRIBUTION_AUDIT.md)
-- [Integrity model](docs/integrity_model.md)
-- [Custody and isolation](docs/custody_isolation.md)
-- [Empirical support audit](docs/support_audit.md)
-- [Validation audit](docs/validation_audit.md)
+- [Project status](PROJECT_STATUS.md)
+- [Security](SECURITY.md)
+- [Contributing](CONTRIBUTING.md)
 
-## Development Status
-
-ResearchAuditKit is an experimental, consumer-driven engineering asset.
-
-Licensed under the Apache License, Version 2.0.
-
-The source tree reports `0.1.0rc2`, an experimental release candidate, and the
-API is not committed to long-term stability. Release status and downloadable
-artifacts are authoritative on the GitHub Releases page.
-
-Source-checkout installation remains supported. No PyPI, TestPyPI, or stable
-release is claimed.
-
-Commands operate on local paths, but reports may reveal filenames and hashes.
-Review generated artifacts before sharing them. See [Project Status](PROJECT_STATUS.md),
-[Contributing](CONTRIBUTING.md), [Security](SECURITY.md), and the repository-root
-[license](LICENSE).
+ResearchAuditKit is an experimental, consumer-driven engineering asset. Licensed under the Apache License, Version 2.0. It has no stable release and is not distributed through PyPI or TestPyPI. Reports may reveal local filenames and hashes; review generated files before sharing them.

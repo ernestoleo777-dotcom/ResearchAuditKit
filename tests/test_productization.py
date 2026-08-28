@@ -24,19 +24,24 @@ from _toml_compat import tomllib
 
 ROOT = Path(__file__).parents[1]
 DEMO = ROOT / "examples" / "repository_integrity_demo"
+AUDIT_DEMO = ROOT / "examples" / "audit_demo"
 CURATED_DOCS = {
+    "docs/audit_command.md",
     "docs/quickstart.md",
     "docs/command_reference.md",
     "docs/use_cases.md",
     "docs/limitations.md",
     "docs/architecture.md",
     "docs/ci_integration.md",
+    "docs/extension_boundaries.md",
+    "docs/github_action.md",
     "docs/rc2_readiness.md",
     "docs/integrity_model.md",
     "docs/custody_isolation.md",
     "docs/support_audit.md",
     "docs/validation_audit.md",
     "docs/productization/EXISTING_PRODUCT_SURFACE.md",
+    "docs/research_release_workflow.md",
     "docs/releases/RC1_TO_RC2_DELTA.md",
     "docs/releases/RC2_DISTRIBUTION_AUDIT.md",
     "docs/releases/v0.1.0-rc.2.md",
@@ -167,23 +172,27 @@ def test_every_readme_quickstart_command_executes_in_a_fresh_environment(tmp_pat
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "rak 0.1.0rc2" in result.stdout
-    assert '"status": "PASS"' in result.stdout
-    assert '"status": "FAIL"' in result.stdout
+    assert "Result: PASS" in result.stdout
+    assert "Result: WARNING" in result.stdout
+    assert "Result: RELEASE_BLOCKER" in result.stdout
 
 
 def test_readme_example_output_matches_executed_demo_expectations():
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    section = readme.split("## Example Output", 1)[1].split("## What It Checks", 1)[0]
-    payloads = [
-        json.loads(value)
-        for value in re.findall(r"```json\n(.*?)\n```", section, re.DOTALL)
-    ]
-    assert payloads == [read_expected("pass_summary.json"), read_expected("issue_summary.json")]
+    section = readme.split("Real terminal output from the committed `pass_repo` fixture:", 1)[1]
+    documented = re.search(r"```text\n(.*?)\n```", section, re.DOTALL)
+    assert documented is not None
+    expected = (AUDIT_DEMO / "expected" / "pass.txt").read_text(encoding="utf-8").rstrip()
+    assert documented.group(1) == expected
+    replay = run_cli("audit", AUDIT_DEMO / "pass_repo")
+    assert replay.returncode == 0
+    assert replay.stdout.rstrip() == expected
 
 
 def test_documented_command_inventory_matches_real_parser_and_help():
     commands = parser_commands()
     assert commands == {
+        "audit",
         "init",
         "inventory",
         "freeze",
@@ -220,9 +229,11 @@ def test_ci_example_is_valid_yaml_and_uses_real_commands():
     assert workflow["permissions"] == {"contents": "read"}
     assert set(workflow["on"]) == {"push", "pull_request"}
     jobs = workflow["jobs"]
-    steps = jobs["repository-integrity"]["steps"]
+    steps = jobs["repository-audit"]["steps"]
     scripts = "\n".join(step.get("run", "") for step in steps)
-    assert "python -m pip install -e ." in scripts
+    uses = [step.get("uses", "") for step in steps]
+    assert any(value.startswith("ernestoleo777-dotcom/ResearchAuditKit@") for value in uses)
+    assert "pip install" not in scripts
     assert "secrets." not in match["workflow"]
     for command in re.findall(r"\brak\s+([a-z][a-z-]*)", scripts):
         assert command in parser_commands()
@@ -269,9 +280,13 @@ def test_public_productization_text_has_no_private_or_secret_material():
         ROOT / "README.md",
         ROOT / "CHANGELOG.md",
         ROOT / "CONTRIBUTING.md",
+        ROOT / "action.yml",
         ROOT / "MANIFEST.in",
+        *sorted((ROOT / "action").rglob("*")),
         *sorted((ROOT / "docs").rglob("*.md")),
+        *sorted((ROOT / "examples" / "audit_demo").rglob("*")),
         *sorted((ROOT / "examples" / "repository_integrity_demo").rglob("*")),
+        *sorted((ROOT / "schemas").rglob("*.json")),
         *sorted((ROOT / ".github" / "ISSUE_TEMPLATE").rglob("*.yml")),
         ROOT / ".github" / "pull_request_template.md",
     ]
@@ -348,7 +363,7 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
         metadata_name = next(name for name in wheel_names if name.endswith(".dist-info/METADATA"))
         metadata = BytesParser(policy=policy.default).parsebytes(archive.read(metadata_name))
         assert metadata["Version"] == __version__
-        assert "Three-minute Quick Start" in metadata.get_payload()
+        assert "Audit and freeze an ML repository before public release" in metadata.get_payload()
         assert not [name for name in wheel_names if name.startswith(("docs/", "examples/"))]
 
     with tarfile.open(sdist) as archive:
@@ -361,7 +376,25 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
         required = {
             "README.md",
             "PROJECT_STATUS.md",
+            "action.yml",
             *CURATED_DOCS,
+            "action/run-audit.sh",
+            "action/render-summary.py",
+            "schemas/audit-result-v1.schema.json",
+            "configs/audit_policy.default.yaml",
+            "examples/audit_demo/README.md",
+            "examples/audit_demo/expected/pass.txt",
+            "examples/audit_demo/expected/warning.txt",
+            "examples/audit_demo/expected/blocker.txt",
+            "examples/audit_demo/pass_repo/README.md",
+            "examples/audit_demo/pass_repo/LICENSE",
+            "examples/audit_demo/pass_repo/analysis.py",
+            "examples/audit_demo/warning_repo/README.md",
+            "examples/audit_demo/warning_repo/analysis.py",
+            "examples/audit_demo/blocker_repo/.rak/policy.yaml",
+            "examples/audit_demo/blocker_repo/README.md",
+            "examples/audit_demo/blocker_repo/LICENSE",
+            "examples/audit_demo/blocker_repo/analysis.py",
             "examples/repository_integrity_demo/README.md",
             "examples/repository_integrity_demo/policy.yaml",
             "examples/repository_integrity_demo/expected/pass_summary.json",

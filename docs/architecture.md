@@ -8,7 +8,9 @@ not imported or executed.
 ```mermaid
 flowchart LR
     U["User or CI"] --> C["rak CLI"]
+    C --> A["Unified audit orchestrator"]
     C --> L["Safe JSON, YAML, and CSV loaders"]
+    A --> I
     L --> I["Integrity and isolation"]
     L --> S["Support, Pareto, and split audits"]
     L --> G["Gates, deviations, claims, and evidence index"]
@@ -23,7 +25,8 @@ flowchart LR
 ## Components
 
 - `integrity`: inventory, policy classification, baseline freeze/verify, portable
-  paths, declaration seals, and structural workspace isolation.
+  paths, unified audit orchestration, declaration seals, and structural workspace
+  isolation.
 - `support` and `optimization_audit`: empirical support summaries and checks of
   supplied Pareto/support labels.
 - `validation`: split, leakage, fold-local, and determinism helpers driven by
@@ -46,5 +49,7 @@ not establish claim truth.
 - Python 3.10 or newer and PyYAML 6 or newer.
 - No runtime network call, database, GPU, background worker, or model execution.
 - Inputs and reports are ordinary local JSON, YAML, and CSV files.
+- `rak audit` writes no file unless `--output` is explicit; the composite Action
+  writes only to runner temporary storage and GitHub Job Summary.
 - CLI failures use documented process exit codes and JSON stderr for handled
   errors.
