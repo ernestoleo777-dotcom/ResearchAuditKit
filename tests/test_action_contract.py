@@ -9,6 +9,8 @@ import sys
 import pytest
 import yaml
 
+from research_audit_kit.integrity.audit import audit_repository
+
 
 ROOT = Path(__file__).parents[1]
 DEMO = ROOT / "examples" / "audit_demo"
@@ -147,3 +149,25 @@ def test_summary_renderer_escapes_markdown_and_html():
     assert "&lt;script&gt;" in rendered
     assert "x&#124;y" in rendered
     assert "line one line two" in rendered
+
+
+def test_summary_renderer_cannot_disclose_an_invalid_required_path(tmp_path: Path):
+    raw = "../../outside.txt"
+    target = tmp_path / "target"
+    policy_path = target / ".rak" / "policy.yaml"
+    policy_path.parent.mkdir(parents=True)
+    (target / "README.md").write_text("# Target\n", encoding="utf-8")
+    policy_path.write_text(
+        yaml.safe_dump(
+            {"policy": {"id": "unsafe", "required_files": [raw]}}, sort_keys=True
+        ),
+        encoding="utf-8",
+    )
+    namespace: dict[str, object] = {}
+    exec((ROOT / "action" / "render-summary.py").read_text(encoding="utf-8"), namespace)
+
+    rendered = namespace["render"](audit_repository(target))
+
+    assert raw not in rendered
+    assert "PARENT_TRAVERSAL" in rendered
+    assert "policy.required_files[0]" in rendered

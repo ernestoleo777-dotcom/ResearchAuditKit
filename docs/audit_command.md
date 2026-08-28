@@ -31,6 +31,14 @@ It deliberately does not inspect Git status, Git LFS payloads, large-file thresh
 
 A project policy replaces built-in inventory classification and required-file declarations. Universal checks listed above still apply. Missing/invalid explicit configuration produces `UNRESOLVED` and aggregate `ABSTAIN`; the command never silently falls back.
 
+`policy.required_files` entries use canonical POSIX-style repository-relative
+file syntax. Empty values, absolute or Windows-drive paths, UNC/device paths,
+backslashes, `.` or `..` components, duplicate/trailing separators, control
+characters, and paths whose existing symlink chain leaves the repository are
+configuration errors. The audit emits `UNRESOLVED`, aggregate `ABSTAIN`, exit 2,
+a stable reason-bearing check ID, and the invalid list index. It never includes
+the rejected value in the finding, location, inventory, or content digest.
+
 ## Status and exit semantics
 
 | Finding status | Meaning |

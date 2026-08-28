@@ -11,7 +11,7 @@ from typing import Any, Iterable
 
 import yaml
 
-from ..exceptions import AuditError, UnsafePathError
+from ..exceptions import AuditError, RequiredFilePathError, UnsafePathError
 from .inventory import build_inventory
 from .policy import IntegrityPolicy
 
@@ -111,6 +111,24 @@ def _safe_message(exc: BaseException, root: Path, policy_path: Path | None = Non
     if policy_path is not None:
         message = message.replace(str(policy_path), _safe_location(policy_path, root))
     return message
+
+
+def _policy_failure_finding(
+    exc: BaseException,
+    *,
+    root: Path,
+    policy_path: Path,
+    policy_location: str | None,
+) -> dict[str, str]:
+    check_id = "policy.configuration"
+    if isinstance(exc, RequiredFilePathError):
+        check_id = f"policy.required-file-path.{exc.reason_code}"
+    return _finding(
+        check_id,
+        FINDING_UNRESOLVED,
+        f"Project policy could not be applied: {_safe_message(exc, root, policy_path)}",
+        policy_location or "<external-policy>",
+    )
 
 
 def _inventory_digest(rows: Iterable[dict[str, object]]) -> str:
@@ -244,11 +262,11 @@ def audit_repository(
             policy = IntegrityPolicy.from_yaml(candidate)
         except (AuditError, OSError, UnicodeError, ValueError, yaml.YAMLError) as exc:
             findings.append(
-                _finding(
-                    "policy.configuration",
-                    FINDING_UNRESOLVED,
-                    f"Project policy could not be applied: {_safe_message(exc, base, candidate)}",
-                    policy_location or "<external-policy>",
+                _policy_failure_finding(
+                    exc,
+                    root=base,
+                    policy_path=candidate,
+                    policy_location=policy_location,
                 )
             )
             return _result(
@@ -294,6 +312,32 @@ def audit_repository(
 
     try:
         rows = build_inventory(base, policy, omit_paths=sorted(omitted))
+    except RequiredFilePathError as exc:
+        findings = [
+            finding
+            for finding in findings
+            if finding["check_id"] != "policy.configuration"
+        ]
+        findings.append(
+            _policy_failure_finding(
+                exc,
+                root=base,
+                policy_path=candidate,
+                policy_location=policy_location,
+            )
+        )
+        return _result(
+            root_identifier=root_identifier,
+            policy={
+                "available": policy_available,
+                "mode": "unresolved",
+                "path": policy_location,
+                "policy_id": policy.policy_id,
+            },
+            findings=findings,
+            asset_count=0,
+            inventory_sha256=None,
+        )
     except UnsafePathError as exc:
         findings.append(
             _finding(

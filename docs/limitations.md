@@ -64,6 +64,9 @@ and policies. Its results are deliberately narrower than scientific review.
 - `researchauditkit.audit/v1` omits timestamps and absolute target paths for stable
   local-tool interoperability. Its content digest covers inventory paths, sizes,
   bytes, classifications, and statuses—not filesystem modification times.
+- Invalid `policy.required_files` values fail before inventory construction. The
+  diagnostic exposes only the list index and stable reason code, not the rejected
+  path or any resolved outside target.
 - Report files can reveal repository paths, filenames, sizes, hashes, and supplied
   metadata. Review them before sharing.
 - Ordinary report files are replaced on rerun. Baselines and prediction seals are

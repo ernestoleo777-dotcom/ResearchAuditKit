@@ -11,6 +11,9 @@
   does not execute target code, preserves CLI exit status, and writes a safe Job
   Summary.
 - Add deterministic PASS, WARNING, and RELEASE_BLOCKER fixtures and replays.
+- Reject non-portable or symlink-escaping `policy.required_files` entries before
+  inventory, hashing, serialization, or baseline creation; diagnostics retain the
+  list index and stable reason code without echoing the rejected value.
 - Document CoordCap as the first verified, self-owned public consumer of the RC2
   GitHub Release wheel and bind the record to its exact commit and successful
   `rak inventory` workflow run.

@@ -83,6 +83,11 @@ The warning returns 0 under the default `--fail-on release-blocker`; use `--fail
 
 With no configuration, `rak audit` applies the conservative built-in `rak-generic-release-v1` policy. A repository may provide `.rak/policy.yaml`, or pass `--policy PATH`, to replace inventory classification and declare required files. Universal path-safety, README/license presence, symlink reporting, and deterministic inventory checks still run.
 
+Every `policy.required_files` value must be a canonical, POSIX-style relative
+file path confined to the repository. Absolute, traversal, backslash, control-
+character, non-canonical, and symlink-escaping values are rejected as policy
+errors without reproducing the unsafe value.
+
 Copy [the documented default policy](configs/audit_policy.default.yaml) to inspect the exact built-in contract. Policy files are data; the audit never runs target-project dependencies.
 
 ## Machine-readable output

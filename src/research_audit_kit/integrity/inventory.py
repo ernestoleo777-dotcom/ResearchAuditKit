@@ -13,6 +13,7 @@ from ..io.csv_io import write_csv_rows
 from ..io.json_io import write_json
 from .hashing import sha256_bytes, sha256_file
 from .policy import IntegrityPolicy
+from .portable import validate_required_file_confinement
 
 INVENTORY_FIELDS = [
     "path",
@@ -41,6 +42,7 @@ def build_inventory(
     base = Path(root).resolve()
     if not base.is_dir():
         raise NotADirectoryError(base)
+    validate_required_file_confinement(base, policy.required_files)
     omitted = set(omit_paths)
     rows: list[dict[str, object]] = []
     casefolded: dict[str, str] = {}
