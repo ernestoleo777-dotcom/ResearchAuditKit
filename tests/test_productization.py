@@ -171,7 +171,7 @@ def test_every_readme_quickstart_command_executes_in_a_fresh_environment(tmp_pat
         timeout=120,
     )
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "rak 0.1.0rc2" in result.stdout
+    assert f"rak {__version__}" in result.stdout
     assert "Result: PASS" in result.stdout
     assert "Result: WARNING" in result.stdout
     assert "Result: RELEASE_BLOCKER" in result.stdout
@@ -309,14 +309,17 @@ def test_public_productization_text_has_no_private_or_secret_material():
 
 
 def test_version_and_status_are_consistent():
-    assert __version__ == "0.1.0rc2"
+    assert __version__ == "0.1.0rc3.dev0"
     citation = yaml.safe_load((ROOT / "CITATION.cff").read_text(encoding="utf-8"))
-    assert citation["version"] == __version__
+    assert citation["version"] == "0.1.0rc2"
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert f"Experimental — source version v{__version__} — release candidate — no stable release" in readme
+    assert f"development source version v{__version__} — unpublished — no stable release" in readme
     project_status = (ROOT / "PROJECT_STATUS.md").read_text(encoding="utf-8")
-    assert f"CURRENT_VERSION = {__version__}" in project_status
-    assert "CURRENT_RELEASE_CLASS = RELEASE_CANDIDATE" in project_status
+    assert f"DISTRIBUTION_SOURCE_VERSION = {__version__}" in project_status
+    assert "LATEST_PUBLIC_RELEASE = 0.1.0rc2" in project_status
+    assert "FUTURE_RELEASE_TARGET = v0.1.0-rc.3" in project_status
+    assert "RC3_RELEASED = FALSE" in project_status
+    assert "STABLE_RELEASED = FALSE" in project_status
     assert "STABLE_RELEASE = NONE" in project_status
     assert "DISTRIBUTION_AUTHORITY = GITHUB_RELEASES" in project_status
     assert "PYPI_DISTRIBUTION = NONE" in project_status
@@ -354,8 +357,8 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
     )
     assert result.returncode == 0, result.stdout + result.stderr
 
-    wheel = dist / "research_audit_kit-0.1.0rc2-py3-none-any.whl"
-    sdist = dist / "research_audit_kit-0.1.0rc2.tar.gz"
+    wheel = dist / "research_audit_kit-0.1.0rc3.dev0-py3-none-any.whl"
+    sdist = dist / "research_audit_kit-0.1.0rc3.dev0.tar.gz"
     assert wheel.is_file() and sdist.is_file()
 
     with zipfile.ZipFile(wheel) as archive:
@@ -379,7 +382,10 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
             "action.yml",
             *CURATED_DOCS,
             "action/run-audit.sh",
+            "action/bootstrap.sh",
             "action/render-summary.py",
+            "action/requirements.lock",
+            "action/runner.py",
             "schemas/audit-result-v1.schema.json",
             "configs/audit_policy.default.yaml",
             "examples/audit_demo/README.md",

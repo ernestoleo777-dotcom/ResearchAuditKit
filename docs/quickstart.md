@@ -1,6 +1,8 @@
 # Quickstart
 
-This walkthrough exercises the unpublished owner-review source checkout. The current public RC2 artifact does not contain `rak audit`; no publication is claimed.
+This walkthrough exercises the unpublished `0.1.0rc3.dev0` owner-review source
+checkout. The current public RC2 artifact does not contain `rak audit`; no RC3
+publication is claimed.
 
 ## Install the checkout
 

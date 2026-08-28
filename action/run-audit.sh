@@ -6,10 +6,25 @@ if [[ -z "${RAK_ACTION_ROOT:-}" ]]; then
   exit 2
 fi
 
-python_command="${RAK_PYTHON_COMMAND:-python}"
+if [[ -z "${RAK_ACTION_RUNTIME_DIR:-}" || -z "${RAK_PYTHON_COMMAND:-}" ]]; then
+  printf '%s\n' 'ResearchAuditKit Action runtime is not initialized.' >&2
+  exit 2
+fi
+
+python_command="$RAK_PYTHON_COMMAND"
 runner_temp="${RUNNER_TEMP:-${TMPDIR:-/tmp}}"
-result_file="${RAK_ACTION_RESULT_FILE:-${runner_temp}/researchauditkit-audit.json}"
+runtime_dir="$RAK_ACTION_RUNTIME_DIR"
+case "$runtime_dir/" in
+  "$runner_temp"/*) ;;
+  *)
+    printf '%s\n' 'ResearchAuditKit Action runtime is outside runner temporary storage.' >&2
+    exit 2
+    ;;
+esac
+
+result_file="${runtime_dir}/audit-result.json"
 stdout_file="${result_file}.stdout"
+summary_file="${runtime_dir}/job-summary.md"
 workspace_root="${GITHUB_WORKSPACE:-$PWD}"
 
 target_path="${RAK_INPUT_PATH:-.}"
@@ -22,12 +37,8 @@ if [[ -n "$policy_path" && "$policy_path" != /* ]]; then
   policy_path="$workspace_root/$policy_path"
 fi
 
-if ! (
-  cd "$RAK_ACTION_ROOT" || exit 2
-  PYTHONPATH="$RAK_ACTION_ROOT/src" \
-    "$python_command" -c 'import yaml; assert tuple(int(part) for part in yaml.__version__.split(".")[:1]) >= (6,)'
-) 2>/dev/null; then
-  printf '%s\n' 'ResearchAuditKit Action requires Python 3.10+ and PyYAML>=6 preinstalled.' >&2
+if ! "$python_command" -I -c 'import yaml; assert yaml.__version__ == "6.0.3"' 2>/dev/null; then
+  printf '%s\n' 'ResearchAuditKit Action runtime dependency verification failed.' >&2
   exit 2
 fi
 
@@ -45,8 +56,7 @@ fi
 set +e
 (
   cd "$RAK_ACTION_ROOT" || exit 2
-  PYTHONPATH="$RAK_ACTION_ROOT/src" \
-    "$python_command" -m research_audit_kit.cli "${args[@]}"
+  "$python_command" -I "$RAK_ACTION_ROOT/action/runner.py" "${args[@]}"
 ) >"$stdout_file"
 audit_code=$?
 set -e
@@ -56,21 +66,17 @@ if [[ -f "$stdout_file" ]]; then
 fi
 
 if [[ -f "$result_file" ]]; then
+  "$python_command" -I "$RAK_ACTION_ROOT/action/render-summary.py" "$result_file" >"$summary_file"
   if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
-    (
-      cd "$RAK_ACTION_ROOT" || exit 2
-      PYTHONPATH="$RAK_ACTION_ROOT/src" \
-        "$python_command" "$RAK_ACTION_ROOT/action/render-summary.py" "$result_file"
-    ) >>"$GITHUB_STEP_SUMMARY"
+    cat "$summary_file" >>"$GITHUB_STEP_SUMMARY"
   fi
   if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     audit_status=$(
-      cd "$RAK_ACTION_ROOT" || exit 2
-      PYTHONPATH="$RAK_ACTION_ROOT/src" \
-        "$python_command" -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["status"])' "$result_file"
+      "$python_command" -I -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["status"])' "$result_file"
     )
     printf 'status=%s\n' "$audit_status" >>"$GITHUB_OUTPUT"
     printf 'result-file=%s\n' "$result_file" >>"$GITHUB_OUTPUT"
+    printf 'exit-code=%s\n' "$audit_code" >>"$GITHUB_OUTPUT"
   fi
 fi
 

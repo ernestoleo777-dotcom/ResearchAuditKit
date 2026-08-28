@@ -7,7 +7,7 @@ include CONTRIBUTING.md
 include SECURITY.md
 include CITATION.cff
 include action.yml
-recursive-include action *.sh *.py
+recursive-include action *.sh *.py *.lock
 recursive-include configs *.yaml
 recursive-include schemas *.json
 recursive-include src *.py

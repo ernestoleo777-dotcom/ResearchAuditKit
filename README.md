@@ -2,7 +2,7 @@
 
 ResearchAuditKit is a local-first release-engineering and integrity toolkit for ML research repositories.
 
-**Experimental — source version v0.1.0rc2 — release candidate — no stable release**
+**Experimental — development source version v0.1.0rc3.dev0 — unpublished — no stable release**
 
 [![CI](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml/badge.svg)](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
@@ -18,7 +18,8 @@ python -m pip install \
 rak --version  # rak 0.1.0rc2
 ```
 
-RC2 does not contain the hero command. From this unpublished owner-review source checkout:
+RC2 does not contain the hero command. This unpublished owner-review source
+checkout identifies its differently composed distribution as `0.1.0rc3.dev0`:
 
 ```bash
 python -m pip install -e .
@@ -102,7 +103,15 @@ SARIF is deferred because its result/severity model cannot preserve `NOT_APPLICA
 
 ## GitHub Action
 
-An unpublished composite Action source is included for owner review. It runs only `rak audit`, writes a GitHub Job Summary, preserves CLI exit status, requests no token, installs nothing, and does not execute target code. It must be pinned to an immutable commit/tag and requires Python 3.10+ plus PyYAML 6+ already available. See [GitHub Action integration](docs/github_action.md); do not advertise or publish it before a release artifact containing `rak audit` exists.
+An unpublished composite Action source is included for owner review. It
+self-provisions a fixed Python runtime and hash-locked PyYAML dependency, runs
+only `rak audit`, writes a GitHub Job Summary, preserves CLI exit status,
+requests no token, and does not install or execute target code. Bootstrap uses
+official Action and package infrastructure; the audit itself remains local and
+uploads no repository content. The Action must be pinned to an immutable
+commit/tag. See [GitHub Action integration](docs/github_action.md); do not use a
+nonexistent RC3 tag or represent the Action as publicly released before a
+separately authorized release.
 
 ## Advanced commands
 

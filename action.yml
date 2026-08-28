@@ -27,15 +27,32 @@ outputs:
   result-file:
     description: Runner-local path to the canonical JSON result.
     value: ${{ steps.audit.outputs.result-file }}
+  exit-code:
+    description: ResearchAuditKit CLI exit code (0 or 2).
+    value: ${{ steps.audit.outputs.exit-code }}
 
 runs:
   using: composite
   steps:
+    - id: setup-python
+      name: Provision Action-owned Python
+      # actions/setup-python v6 (immutable major-tag commit verified 2026-08-28)
+      uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+      with:
+        python-version: "3.12.14"
+    - id: bootstrap
+      name: Bootstrap isolated ResearchAuditKit runtime
+      shell: bash
+      env:
+        RAK_ACTION_ROOT: ${{ github.action_path }}
+      run: bash "$RAK_ACTION_ROOT/action/bootstrap.sh"
     - id: audit
       name: Run ResearchAuditKit audit
       shell: bash
       env:
         RAK_ACTION_ROOT: ${{ github.action_path }}
+        RAK_ACTION_RUNTIME_DIR: ${{ steps.bootstrap.outputs.runtime-dir }}
+        RAK_PYTHON_COMMAND: ${{ steps.bootstrap.outputs.python-command }}
         RAK_INPUT_FAIL_ON: ${{ inputs['fail-on'] }}
         RAK_INPUT_FORMAT: ${{ inputs['output-format'] }}
         RAK_INPUT_PATH: ${{ inputs.path }}

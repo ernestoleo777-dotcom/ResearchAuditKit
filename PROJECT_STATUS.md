@@ -3,8 +3,12 @@
 ```text
 ENGINEERING_ASSET = MAINTAINED
 OPERATING_MODE = CONSUMER_DRIVEN_MAINTENANCE
-CURRENT_VERSION = 0.1.0rc2
-CURRENT_RELEASE_CLASS = RELEASE_CANDIDATE
+DISTRIBUTION_SOURCE_VERSION = 0.1.0rc3.dev0
+LATEST_PUBLIC_RELEASE = 0.1.0rc2
+LATEST_PUBLIC_RELEASE_TAG = v0.1.0-rc.2
+FUTURE_RELEASE_TARGET = v0.1.0-rc.3
+RC3_RELEASED = FALSE
+STABLE_RELEASED = FALSE
 STABLE_RELEASE = NONE
 DISTRIBUTION_AUTHORITY = GITHUB_RELEASES
 PYPI_DISTRIBUTION = NONE
@@ -18,8 +22,11 @@ INDEPENDENT_EXTERNAL_CONSUMER_COUNT = 0
 ```
 
 Release availability and downloadable artifacts are defined by the repository's
-GitHub Releases page. The project has no stable release and is not distributed
-through PyPI or TestPyPI.
+GitHub Releases page. The source checkout is an unreleased `0.1.0rc3.dev0`
+development distribution; the latest public release remains `0.1.0rc2`. The
+`CITATION.cff` continues to describe that latest public RC2 release rather than
+the unpublished source build. The project has no stable release and is not
+distributed through PyPI or TestPyPI.
 
 ResearchAuditKit supports mechanical, verifiable repository auditing, including:
 

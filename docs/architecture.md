@@ -51,5 +51,9 @@ not establish claim truth.
 - Inputs and reports are ordinary local JSON, YAML, and CSV files.
 - `rak audit` writes no file unless `--output` is explicit; the composite Action
   writes only to runner temporary storage and GitHub Job Summary.
+- The composite Action bootstrap downloads its SHA-pinned setup Action, fixed
+  Python runtime, and hash-locked PyYAML wheel. Audit execution then loads
+  ResearchAuditKit only from the Action checkout under Python isolated mode;
+  it neither installs the target project nor uploads audited repository content.
 - CLI failures use documented process exit codes and JSON stderr for handled
   errors.
