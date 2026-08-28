@@ -195,19 +195,16 @@ jobs:
             "${{ steps.explicit-pass-second.outputs.result-file }}"
           jq -e '.schema_version == "researchauditkit.audit/v1" and .status == "PASS"' \
             "${{ steps.explicit-pass-first.outputs.result-file }}"
-          grep -F '## ResearchAuditKit audit' "$GITHUB_STEP_SUMMARY"
-          grep -F '**Status:** `PASS`' "$GITHUB_STEP_SUMMARY"
-          grep -F '**Status:** `ABSTAIN`' "$GITHUB_STEP_SUMMARY"
 
           test ! -e "${{ steps.fixtures.outputs.canary-path }}"
           if grep -F '../outside-secret.txt' \
-            "${{ steps.invalid-policy.outputs.result-file }}" "$GITHUB_STEP_SUMMARY"
+            "${{ steps.invalid-policy.outputs.result-file }}"
           then
             printf '%s\n' 'Unsafe policy value was disclosed.' >&2
             exit 1
           fi
           if grep -F "${{ steps.fixtures.outputs.outside-target }}" \
-            "${{ steps.escaping-symlink.outputs.result-file }}" "$GITHUB_STEP_SUMMARY"
+            "${{ steps.escaping-symlink.outputs.result-file }}"
           then
             printf '%s\n' 'Resolved outside path was disclosed.' >&2
             exit 1

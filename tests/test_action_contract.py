@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import copy
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 
@@ -14,6 +16,22 @@ from research_audit_kit.integrity.audit import audit_repository
 
 ROOT = Path(__file__).parents[1]
 DEMO = ROOT / "examples" / "audit_demo"
+
+
+def _render_summary_file(result_path: Path) -> bytes:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            str(ROOT / "action" / "render-summary.py"),
+            str(result_path),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        check=False,
+    )
+    assert completed.returncode == 0, completed.stderr.decode("utf-8", errors="replace")
+    return completed.stdout
 
 
 def _run_action(tmp_path: Path, fixture: str, *, fail_on: str = "release-blocker"):
@@ -313,3 +331,110 @@ def test_summary_renderer_cannot_disclose_an_invalid_required_path(tmp_path: Pat
     assert raw not in rendered
     assert "PARENT_TRAVERSAL" in rendered
     assert "policy.required_files[0]" in rendered
+
+
+def test_summary_renderer_is_byte_identical_for_repeated_canonical_input(
+    tmp_path: Path,
+):
+    result = audit_repository(DEMO / "pass_repo")
+    result_path = tmp_path / "canonical-audit-result.json"
+    result_path.write_text(json.dumps(result, sort_keys=True), encoding="utf-8")
+
+    first = _render_summary_file(result_path)
+    second = _render_summary_file(result_path)
+
+    assert first == second
+    assert b"\r" not in first
+    assert first.startswith(b"## ResearchAuditKit audit\n")
+    assert b"**Status:** `PASS`" in first
+    assert re.search(rb"\b20\d{2}-\d{2}-\d{2}(?:T| )", first) is None
+    assert re.search(
+        rb"\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b",
+        first,
+    ) is None
+    assert b"/private/" not in first
+    assert b"/tmp/" not in first
+
+
+def test_summary_renderer_is_cross_host_and_result_path_independent(tmp_path: Path):
+    host_a = tmp_path / "Users" / "example-a" / "private" / "work"
+    host_b = tmp_path / "home" / "example-b" / "secret" / "build"
+    repository_a = host_a / "consumer-repo"
+    repository_b = host_b / "consumer-repo"
+    for repository in (repository_a, repository_b):
+        repository.mkdir(parents=True)
+        (repository / "README.md").write_text("# Consumer\n", encoding="utf-8")
+        (repository / "LICENSE").write_text("Test license\n", encoding="utf-8")
+
+    result_a = audit_repository(repository_a)
+    result_b = audit_repository(repository_b)
+    result_path_a = host_a / "private result A" / "audit-result.json"
+    result_path_b = host_b / "secret result B" / "audit-result.json"
+    result_path_a.parent.mkdir()
+    result_path_b.parent.mkdir()
+    result_path_a.write_text(json.dumps(result_a, sort_keys=True), encoding="utf-8")
+    result_path_b.write_text(json.dumps(result_b, sort_keys=True), encoding="utf-8")
+
+    rendered_a = _render_summary_file(result_path_a)
+    rendered_b = _render_summary_file(result_path_b)
+
+    assert result_a == result_b
+    assert rendered_a == rendered_b
+    assert b"consumer-repo" in rendered_a
+    for private_value in (host_a, host_b, result_path_a, result_path_b):
+        assert str(private_value).encode("utf-8") not in rendered_a
+        assert str(private_value).encode("utf-8") not in rendered_b
+
+
+def test_summary_renderer_keeps_scope_repository_safe(tmp_path: Path):
+    namespace: dict[str, object] = {}
+    exec((ROOT / "action" / "render-summary.py").read_text(encoding="utf-8"), namespace)
+    render = namespace["render"]
+    base_result = audit_repository(DEMO / "pass_repo")
+    safe_scopes = (".", "experiments/release candidate", "研究/发布")
+    for scope in safe_scopes:
+        result = copy.deepcopy(base_result)
+        result["target"]["root_identifier"] = scope
+        rendered = render(result)
+        assert f"**Target:** `{scope}`" in rendered
+        assert "not scientific correctness" in rendered
+
+    host_checkout = tmp_path / "absolute host checkout" / "consumer-repo"
+    host_checkout.mkdir(parents=True)
+    (host_checkout / "README.md").write_text("# Consumer\n", encoding="utf-8")
+    (host_checkout / "LICENSE").write_text("Test license\n", encoding="utf-8")
+    host_rendered = render(audit_repository(host_checkout))
+    assert "**Target:** `consumer-repo`" in host_rendered
+    assert str(host_checkout) not in host_rendered
+
+    posix_host_root = "/" + "Users" + "/example-a/private/work/consumer-repo"
+    runner_temp_result = "/" + "home" + "/runner/work/_temp/private-result.json"
+    rejected_values = (
+        posix_host_root,
+        r"C:\Users\example-b\secret\build\consumer-repo",
+        r"\\server\share\private\consumer-repo",
+        "file://" + posix_host_root,
+        runner_temp_result,
+        "../outside-secret.txt",
+    )
+    for index, rejected in enumerate(rejected_values):
+        target = tmp_path / f"safe-target-{index}"
+        policy = target / ".rak" / "policy.yaml"
+        policy.parent.mkdir(parents=True)
+        (target / "README.md").write_text("# Target\n", encoding="utf-8")
+        (target / "LICENSE").write_text("Test license\n", encoding="utf-8")
+        policy.write_text(
+            yaml.safe_dump(
+                {"policy": {"id": "unsafe", "required_files": [rejected]}},
+                sort_keys=True,
+            ),
+            encoding="utf-8",
+        )
+
+        rendered = render(audit_repository(target))
+
+        assert "**Status:** `ABSTAIN`" in rendered
+        assert f"**Target:** `safe-target-{index}`" in rendered
+        assert rejected not in rendered
+        assert "policy.required_files[0]" in rendered
+        assert "not scientific correctness" in rendered
