@@ -194,6 +194,7 @@ def test_documented_command_inventory_matches_real_parser_and_help():
     commands = parser_commands()
     assert commands == {
         "audit",
+        "evidence",
         "init",
         "inventory",
         "freeze",

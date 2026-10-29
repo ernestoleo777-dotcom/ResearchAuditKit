@@ -42,3 +42,14 @@ publication, or project-quality judgment.
   loaded.
 - Report output generally replaces files atomically. The explicit baseline/seal
   exceptions protect existing records by default.
+
+## `rak evidence`
+
+- `rak evidence validate GRAPH.json`: bounded structural validation.
+- `rak evidence trace CLAIM_ID --graph GRAPH.json`: declared support/contradiction and provenance closure.
+- `rak evidence doctor GRAPH.json`: local artifact identity and graph health.
+
+Each accepts `--root DIR` (defaults to the graph directory) and `--out REPORT.json`.
+An output must be a new file within that root; input files and existing outputs are never overwritten.
+Exits: 0 mechanical checks complete, 1 invalid structure/path or definite identity failure,
+2 unresolved required evidence or an explicit ABSTAIN/UNRESOLVED. See [the B1 contract](evidence_graph.md).

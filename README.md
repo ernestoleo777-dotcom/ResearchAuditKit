@@ -184,3 +184,13 @@ integration evidence](docs/public_integrations.md).
 - [Contributing](CONTRIBUTING.md)
 
 ResearchAuditKit is an experimental, consumer-driven engineering asset. Licensed under the Apache License, Version 2.0. It has no stable release and is not distributed through PyPI or TestPyPI. Reports may reveal local filenames and hashes; review generated files before sharing them.
+
+## Evidence Graph B1 (local development)
+
+`rak evidence` adds an explicit, versioned evidence graph alongside the existing audit commands.
+Use `rak evidence validate graph.json`, `rak evidence trace CLAIM_ID --graph graph.json`,
+or `rak evidence doctor graph.json`. The additive schema is `researchauditkit.evidence/v1`.
+Relationships and verification labels in input are user declarations. A matching file hash is
+mechanical evidence of current bytes; it is not scientific adjudication or historical identity.
+See [Evidence Graph B1](docs/evidence_graph.md) for paths, limits, exits and uncertainty.
+This local implementation does not announce a new release.
