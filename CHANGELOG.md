@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Development feature: add explicit versioned evidence graph validation, tracing
+  and local artifact checks, with a packaged synthetic CLI demo that preserves
+  unresolved claim declarations. This does not announce a release.
+
 - Local development: harden stable file hashing against observable equal-size,
   preserved-mtime replacements and rewrites; reject nonregular inputs and
   invalid chunk sizes. See `docs/integrity_hash_hardening.md`.

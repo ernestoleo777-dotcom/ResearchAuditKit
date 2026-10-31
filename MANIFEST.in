@@ -40,3 +40,5 @@ global-exclude *.py[cod]
 global-exclude *.pkl
 global-exclude *.pickle
 global-exclude *.tmp
+include docs/evidence_graph.md
+recursive-include examples/evidence_graph_demo *.md *.py *.json *.txt

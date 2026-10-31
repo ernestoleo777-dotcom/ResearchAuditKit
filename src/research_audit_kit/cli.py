@@ -73,6 +73,14 @@ def _output_omit_paths(root: str | Path, output: str | Path) -> list[str]:
 
 
 def _run(args: argparse.Namespace) -> int:
+    if args.command == "evidence":
+        from .evidence import exit_code, run
+
+        result = run(args.graph, args.evidence_command, claim=getattr(args, "claim_id", None),
+                     root=args.root, output=args.out)
+        print(json.dumps(result, indent=2, sort_keys=True))
+        return exit_code(result)
+
     if args.command == "audit":
         result = audit_repository(args.path, policy_path=args.policy, output_path=args.output)
         if args.output:
@@ -264,6 +272,18 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
+
+    evidence = commands.add_parser("evidence", help="validate and trace explicit local evidence graphs")
+    evidence_commands = evidence.add_subparsers(dest="evidence_command", required=True)
+    for name in ("validate", "trace", "doctor"):
+        operation = evidence_commands.add_parser(name)
+        if name == "trace":
+            operation.add_argument("claim_id")
+            operation.add_argument("--graph", required=True)
+        else:
+            operation.add_argument("graph")
+        operation.add_argument("--root", help="explicit local artifact/output root; defaults to graph directory")
+        operation.add_argument("--out", help="new report inside root; existing files are never overwritten")
 
     audit = commands.add_parser("audit", help="audit a repository for mechanical release blockers")
     audit.add_argument("path", nargs="?", default=".")
