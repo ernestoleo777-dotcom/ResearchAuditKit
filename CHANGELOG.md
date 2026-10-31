@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Development: add bounded `rak evidence impact` reports from observed artifact
+  identity issues to explicitly linked evidence and claims, with current and
+  historical witness paths and explicit incomplete-analysis status.
+
 - Development feature: add explicit versioned evidence graph validation, tracing
   and local artifact checks, with a packaged synthetic CLI demo that preserves
   unresolved claim declarations. This does not announce a release.

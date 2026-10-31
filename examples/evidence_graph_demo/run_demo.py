@@ -20,15 +20,17 @@ def replay():
             ("matched", "doctor", 2, "UNRESOLVED", "MECHANICALLY_VERIFIED"),
             ("changed", "doctor", 1, "INVALID", "IDENTITY_MISMATCH"),
             ("missing", "doctor", 2, "UNRESOLVED", "MISSING"),
+            ("impact-changed", "impact", 1, "INVALID", "IDENTITY_MISMATCH"),
+            ("impact-missing", "impact", 2, "UNRESOLVED", "MISSING"),
         ]
         for name, command, expected_exit, expected_status, expected_artifact in cases:
             target = base / name
             target.mkdir()
             for filename in ("graph.json", "artifact.txt"):
                 shutil.copyfile(source / filename, target / filename)
-            if name == "changed":
+            if name in ("changed", "impact-changed"):
                 (target / "artifact.txt").write_text("Changed synthetic bytes.\n", encoding="utf-8")
-            elif name == "missing":
+            elif name in ("missing", "impact-missing"):
                 (target / "artifact.txt").unlink()
             completed = subprocess.run(
                 [sys.executable, "-m", "research_audit_kit", "evidence", command,
@@ -42,9 +44,17 @@ def replay():
             expected = (expected_exit, expected_status, expected_artifact)
             if actual != expected:
                 raise RuntimeError(f"{name}: expected {expected}, got {actual}")
+            if command == "impact":
+                analysis = result["impact_analysis"]
+                if (analysis["analysis_status"] != "COMPLETE"
+                        or analysis["potentially_affected_claim_ids"] != ["urn:rak:demo:claim:statement@1"]):
+                    raise RuntimeError(f"{name}: missing expected impact path")
             summaries.append({"case": name, "exit_code": completed.returncode,
                               "status": result["status"], "artifact_status": actual_artifact,
                               "scientific_adjudication": result["scope_limits"]["scientific_adjudication"]})
+            if command == "impact":
+                summaries[-1]["potentially_affected_claim_ids"] = analysis["potentially_affected_claim_ids"]
+                summaries[-1]["claim_paths"] = analysis["artifacts"][0]["claim_paths"]
     return summaries
 
 

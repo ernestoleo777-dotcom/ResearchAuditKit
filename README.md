@@ -189,7 +189,7 @@ ResearchAuditKit is an experimental, consumer-driven engineering asset. Licensed
 
 `rak evidence` adds an explicit, versioned evidence graph alongside the existing audit commands.
 Use `rak evidence validate graph.json`, `rak evidence trace CLAIM_ID --graph graph.json`,
-or `rak evidence doctor graph.json`. The additive schema is `researchauditkit.evidence/v1`.
+`rak evidence doctor graph.json`, or `rak evidence impact graph.json`. The additive schema is `researchauditkit.evidence/v1`.
 Relationships and verification labels in input are user declarations. A matching file hash is
 mechanical evidence of current bytes; it is not scientific adjudication or historical identity.
 Start with the [synthetic CLI demo](examples/evidence_graph_demo/README.md).

@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:researchauditkit:evidence-impact:v1",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "Declared artifact impact analysis",
+  "$ref": "urn:researchauditkit:evidence:v1#/$defs/impact"
+}

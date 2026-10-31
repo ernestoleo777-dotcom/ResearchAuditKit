@@ -13,6 +13,7 @@ import re
 from typing import Any
 
 from .fs import EvidenceError, Root, no_download, relative_path
+from .impact import analyze, empty_analysis
 
 SCHEMA = "researchauditkit.evidence/v1"
 TYPES = ("Claim", "Evidence", "ExperimentRun", "Artifact", "Protocol", "Decision")
@@ -389,9 +390,11 @@ def run(graph_path: str | Path, command: str = "validate", *, claim: str | None 
                                "network_execution_and_hydration": "NOT_PERFORMED",
                                "historical_identity": "NOT_INFERRED_FROM_CURRENT_HASH",
                                "file_identity": "Stable descriptor checks; portable byte digest. Inodes and times excluded from result digest."}}
+    if command == "impact":
+        result["impact_analysis"] = empty_analysis(limits)
     confined = None
     try:
-        if command not in ("validate", "trace", "doctor"):
+        if command not in ("validate", "trace", "doctor", "impact"):
             raise EvidenceError("UNKNOWN_COMMAND")
         if any(type(x) is not int or x <= 0 for x in asdict(limits).values()):
             raise EvidenceError("INVALID_LIMITS")
@@ -451,6 +454,10 @@ def run(graph_path: str | Path, command: str = "validate", *, claim: str | None 
                         observation["status"] = exc.code
                         result["findings"].append(finding(exc.code, exc.severity, nid, node["path"]))
                     result["artifact_observations"].append(observation)
+            if command == "impact":
+                analysis = analyze(nodes, edges, refs, result["artifact_observations"], limits)
+                result["impact_analysis"] = analysis
+                result["findings"].extend(finding(code) for code in analysis["incomplete_reasons"])
             result["scope_limits"]["artifact_bytes_read"] = limits.total_artifact_bytes - budget["remaining"]
             result = finish(result)
         # A failed policy restoration must not publish a success-shaped report.

@@ -91,3 +91,45 @@ The no-download policy is installed before root resolution. Restoration is verif
 requested report is published; restoration failure remains UNRESOLVED and does not publish a
 success-shaped output. Five additional engineering regression tests retain the original B0
 25-case contract without weakening its assertions.
+
+## Artifact impact analysis (development)
+
+`rak evidence impact GRAPH.json` performs the same bounded artifact observations
+as `doctor`, then propagates identity issues through explicitly declared links.
+It accepts the same `--root` and new-file-only `--out` options. Existing command
+results and exit meanings are unchanged. The result retains the evidence/v1
+envelope and adds `impact_analysis`, described by
+`schemas/evidence-impact-v1.schema.json`.
+
+A stable digest mismatch starts a CONFIRMED identity-change record. Missing,
+unreadable, unsafe, unidentifiable or budget-limited artifacts start UNRESOLVED
+identity records. Matching artifacts do not start impact records; a declaration
+may still be unresolved in the overall result. There is no automatic rescan of
+undeclared files, code execution, experiment rerun, or relationship inference.
+
+Propagation reverses DERIVED_FROM/DEPENDS_ON and typed provenance references,
+and follows SUPPORTS/CONTRADICTS toward their targets. SUPERSEDES is not a
+propagation link: an older file's issue does not by itself implicate its newer
+version. Graph-wide forks, stale citations and other health findings remain
+visible. NOT_SUPERSEDED means only that no supplied SUPERSEDES edge targets that
+claim version; it does not select a winner in a version fork.
+
+Each record lists reached node IDs, potentially affected claim IDs, and one
+deterministic shortest witness per artifact/claim/current-or-historical context.
+The witness contains node IDs and a relation/typed-reference field for each hop.
+Alternative paths in the same context are not enumerated. Any explicit historical
+citation or superseded node makes that path historical; both contexts remain
+visible when both exist. Contradiction cycles terminate without deciding truth.
+
+`analysis_status` is COMPLETE only when propagation completes within its budget,
+INCOMPLETE when any summary/traversal bound is exhausted, and NOT_ANALYZED when
+the input cannot be validated/read. These refer to impact computation, not claim
+truth or complete evidence. Defaults allow 8,192 propagation steps, 8,192 total
+witness hops, 2,048 claim paths and depth 64, derived from Limits.edges/nodes/depth.
+Usage is included. An exhausted budget adds an explicit unresolved finding; no
+truncation is silently reported as complete. `not_reached_claim_ids` means only
+that no examined declared route reached those claims. It is not proof that they
+are unaffected, especially for an incomplete graph or analysis.
+
+The graph and result digests remain deterministic. Existing read, no-download,
+exclusive-publication and input-preservation safeguards also apply to impact.

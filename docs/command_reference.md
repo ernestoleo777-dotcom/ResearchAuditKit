@@ -48,6 +48,7 @@ publication, or project-quality judgment.
 - `rak evidence validate GRAPH.json`: bounded structural validation.
 - `rak evidence trace CLAIM_ID --graph GRAPH.json`: declared support/contradiction and provenance closure.
 - `rak evidence doctor GRAPH.json`: local artifact identity and graph health.
+- `rak evidence impact GRAPH.json`: declared downstream paths from artifact identity issues.
 
 Each accepts `--root DIR` (defaults to the graph directory) and `--out REPORT.json`.
 An output must be a new file within that root; input files and existing outputs are never overwritten.
