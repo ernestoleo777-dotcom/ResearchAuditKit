@@ -83,7 +83,9 @@ def _run(args: argparse.Namespace) -> int:
                                 namespace=args.namespace, version=args.version)
         else:
             result = run(args.graph, args.evidence_command, claim=getattr(args, "claim_id", None),
-                         root=args.root, output=args.out)
+                         root=args.root, output=args.out,
+                         expected_graph_sha256=getattr(args, "graph_sha256", None),
+                         allow_unresolved_claims=tuple(getattr(args, "allow_unresolved_claim", ())))
         if args.output_format == "human":
             from .evidence.human import render_human
 
@@ -286,13 +288,18 @@ def build_parser() -> argparse.ArgumentParser:
 
     evidence = commands.add_parser("evidence", help="validate and trace explicit local evidence graphs")
     evidence_commands = evidence.add_subparsers(dest="evidence_command", required=True)
-    for name in ("validate", "trace", "doctor", "impact"):
+    for name in ("validate", "trace", "doctor", "impact", "check"):
         operation = evidence_commands.add_parser(name)
         if name == "trace":
             operation.add_argument("claim_id")
             operation.add_argument("--graph", required=True)
         else:
             operation.add_argument("graph")
+        if name == "check":
+            operation.add_argument("--graph-sha256", required=True,
+                                   help="separately retained graph_content_sha256 from initialization")
+            operation.add_argument("--allow-unresolved-claim", action="append", default=[],
+                                   metavar="CLAIM_ID", help="exact unresolved Claim ID; repeat as needed")
         operation.add_argument("--root", help="explicit local artifact/output root; defaults to graph directory")
         operation.add_argument("--out", help="new report inside root; existing files are never overwritten")
         operation.add_argument("--format", dest="output_format", choices=("human", "json"), default="json")

@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:researchauditkit:evidence-check:v1",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "researchauditkit.evidence-check/v1"
+    },
+    "command": {
+      "const": "check"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "INVALID",
+        "UNRESOLVED"
+      ]
+    },
+    "mechanical_gate": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "expected_graph_content_sha256": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "allowed_unresolved_claim_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence_status": {
+      "enum": [
+        "PASS",
+        "INVALID",
+        "UNRESOLVED"
+      ]
+    },
+    "evidence_result": {
+      "$ref": "urn:researchauditkit:evidence:v1#/oneOf/1"
+    },
+    "accepted_findings": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:researchauditkit:evidence:v1#/oneOf/1/properties/findings/items"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "urn:researchauditkit:evidence:v1#/oneOf/1/properties/findings/items"
+      }
+    },
+    "scope_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scientific_adjudication": {
+          "const": "NOT_PERFORMED"
+        },
+        "baseline_authority": {
+          "const": "CALLER_SUPPLIED_ANCHOR"
+        },
+        "atomic_snapshot": {
+          "const": "NOT_PROVIDED"
+        }
+      },
+      "required": [
+        "scientific_adjudication",
+        "baseline_authority",
+        "atomic_snapshot"
+      ]
+    },
+    "result_content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "PASS"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "mechanical_gate": {
+            "const": "PASS"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "mechanical_gate": {
+            "const": "FAIL"
+          }
+        }
+      }
+    }
+  ],
+  "required": [
+    "schema",
+    "command",
+    "status",
+    "mechanical_gate",
+    "expected_graph_content_sha256",
+    "allowed_unresolved_claim_ids",
+    "evidence_status",
+    "evidence_result",
+    "accepted_findings",
+    "findings",
+    "scope_limits",
+    "result_content_sha256"
+  ]
+}

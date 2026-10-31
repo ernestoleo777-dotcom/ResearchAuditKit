@@ -45,3 +45,4 @@ recursive-include examples/evidence_graph_demo *.md *.py *.json *.txt
 include docs/evidence_onboarding.md
 include docs/release_evidence_preflight.md
 include tools/release_evidence_preflight.py
+include docs/evidence_check.md

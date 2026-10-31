@@ -381,7 +381,11 @@ def exit_code(result: dict) -> int:
 
 def run(graph_path: str | Path, command: str = "validate", *, claim: str | None = None,
         root: str | Path | None = None, output: str | Path | None = None,
-        limits: Limits = Limits()) -> dict:
+        limits: Limits = Limits(), expected_graph_sha256: str | None = None,
+        allow_unresolved_claims: tuple[str, ...] = ()) -> dict:
+    checking = command == "check"
+    if checking:
+        command = "impact"
     result = {"schema": SCHEMA, "command": command, "graph_content_sha256": None,
               "findings": [], "nodes_visited": [], "edges_visited": [],
               "reference_observations": [], "artifact_observations": [],
@@ -394,10 +398,16 @@ def run(graph_path: str | Path, command: str = "validate", *, claim: str | None 
         result["impact_analysis"] = empty_analysis(limits)
     confined = None
     try:
-        if command not in ("validate", "trace", "doctor", "impact"):
-            raise EvidenceError("UNKNOWN_COMMAND")
         if any(type(x) is not int or x <= 0 for x in asdict(limits).values()):
             raise EvidenceError("INVALID_LIMITS")
+        if checking:
+            from .check import validate_policy
+
+            validate_policy(expected_graph_sha256, allow_unresolved_claims, limits)
+        elif expected_graph_sha256 is not None or allow_unresolved_claims:
+            raise EvidenceError("CHECK_POLICY_REQUIRES_CHECK_COMMAND")
+        if command not in ("validate", "trace", "doctor", "impact"):
+            raise EvidenceError("UNKNOWN_COMMAND")
         path = Path(os.path.abspath(graph_path))
         base = Path(os.path.abspath(root)) if root is not None else path.parent
         try:
@@ -415,6 +425,12 @@ def run(graph_path: str | Path, command: str = "validate", *, claim: str | None 
             graph = strict_json(payload, limits)
             nodes, edges, refs, declarations = validate_graph(graph, limits)
             result["graph_content_sha256"] = graph_digest(nodes, edges)
+            if checking:
+                from .check import validate_scope
+
+                if result["graph_content_sha256"] != expected_graph_sha256:
+                    raise EvidenceError("GRAPH_ANCHOR_MISMATCH")
+                validate_scope(nodes, allow_unresolved_claims)
             protected = {graph_rel} | {n["path"] for n in nodes.values() if n["type"] == "Artifact"}
             out_rel = confined.output_relative(output, protected) if output is not None else None
             scope = set(nodes)
@@ -461,17 +477,35 @@ def run(graph_path: str | Path, command: str = "validate", *, claim: str | None 
             result["scope_limits"]["artifact_bytes_read"] = limits.total_artifact_bytes - budget["remaining"]
             result = finish(result)
         # A failed policy restoration must not publish a success-shaped report.
+        if checking:
+            from .check import gate_result
+
+            result = gate_result(result, expected_graph_sha256, allow_unresolved_claims)
         if out_rel is not None:
             confined.publish(out_rel, result)
         return result
     except EvidenceError as exc:
+        if checking and "evidence_result" in result:
+            result = result["evidence_result"]
         result.pop("result_content_sha256", None)
         result["findings"].append(finding(exc.code, exc.severity))
-        return finish(result)
+        result = finish(result)
+        if checking:
+            from .check import gate_result
+
+            return gate_result(result, expected_graph_sha256, allow_unresolved_claims)
+        return result
     except (OSError, UnicodeError) as exc:
+        if checking and "evidence_result" in result:
+            result = result["evidence_result"]
         result.pop("result_content_sha256", None)
         result["findings"].append(finding("LOCAL_IO_UNAVAILABLE", "UNRESOLVED"))
-        return finish(result)
+        result = finish(result)
+        if checking:
+            from .check import gate_result
+
+            return gate_result(result, expected_graph_sha256, allow_unresolved_claims)
+        return result
     finally:
         if confined is not None:
             confined.close()

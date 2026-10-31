@@ -51,10 +51,11 @@ publication, or project-quality judgment.
 - `rak evidence trace CLAIM_ID --graph GRAPH.json`: declared support/contradiction and provenance closure.
 - `rak evidence doctor GRAPH.json`: local artifact identity and graph health.
 - `rak evidence impact GRAPH.json`: declared downstream paths from artifact identity issues.
+- `rak evidence check GRAPH.json --graph-sha256 DIGEST`: opt-in mechanical CI policy against a separately retained graph anchor; exact `--allow-unresolved-claim ID` exceptions cover only unresolved Claim declarations. See [the check contract](evidence_check.md).
 
-Validate/trace/doctor/impact accept `--format human` for readable stdout; their JSON default, stored JSON and exits are unchanged.
+Validate/trace/doctor/impact/check accept `--format human` for readable stdout; their JSON default, stored JSON and exits are unchanged.
 
 Each accepts `--root DIR` (defaults to the graph directory) and `--out REPORT.json`.
 An output must be a new file within that root; input files and existing outputs are never overwritten.
-Exits: 0 mechanical checks complete, 1 invalid structure/path or definite identity failure,
+For validate/trace/doctor/impact, exits: 0 mechanical checks complete, 1 invalid structure/path or definite identity failure,
 2 unresolved required evidence or an explicit ABSTAIN/UNRESOLVED. See [the B1 contract](evidence_graph.md).
