@@ -179,6 +179,7 @@ integration evidence](docs/public_integrations.md).
 - [Limitations](docs/limitations.md)
 - [Architecture](docs/architecture.md)
 - [Public integrations](docs/public_integrations.md)
+- [First-party candidate release preflight](docs/release_evidence_preflight.md)
 - [Project status](PROJECT_STATUS.md)
 - [Security](SECURITY.md)
 - [Contributing](CONTRIBUTING.md)

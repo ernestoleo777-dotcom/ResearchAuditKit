@@ -26,6 +26,7 @@ ROOT = Path(__file__).parents[1]
 DEMO = ROOT / "examples" / "repository_integrity_demo"
 AUDIT_DEMO = ROOT / "examples" / "audit_demo"
 CURATED_DOCS = {
+    "docs/release_evidence_preflight.md",
     "docs/evidence_onboarding.md",
     "docs/audit_command.md",
     "docs/quickstart.md",
@@ -291,6 +292,8 @@ def test_public_productization_text_has_no_private_or_secret_material():
         *sorted((ROOT / "examples" / "evidence_graph_demo").rglob("*")),
         *sorted((ROOT / "examples" / "repository_integrity_demo").rglob("*")),
         *sorted((ROOT / "schemas").rglob("*.json")),
+        ROOT / "tools/release_evidence_preflight.py",
+        ROOT / ".github/workflows/release-evidence.yml",
         *sorted((ROOT / ".github" / "ISSUE_TEMPLATE").rglob("*.yml")),
         ROOT / ".github" / "pull_request_template.md",
     ]
@@ -391,6 +394,8 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
             "action/render-summary.py",
             "action/requirements.lock",
             "action/runner.py",
+            "schemas/release-preflight-v1.schema.json",
+            "tools/release_evidence_preflight.py",
             "schemas/evidence-assets-v1.schema.json",
             "schemas/evidence-init-v1.schema.json",
             "schemas/evidence-impact-v1.schema.json",

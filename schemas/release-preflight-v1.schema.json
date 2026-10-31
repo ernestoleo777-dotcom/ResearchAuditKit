@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:researchauditkit:release-preflight:v1",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "title": "First-party candidate release preflight",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "mode",
+    "status",
+    "candidate_only",
+    "publication_performed"
+  ],
+  "properties": {
+    "schema": {
+      "const": "researchauditkit.release-preflight/v1"
+    },
+    "mode": {
+      "enum": [
+        "capture",
+        "check"
+      ]
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "ERROR"
+      ]
+    },
+    "candidate_only": {
+      "const": true
+    },
+    "publication_performed": {
+      "const": false
+    },
+    "package_version": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$"
+    },
+    "capture_receipt_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "claim_resolution": {
+      "const": "UNRESOLVED"
+    },
+    "error": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_status": {
+      "enum": [
+        "PASS",
+        "INVALID",
+        "UNRESOLVED"
+      ]
+    },
+    "potentially_affected_claim_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "artifact_observations": {
+      "$ref": "urn:researchauditkit:evidence:v1#/oneOf/1/properties/artifact_observations"
+    },
+    "findings": {
+      "$ref": "urn:researchauditkit:evidence:v1#/oneOf/1/properties/findings"
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "doctor_identity_checks",
+        "impact_identity_checks",
+        "impact_analysis_complete",
+        "no_artifact_identity_issues"
+      ],
+      "properties": {
+        "doctor_identity_checks": {
+          "type": "boolean"
+        },
+        "impact_identity_checks": {
+          "type": "boolean"
+        },
+        "impact_analysis_complete": {
+          "type": "boolean"
+        },
+        "no_artifact_identity_issues": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "ERROR"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "error"
+        ]
+      },
+      "else": {
+        "required": [
+          "package_version",
+          "capture_receipt_sha256",
+          "claim_resolution"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "check"
+          },
+          "status": {
+            "enum": [
+              "PASS",
+              "FAIL"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "checks",
+          "artifact_observations",
+          "findings",
+          "evidence_status",
+          "potentially_affected_claim_ids",
+          "scope"
+        ]
+      }
+    }
+  ]
+}

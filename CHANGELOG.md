@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Development: apply evidence initialization, doctor and impact to first-party
+  candidate build artifacts with a separately retained capture digest, a fresh
+  wheel-installed check environment and a read-only, non-publishing CI workflow.
+
 - Development: initialize evidence graphs from explicit asset lists and optional
   user-declared claims/links; preserve unresolved asset identities and never overwrite inputs.
 - Add opt-in human evidence reports while preserving existing JSON defaults,

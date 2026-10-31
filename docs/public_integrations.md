@@ -62,3 +62,10 @@ and ran `rak inventory`; its [historical successful
 run](https://github.com/ernestoleo777-dotcom/CoordCap/actions/runs/32759394362)
 remains valid evidence of the earlier integration stage. RC2 and RC3 are two
 stages of one self-owned consumer integration, not two consumers.
+
+## First-party candidate build check (development)
+
+The [release evidence preflight](release_evidence_preflight.md) checks AuditKit's
+own newly built wheel and source distribution in separate capture/check stages.
+It is a first-party build integration, and does not change the documented
+CoordCap public-consumer or independent-consumer counts. It creates no release.
