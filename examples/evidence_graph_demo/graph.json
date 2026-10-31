@@ -1,0 +1,43 @@
+{
+  "schema": "researchauditkit.evidence/v1",
+  "nodes": [
+    {
+      "id": "urn:rak:demo:artifact:record@1",
+      "logical_id": "urn:rak:demo:artifact:record",
+      "version": "1",
+      "type": "Artifact",
+      "assertion_level": "DECLARED",
+      "path": "artifact.txt",
+      "media_type": "text/plain",
+      "sha256": "427384a8587db98e2724a082b76eb4a0c9a624bf6d0134c676675405f48b9228"
+    },
+    {
+      "id": "urn:rak:demo:evidence:observation@1",
+      "logical_id": "urn:rak:demo:evidence:observation",
+      "version": "1",
+      "type": "Evidence",
+      "assertion_level": "DECLARED",
+      "description": "A synthetic record supplied as evidence.",
+      "source_refs": [
+        "urn:rak:demo:artifact:record@1"
+      ]
+    },
+    {
+      "id": "urn:rak:demo:claim:statement@1",
+      "logical_id": "urn:rak:demo:claim:statement",
+      "version": "1",
+      "type": "Claim",
+      "assertion_level": "DECLARED",
+      "statement": "A demonstration claim whose truth is not decided by this tool.",
+      "resolution": "UNRESOLVED"
+    }
+  ],
+  "edges": [
+    {
+      "id": "declared-support",
+      "type": "SUPPORTS",
+      "source": "urn:rak:demo:evidence:observation@1",
+      "target": "urn:rak:demo:claim:statement@1"
+    }
+  ]
+}

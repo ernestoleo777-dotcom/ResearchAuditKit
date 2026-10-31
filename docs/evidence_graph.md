@@ -3,6 +3,12 @@
 This local development feature is additive to `researchauditkit.audit/v1`; it does not change
 audit/freeze/verify/gate exit meanings or publish a release.
 
+## Start with a synthetic example
+
+[Run the public CLI demo](../examples/evidence_graph_demo/README.md) to compare
+structural validation, matching bytes, a changed file and a missing file. The
+matched-file case retains an unresolved Claim rather than assigning its truth.
+
 ## Document and identity
 
 The JSON document has exactly `schema: researchauditkit.evidence/v1`, `nodes`, and `edges`.
