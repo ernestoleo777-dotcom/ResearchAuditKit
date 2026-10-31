@@ -1,0 +1,187 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:researchauditkit:evidence-init:v1",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "description": "Initialization receipt. PASS refers to scaffolding and current identity capture, never to claim truth. The generated file uses evidence/v1.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "command",
+    "status",
+    "findings",
+    "manifest_content_sha256",
+    "graph_content_sha256",
+    "result_content_sha256",
+    "output_path",
+    "output_created",
+    "generated_node_counts",
+    "artifact_observations",
+    "scope_limits"
+  ],
+  "properties": {
+    "schema": {
+      "const": "researchauditkit.evidence-init/v1"
+    },
+    "command": {
+      "const": "init"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "INVALID",
+        "UNRESOLVED"
+      ]
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "code",
+          "severity",
+          "node_id",
+          "path"
+        ],
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 65536
+          },
+          "severity": {
+            "enum": [
+              "INFO",
+              "UNRESOLVED",
+              "INVALID"
+            ]
+          },
+          "node_id": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "manifest_content_sha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "graph_content_sha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "result_content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "output_path": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "output_created": {
+      "type": "boolean"
+    },
+    "generated_node_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Artifact": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "Evidence": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "Claim": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "artifact_observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "node_id",
+          "path",
+          "declared_version",
+          "expected_sha256",
+          "status"
+        ],
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "path": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4096,
+            "pattern": "^(?!/)(?![A-Za-z]:)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*//)(?!.*\\/$)[^\\\\\\x00-\\x1f\\x7f]+$"
+          },
+          "declared_version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expected_sha256": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "stable_read": {
+            "const": true
+          },
+          "status": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "scope_limits": {
+      "type": "object"
+    }
+  }
+}

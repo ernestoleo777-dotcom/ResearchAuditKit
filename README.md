@@ -192,6 +192,7 @@ Use `rak evidence validate graph.json`, `rak evidence trace CLAIM_ID --graph gra
 `rak evidence doctor graph.json`, or `rak evidence impact graph.json`. The additive schema is `researchauditkit.evidence/v1`.
 Relationships and verification labels in input are user declarations. A matching file hash is
 mechanical evidence of current bytes; it is not scientific adjudication or historical identity.
-Start with the [synthetic CLI demo](examples/evidence_graph_demo/README.md).
+Start with [asset-list initialization and readable reports](docs/evidence_onboarding.md),
+or replay the [synthetic CLI demo](examples/evidence_graph_demo/README.md).
 See [Evidence Graph B1](docs/evidence_graph.md) for paths, limits, exits and uncertainty.
 This local implementation does not announce a new release.

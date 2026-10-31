@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Development: initialize evidence graphs from explicit asset lists and optional
+  user-declared claims/links; preserve unresolved asset identities and never overwrite inputs.
+- Add opt-in human evidence reports while preserving existing JSON defaults,
+  canonical stored results and exits; package an executable onboarding walkthrough.
+
 - Development: add bounded `rak evidence impact` reports from observed artifact
   identity issues to explicitly linked evidence and claims, with current and
   historical witness paths and explicit incomplete-analysis status.
