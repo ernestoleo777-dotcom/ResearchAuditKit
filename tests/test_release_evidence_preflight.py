@@ -130,9 +130,17 @@ def test_real_built_wheel_runs_the_candidate_gate_from_its_installed_package(tmp
     script = checkout / "tools/release_evidence_preflight.py"
     captured = invoke([sys.executable, str(script), "capture", "--root", str(candidate), "--version", __version__])
     digest = json.loads(captured.stdout)["capture_receipt_sha256"]
+    # Retain the graph anchor before installation/check; never recapture during a check.
+    graph_anchor = json.loads((candidate / "release-capture.json").read_text())["graph_content_sha256"]
     runtime = tmp_path / "runtime"
     invoke([sys.executable, "-m", "venv", "--system-site-packages", str(runtime)])
     python = runtime / "bin/python"
+    # Nested local venvs do not inherit their parent venv's dependencies. Supply
+    # the already installed PyYAML package offline in this disposable runtime.
+    invoke([str(python), "-I", "-c",
+            "import pathlib,shutil,sysconfig,sys; "
+            "shutil.copytree(sys.argv[1], pathlib.Path(sysconfig.get_path('purelib'))/'yaml')",
+            str(Path(yaml.__file__).resolve().parent)])
     invoke([str(python), "-m", "pip", "install", "--ignore-installed", "--no-index", "--no-deps",
             str(candidate / preflight.names(__version__)["wheel"])])
     invoke([str(python), "-I", "-c", "import pathlib,sys,research_audit_kit as r; assert pathlib.Path(r.__file__).resolve().is_relative_to(pathlib.Path(sys.prefix).resolve())"])
@@ -141,3 +149,18 @@ def test_real_built_wheel_runs_the_candidate_gate_from_its_installed_package(tmp
     result = json.loads(checked.stdout)
     assert result["status"] == "PASS" and result["evidence_status"] == "UNRESOLVED"
     assert len(result["artifact_observations"]) == 2
+
+    general = [str(python), "-I", "-m", "research_audit_kit", "evidence", "check",
+               str(candidate / "release-graph.json"), "--graph-sha256", graph_anchor,
+               "--allow-unresolved-claim", f"urn:rak:rak-release:claim:candidate@{__version__}"]
+    gated = json.loads(invoke(general + ["--out", "general-check.json"]).stdout)
+    assert gated["mechanical_gate"] == "PASS" and gated["evidence_status"] == "UNRESOLVED"
+    assert len(gated["evidence_result"]["artifact_observations"]) == 2
+    (candidate / preflight.names(__version__)["wheel"]).write_bytes(b"Controlled post-build change")
+    rejected = subprocess.run(general, env=env, capture_output=True, text=True,
+                              check=False, timeout=120)
+    assert rejected.returncode == 1, rejected.stdout + rejected.stderr
+    failed = json.loads(rejected.stdout)
+    assert failed["mechanical_gate"] == "FAIL"
+    assert failed["evidence_result"]["impact_analysis"]["potentially_affected_claim_ids"] == [
+        f"urn:rak:rak-release:claim:candidate@{__version__}"]

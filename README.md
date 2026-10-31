@@ -195,5 +195,6 @@ Relationships and verification labels in input are user declarations. A matching
 mechanical evidence of current bytes; it is not scientific adjudication or historical identity.
 Start with [asset-list initialization and readable reports](docs/evidence_onboarding.md),
 or replay the [synthetic CLI demo](examples/evidence_graph_demo/README.md).
+Use [anchored project checks](docs/evidence_check.md) to gate listed file identities in CI while retaining unresolved claim declarations.
 See [Evidence Graph B1](docs/evidence_graph.md) for paths, limits, exits and uncertainty.
 This local implementation does not announce a new release.

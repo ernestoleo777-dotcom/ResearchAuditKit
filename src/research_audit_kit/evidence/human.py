@@ -42,6 +42,23 @@ def render_human(result: dict) -> str:
             value = value[:MAX_LINE_CHARS] + " [line truncated; see JSON]"
         lines.append(value)
 
+    if result.get("command") == "check":
+        add("ResearchAuditKit evidence check")
+        add(f"Mechanical gate: {display(result['mechanical_gate'])}")
+        add(f"Evidence status: {display(result['evidence_status'])}")
+        add(f"Accepted unresolved Claim declarations: {len(result['accepted_findings'])}")
+        add(f"Blocking findings: {sum(row['severity'] != 'INFO' for row in result['findings'])}")
+        for item in result["findings"][:20]:
+            add(f"- {display(item['severity'])}: {display(item['code'])} {display(item['node_id'] or item['path'])}")
+        add("Claim declarations remain unchanged. See the impact report below for review paths.")
+        combined = lines + [""] + render_human(result["evidence_result"]).splitlines()
+        if len(combined) > MAX_LINES:
+            combined = combined[:MAX_LINES - 2] + [
+                "Text report truncated at 400 lines; use --format json for full details.",
+                "Boundary: declared relationships and current-byte observations only; no scientific adjudication.",
+            ]
+        return "\n".join(combined)
+
     command = result.get("command", "unknown")
     add(f"ResearchAuditKit evidence {display(command)}")
     add(f"Result: {display(result.get('status', 'UNRESOLVED'))}")

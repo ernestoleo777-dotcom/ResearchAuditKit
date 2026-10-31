@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Development: add `rak evidence check` with a separately supplied graph anchor,
+  exact unresolved Claim allowances, fail-closed file/health/impact requirements,
+  and distinct mechanical gate and evidence statuses. Existing commands retain
+  their report and exit semantics.
+
 - Development: apply evidence initialization, doctor and impact to first-party
   candidate build artifacts with a separately retained capture digest, a fresh
   wheel-installed check environment and a read-only, non-publishing CI workflow.
