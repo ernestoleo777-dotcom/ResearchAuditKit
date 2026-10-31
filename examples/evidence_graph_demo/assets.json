@@ -1,0 +1,19 @@
+{
+  "schema": "researchauditkit.asset-list/v1",
+  "assets": [
+    {
+      "name": "record",
+      "path": "artifact.txt",
+      "media_type": "text/plain"
+    }
+  ],
+  "claims": [
+    {
+      "name": "statement",
+      "statement": "A demonstration claim whose truth is not decided by this tool.",
+      "supports": [
+        "record"
+      ]
+    }
+  ]
+}

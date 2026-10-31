@@ -42,3 +42,4 @@ global-exclude *.pickle
 global-exclude *.tmp
 include docs/evidence_graph.md
 recursive-include examples/evidence_graph_demo *.md *.py *.json *.txt
+include docs/evidence_onboarding.md

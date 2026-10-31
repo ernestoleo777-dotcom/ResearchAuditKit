@@ -43,3 +43,7 @@ The two impact cases additionally print the affected claim ID and the declared
 Artifact → Evidence → Claim witness path. Changed stable bytes are a confirmed
 identity mismatch; a missing file leaves identity unresolved. These paths say
 which supplied declarations require review, not whether the claim is false.
+
+For the asset-list → graph → readable-impact workflow, run
+`python examples/evidence_graph_demo/run_onboarding.py` from the repository root.
+See [the onboarding guide](../../docs/evidence_onboarding.md).

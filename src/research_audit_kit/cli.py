@@ -76,9 +76,20 @@ def _run(args: argparse.Namespace) -> int:
     if args.command == "evidence":
         from .evidence import exit_code, run
 
-        result = run(args.graph, args.evidence_command, claim=getattr(args, "claim_id", None),
-                     root=args.root, output=args.out)
-        print(json.dumps(result, indent=2, sort_keys=True))
+        if args.evidence_command == "init":
+            from .evidence.initialize import initialize
+
+            result = initialize(args.manifest, output=args.out, root=args.root,
+                                namespace=args.namespace, version=args.version)
+        else:
+            result = run(args.graph, args.evidence_command, claim=getattr(args, "claim_id", None),
+                         root=args.root, output=args.out)
+        if args.output_format == "human":
+            from .evidence.human import render_human
+
+            print(render_human(result))
+        else:
+            print(json.dumps(result, indent=2, sort_keys=True))
         return exit_code(result)
 
     if args.command == "audit":
@@ -284,6 +295,15 @@ def build_parser() -> argparse.ArgumentParser:
             operation.add_argument("graph")
         operation.add_argument("--root", help="explicit local artifact/output root; defaults to graph directory")
         operation.add_argument("--out", help="new report inside root; existing files are never overwritten")
+        operation.add_argument("--format", dest="output_format", choices=("human", "json"), default="json")
+
+    evidence_init = evidence_commands.add_parser("init", help="create a graph from your explicit asset list")
+    evidence_init.add_argument("--manifest", required=True, help="user-confirmed asset-list JSON")
+    evidence_init.add_argument("--out", required=True, help="new graph inside the root; never overwrite")
+    evidence_init.add_argument("--root", help="artifact/output root; defaults to manifest directory")
+    evidence_init.add_argument("--namespace", default="project")
+    evidence_init.add_argument("--version", default="1")
+    evidence_init.add_argument("--format", dest="output_format", choices=("human", "json"), default="human")
 
     audit = commands.add_parser("audit", help="audit a repository for mechanical release blockers")
     audit.add_argument("path", nargs="?", default=".")

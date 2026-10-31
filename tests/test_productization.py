@@ -26,6 +26,7 @@ ROOT = Path(__file__).parents[1]
 DEMO = ROOT / "examples" / "repository_integrity_demo"
 AUDIT_DEMO = ROOT / "examples" / "audit_demo"
 CURATED_DOCS = {
+    "docs/evidence_onboarding.md",
     "docs/audit_command.md",
     "docs/quickstart.md",
     "docs/command_reference.md",
@@ -390,10 +391,14 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
             "action/render-summary.py",
             "action/requirements.lock",
             "action/runner.py",
+            "schemas/evidence-assets-v1.schema.json",
+            "schemas/evidence-init-v1.schema.json",
             "schemas/evidence-impact-v1.schema.json",
             "schemas/evidence-v1.schema.json",
             "schemas/audit-result-v1.schema.json",
             "configs/audit_policy.default.yaml",
+            "examples/evidence_graph_demo/assets.json",
+            "examples/evidence_graph_demo/run_onboarding.py",
             "examples/evidence_graph_demo/README.md",
             "examples/evidence_graph_demo/run_demo.py",
             "examples/evidence_graph_demo/graph.json",

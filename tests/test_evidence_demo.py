@@ -35,3 +35,20 @@ def test_public_demo_exercises_cli_without_mutating_shipped_fixtures():
         ]
     assert all(row["scientific_adjudication"] == "NOT_PERFORMED" for row in rows)
     assert {name: (directory / name).read_bytes() for name in before} == before
+
+
+def test_asset_list_onboarding_replays_real_cli_and_preserves_templates():
+    directory = ROOT / "examples/evidence_graph_demo"
+    before = {name: (directory / name).read_bytes() for name in ("assets.json", "artifact.txt")}
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(ROOT / "src")
+    env["PYTHONDONTWRITEBYTECODE"] = "1"
+    completed = subprocess.run([sys.executable, str(directory / "run_onboarding.py")],
+                               cwd=ROOT, env=env, capture_output=True, text=True,
+                               check=False, timeout=120)
+    assert completed.returncode == 0, completed.stdout + completed.stderr
+    for expected in ("Graph: graph.json (created)", "Problem file: artifact.txt",
+                     "Claim to review: urn:rak:demo:claim:statement@1",
+                     "Declared path (current; NOT_SUPERSEDED):", "Review items:"):
+        assert expected in completed.stdout
+    assert {name: (directory / name).read_bytes() for name in before} == before
