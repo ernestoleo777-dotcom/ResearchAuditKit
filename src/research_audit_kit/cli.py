@@ -275,7 +275,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     evidence = commands.add_parser("evidence", help="validate and trace explicit local evidence graphs")
     evidence_commands = evidence.add_subparsers(dest="evidence_command", required=True)
-    for name in ("validate", "trace", "doctor"):
+    for name in ("validate", "trace", "doctor", "impact"):
         operation = evidence_commands.add_parser(name)
         if name == "trace":
             operation.add_argument("claim_id")

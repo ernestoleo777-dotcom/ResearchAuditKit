@@ -25,6 +25,13 @@ def test_public_demo_exercises_cli_without_mutating_shipped_fixtures():
     assert [(row["case"], row["exit_code"], row["artifact_status"]) for row in rows] == [
         ("validate", 0, None), ("matched", 2, "MECHANICALLY_VERIFIED"),
         ("changed", 1, "IDENTITY_MISMATCH"), ("missing", 2, "MISSING"),
+        ("impact-changed", 1, "IDENTITY_MISMATCH"), ("impact-missing", 2, "MISSING"),
     ]
+    for row in rows[-2:]:
+        assert row["potentially_affected_claim_ids"] == ["urn:rak:demo:claim:statement@1"]
+        assert row["claim_paths"][0]["node_ids"] == [
+            "urn:rak:demo:artifact:record@1", "urn:rak:demo:evidence:observation@1",
+            "urn:rak:demo:claim:statement@1",
+        ]
     assert all(row["scientific_adjudication"] == "NOT_PERFORMED" for row in rows)
     assert {name: (directory / name).read_bytes() for name in before} == before
