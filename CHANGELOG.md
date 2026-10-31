@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Local development: harden stable file hashing against observable equal-size,
+  preserved-mtime replacements and rewrites; reject nonregular inputs and
+  invalid chunk sizes. See `docs/integrity_hash_hardening.md`.
+
 - Documentation: refresh the existing self-owned CoordCap integration evidence
   from its historical RC2 wheel/`rak inventory` stage to the immutable RC3
   Action/`rak audit` integration and successful public-main run. This remains
