@@ -46,3 +46,4 @@ include docs/evidence_onboarding.md
 include docs/release_evidence_preflight.md
 include tools/release_evidence_preflight.py
 include docs/evidence_check.md
+include README.zh-CN.md
