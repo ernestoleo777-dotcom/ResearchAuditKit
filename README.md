@@ -1,5 +1,7 @@
 # ResearchAuditKit
 
+English | [简体中文](README.zh-CN.md)
+
 **Know which research claims need review when your artifacts change.**
 
 Track explicitly listed result files, connect them to your own claims, and see
