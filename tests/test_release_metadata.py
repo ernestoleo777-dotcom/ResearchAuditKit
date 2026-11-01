@@ -16,10 +16,10 @@ from research_audit_kit import __version__
 from _toml_compat import TOML_BACKEND, tomllib
 
 ROOT = Path(__file__).parents[1]
-RELEASE_SOURCE_VERSION = "0.1.0rc3"
+RELEASE_SOURCE_VERSION = "0.1.0rc4"
 HISTORICAL_RC2_VERSION = "0.1.0rc2"
 HISTORICAL_RC1_VERSION = "0.1.0rc1"
-RELEASE_DATE = "2026-08-28"
+RELEASE_DATE = "2026-11-02"
 
 
 def test_single_version_source():
@@ -51,7 +51,7 @@ def test_release_candidate_documents_and_historical_rc1_are_consistent():
     assert parsed.is_prerelease
     assert not parsed.is_devrelease
     assert parsed.base_version == "0.1.0"
-    assert parsed.pre == ("rc", 3)
+    assert parsed.pre == ("rc", 4)
     assert parsed.dev is None
 
 
@@ -61,7 +61,7 @@ def test_readme_source_install_and_release_candidate_status_are_consistent():
     assert f"release candidate v{RELEASE_SOURCE_VERSION}" in readme
     project_status = (ROOT / "PROJECT_STATUS.md").read_text()
     assert f"DISTRIBUTION_SOURCE_VERSION = {RELEASE_SOURCE_VERSION}" in project_status
-    assert "RELEASE_TARGET = v0.1.0-rc.3" in project_status
+    assert "RELEASE_TARGET = v0.1.0-rc.4" in project_status
     assert "RELEASE_AVAILABILITY_AUTHORITY = GITHUB_RELEASES" in project_status
     assert "GitHub Releases page" in readme
     assert "not distributed through PyPI or TestPyPI" in readme

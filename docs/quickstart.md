@@ -1,8 +1,8 @@
 # Quickstart
 
-This walkthrough exercises the `0.1.0rc3` release source. Public availability is
-defined by GitHub Releases; confirm the `v0.1.0-rc.3` prerelease exists before
-installing its release asset. RC2 does not contain `rak audit`.
+This walkthrough exercises RC4 (`0.1.0rc4`). Public availability is defined by
+GitHub Releases; confirm `v0.1.0-rc.4` before installing its release asset.
+For file-to-claim impact checks, start with [the guided evidence workflow](evidence_onboarding.md).
 
 ## Install the checkout
 
@@ -50,3 +50,15 @@ The result conforms to [`researchauditkit.audit/v1`](../schemas/audit-result-v1.
 ## Continue through the lifecycle
 
 After reviewing the audit, use a deliberate project policy with `rak freeze`, preserve the baseline, run `rak verify` against later states, and apply `rak gate` only when a separately authored metrics/gate contract exists. See the [workflow guide](research_release_workflow.md).
+
+Real terminal output from the committed `pass_repo` fixture:
+
+```text
+ResearchAuditKit audit
+Target: pass_repo
+Policy: built-in (rak-generic-release-v1)
+Result: PASS
+Findings: PASS=6 WARNING=0 RELEASE_BLOCKER=0 NOT_APPLICABLE=2 UNRESOLVED=0
+- No warnings, unresolved checks, or release blockers.
+Boundary: PASS is mechanical only; it is not scientific correctness or certification.
+```

@@ -4,8 +4,8 @@ The `Release evidence preflight` workflow applies AuditKit's evidence graph to
 AuditKit's own newly built wheel and source distribution. It is a first-party
 engineering integration using real candidate build files. It does not validate
 an already published release, add an independent consumer, or publish a package.
-The candidate retains the checkout's source version; it must receive a separately
-reviewed new version before any future publication.
+The candidate retains the checkout's source version. Review that version and
+its release contract before tagging; a successful candidate check is not publication.
 
 ## Separate capture and check stages
 

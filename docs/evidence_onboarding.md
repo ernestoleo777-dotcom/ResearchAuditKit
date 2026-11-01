@@ -1,8 +1,18 @@
 # Start an evidence graph from an asset list
 
-These commands are unreleased development functionality in the reviewed source
-checkout. Published RC3 packages do not contain them. Use the source installation
-instructions in the repository quickstart.
+These commands are included in RC4. Install its reviewed release asset or use a
+source checkout. Earlier RC3 packages do not contain this workflow.
+
+## Guided start (no JSON editing required)
+
+Run `rak evidence wizard` in your project directory. Enter each asset name and
+relative path; blank name ends the asset section. Claims are optional. If you
+add one, write its statement and explicitly list supporting/contradicting asset
+names. Preview the full declaration and type `yes` to create `assets.json`.
+The guide does not scan directories, read assets, infer relationships or overwrite
+existing files. EOF/cancellation publishes nothing. Fix an invalid declaration by
+rerunning the guide. Names, paths and relationship references use the same strict
+rules as manual lists. Then continue with graph generation below.
 
 ## 1. List the assets you intend to include
 
@@ -110,3 +120,36 @@ This creates a graph from the supplied template, changes its own temporary
 artifact copy, and displays the resulting impact path and review items. It
 preserves the shipped files and removes only its own temporary directory. It is
 an engineering demonstration, not real-consumer or scientific acceptance evidence.
+
+## GitHub-readable reports
+
+All evidence operations accept `--format markdown`. It renders a bounded GitHub
+report with file observations, affected claim paths, findings and explicit scope.
+User-supplied text is escaped as inert text, not HTML, links or Markdown syntax.
+Truncated sections are labelled; retain JSON for complete details. `--out` keeps
+its existing meaning: graph for init, asset list for wizard, canonical JSON for
+check/impact/doctor/trace/validate. Markdown changes stdout only.
+
+After installing the reviewed AuditKit release in a GitHub Actions job, use a
+separately reviewed graph anchor stored in a repository variable. Example step:
+
+```yaml
+- name: Check declared research assets
+  env:
+    RAK_GRAPH_SHA256: ${{ vars.RAK_GRAPH_SHA256 }}
+  shell: bash
+  run: |
+    set +e
+    rak evidence check graph.json --graph-sha256 "$RAK_GRAPH_SHA256" \
+      --allow-unresolved-claim urn:rak:project:claim:main@1 \
+      --format markdown --out check.json > evidence-report.md
+    code=$?
+    cat evidence-report.md >> "$GITHUB_STEP_SUMMARY"
+    exit "$code"
+```
+
+Replace the graph path and exact optional Claim ID with your project's values;
+omit the allowance when no Claim is accepted. The step reports failure without
+masking its exit. GitHub Summary needs no PR comment write permission. Do not
+recapture or recompute the expected anchor from the graph during this job.
+Only reviewed baseline/anchor updates should change the accepted scope.

@@ -156,6 +156,14 @@ def test_real_built_wheel_runs_the_candidate_gate_from_its_installed_package(tmp
     gated = json.loads(invoke(general + ["--out", "general-check.json"]).stdout)
     assert gated["mechanical_gate"] == "PASS" and gated["evidence_status"] == "UNRESOLVED"
     assert len(gated["evidence_result"]["artifact_observations"]) == 2
+    markdown = invoke(general + ["--format", "markdown"]).stdout
+    assert "Mechanical gate: **PASS**" in markdown
+    authored = subprocess.run([str(python), "-I", "-m", "research_audit_kit", "evidence", "wizard",
+                               "--root", str(candidate), "--out", "guided-assets.json", "--format", "json"],
+                              input="wheel\n" + preflight.names(__version__)["wheel"] + "\n\n\nyes\n",
+                              env=env, capture_output=True, text=True, timeout=30)
+    assert authored.returncode == 0, authored.stdout + authored.stderr
+    assert json.loads(authored.stdout)["output_created"]
     (candidate / preflight.names(__version__)["wheel"]).write_bytes(b"Controlled post-build change")
     rejected = subprocess.run(general, env=env, capture_output=True, text=True,
                               check=False, timeout=120)

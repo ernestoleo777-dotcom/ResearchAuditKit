@@ -47,3 +47,14 @@ which supplied declarations require review, not whether the claim is false.
 For the asset-list → graph → readable-impact workflow, run
 `python examples/evidence_graph_demo/run_onboarding.py` from the repository root.
 See [the onboarding guide](../../docs/evidence_onboarding.md).
+
+## Guided RC4 workflow and GitHub report
+
+```bash
+python examples/evidence_graph_demo/run_guided_demo.py
+```
+
+Runs the real wizard, initialization and anchored check CLI in its own temporary
+synthetic project. Shows a matching baseline followed by a controlled file change
+and the affected Claim path. It preserves shipped files and uses no model/network.
+This is an engineering demonstration, not independent adoption or scientific evidence.

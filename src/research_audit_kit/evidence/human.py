@@ -63,7 +63,11 @@ def render_human(result: dict) -> str:
     add(f"ResearchAuditKit evidence {display(command)}")
     add(f"Result: {display(result.get('status', 'UNRESOLVED'))}")
     observations = result.get("artifact_observations", [])
-    if command == "init":
+    if command == "wizard":
+        add(f"Asset list: {display(result.get('output_path') or '(none)')}")
+        add(f"Created: {result['output_created']}; asset contents were not read.")
+        add("Next: evidence init --manifest ASSETS.json --out graph.json --format json")
+    elif command == "init":
         created = result.get("output_created", False)
         add(f"Graph: {display(result.get('output_path') or '(none)')} ({'created' if created else 'not created'})")
         counts = result.get("generated_node_counts", {})

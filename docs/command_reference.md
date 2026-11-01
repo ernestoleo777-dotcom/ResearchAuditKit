@@ -45,6 +45,8 @@ publication, or project-quality judgment.
 
 ## `rak evidence`
 
+- `rak evidence wizard [--root DIR] [--out assets.json]`: interactively author and confirm an explicit asset list; no discovery or asset-content reads.
+
 - `rak evidence init --manifest ASSETS.json --out GRAPH.json`: generate a declared graph from an explicit asset list; optional `--namespace`, `--version`, and `--root`. Defaults to a human receipt; use `--format json` for the initialization receipt. See [onboarding](evidence_onboarding.md).
 
 - `rak evidence validate GRAPH.json`: bounded structural validation.
@@ -53,7 +55,7 @@ publication, or project-quality judgment.
 - `rak evidence impact GRAPH.json`: declared downstream paths from artifact identity issues.
 - `rak evidence check GRAPH.json --graph-sha256 DIGEST`: opt-in mechanical CI policy against a separately retained graph anchor; exact `--allow-unresolved-claim ID` exceptions cover only unresolved Claim declarations. See [the check contract](evidence_check.md).
 
-Validate/trace/doctor/impact/check accept `--format human` for readable stdout; their JSON default, stored JSON and exits are unchanged.
+Validate/trace/doctor/impact/check accept `--format human` or `--format markdown` for readable stdout; their JSON default, stored JSON and exits are unchanged.
 
 Each accepts `--root DIR` (defaults to the graph directory) and `--out REPORT.json`.
 An output must be a new file within that root; input files and existing outputs are never overwritten.
