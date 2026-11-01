@@ -3,9 +3,9 @@
 ```text
 ENGINEERING_ASSET = MAINTAINED
 OPERATING_MODE = CONSUMER_DRIVEN_MAINTENANCE
-DISTRIBUTION_SOURCE_VERSION = 0.1.0rc3
-PUBLIC_VERSION = 0.1.0rc3
-RELEASE_TARGET = v0.1.0-rc.3
+DISTRIBUTION_SOURCE_VERSION = 0.1.0rc4
+PUBLIC_VERSION = VERIFY_GITHUB_RELEASES
+RELEASE_TARGET = v0.1.0-rc.4
 RELEASE_CLASS = GITHUB_PRERELEASE
 PUBLIC_RELEASE_STATE = PRERELEASE
 RELEASE_AVAILABILITY_AUTHORITY = GITHUB_RELEASES
@@ -28,9 +28,8 @@ INDEPENDENT_EXTERNAL_CONSUMERS = 0
 ```
 
 Release availability and downloadable artifacts are defined only by the
-repository's GitHub Releases page. Version `0.1.0rc3` is published there as the
-`v0.1.0-rc.3` prerelease; the annotated tag resolves to the public release
-commit. The project has no stable release and is not distributed through PyPI,
+repository's GitHub Releases page. The RC4 target is `v0.1.0-rc.4` (`0.1.0rc4`); verify its published release
+and assets there. RC3 remains a historical prerelease. The project has no stable release and is not distributed through PyPI,
 TestPyPI, or GitHub Marketplace.
 
 ResearchAuditKit supports mechanical, verifiable repository auditing, including:

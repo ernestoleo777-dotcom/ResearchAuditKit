@@ -26,6 +26,8 @@ ROOT = Path(__file__).parents[1]
 DEMO = ROOT / "examples" / "repository_integrity_demo"
 AUDIT_DEMO = ROOT / "examples" / "audit_demo"
 CURATED_DOCS = {
+    "docs/releases/v0.1.0-rc.4.md",
+    "docs/evidence_check.md",
     "docs/release_evidence_preflight.md",
     "docs/evidence_onboarding.md",
     "docs/audit_command.md",
@@ -180,8 +182,8 @@ def test_every_readme_quickstart_command_executes_in_a_fresh_environment(tmp_pat
     assert "Result: RELEASE_BLOCKER" in result.stdout
 
 
-def test_readme_example_output_matches_executed_demo_expectations():
-    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+def test_audit_quickstart_output_matches_executed_demo_expectations():
+    readme = (ROOT / "docs/quickstart.md").read_text(encoding="utf-8")
     section = readme.split("Real terminal output from the committed `pass_repo` fixture:", 1)[1]
     documented = re.search(r"```text\n(.*?)\n```", section, re.DOTALL)
     assert documented is not None
@@ -316,15 +318,15 @@ def test_public_productization_text_has_no_private_or_secret_material():
 
 
 def test_version_and_status_are_consistent():
-    assert __version__ == "0.1.0rc3"
+    assert __version__ == "0.1.0rc4"
     citation = yaml.safe_load((ROOT / "CITATION.cff").read_text(encoding="utf-8"))
-    assert citation["version"] == "0.1.0rc3"
-    assert str(citation["date-released"]) == "2026-08-28"
+    assert citation["version"] == "0.1.0rc4"
+    assert str(citation["date-released"]) == "2026-11-02"
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert f"release candidate v{__version__} — GitHub prerelease — no stable release" in readme
     project_status = (ROOT / "PROJECT_STATUS.md").read_text(encoding="utf-8")
     assert f"DISTRIBUTION_SOURCE_VERSION = {__version__}" in project_status
-    assert "RELEASE_TARGET = v0.1.0-rc.3" in project_status
+    assert "RELEASE_TARGET = v0.1.0-rc.4" in project_status
     assert "RELEASE_CLASS = GITHUB_PRERELEASE" in project_status
     assert "RC3_RELEASED = VERIFY_GITHUB_RELEASES" in project_status
     assert "STABLE_RELEASED = FALSE" in project_status
@@ -365,8 +367,8 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
     )
     assert result.returncode == 0, result.stdout + result.stderr
 
-    wheel = dist / "research_audit_kit-0.1.0rc3-py3-none-any.whl"
-    sdist = dist / "research_audit_kit-0.1.0rc3.tar.gz"
+    wheel = dist / "research_audit_kit-0.1.0rc4-py3-none-any.whl"
+    sdist = dist / "research_audit_kit-0.1.0rc4.tar.gz"
     assert wheel.is_file() and sdist.is_file()
 
     with zipfile.ZipFile(wheel) as archive:
@@ -402,6 +404,10 @@ def test_wheel_and_sdist_public_content_contract(tmp_path: Path):
             "schemas/evidence-v1.schema.json",
             "schemas/audit-result-v1.schema.json",
             "configs/audit_policy.default.yaml",
+            "schemas/evidence-wizard-v1.schema.json",
+            "schemas/evidence-check-v1.schema.json",
+            "examples/evidence_graph_demo/run_guided_demo.py",
+            "examples/evidence_graph_demo/expected_guided_report.md",
             "examples/evidence_graph_demo/assets.json",
             "examples/evidence_graph_demo/run_onboarding.py",
             "examples/evidence_graph_demo/README.md",

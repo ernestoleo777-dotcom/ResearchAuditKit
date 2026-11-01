@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:researchauditkit:evidence-wizard:v1",
+  "$comment": "SPDX-License-Identifier: Apache-2.0",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "const": "researchauditkit.evidence-wizard/v1"
+    },
+    "command": {
+      "const": "wizard"
+    },
+    "status": {
+      "enum": [
+        "PASS",
+        "INVALID",
+        "UNRESOLVED"
+      ]
+    },
+    "findings": {
+      "$ref": "urn:researchauditkit:evidence:v1#/oneOf/1/properties/findings"
+    },
+    "output_created": {
+      "type": "boolean"
+    },
+    "output_path": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "asset_contents_read": {
+      "const": false
+    },
+    "relationships": {
+      "const": "USER_SUPPLIED_ONLY"
+    },
+    "result_content_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "schema",
+    "command",
+    "status",
+    "findings",
+    "output_created",
+    "output_path",
+    "asset_contents_read",
+    "relationships",
+    "result_content_sha256"
+  ]
+}

@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+No changes recorded after RC4.
+
+## 0.1.0rc4 — 2026-11-02
+
+- Guide users through authoring an explicit asset list with `rak evidence wizard`.
+  Preview/confirmation, safe new-file publication and no implicit file discovery.
+- Render GitHub Markdown evidence reports with `--format markdown`; canonical
+  JSON and operation exits are preserved. Includes Job Summary integration guide.
+- Introduce the claim-impact workflow in the README and ship the evidence
+  initialization, impact and anchored-check features developed since RC3.
+
+
 - Development: add `rak evidence check` with a separately supplied graph anchor,
   exact unresolved Claim allowances, fail-closed file/health/impact requirements,
   and distinct mechanical gate and evidence statuses. Existing commands retain

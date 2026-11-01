@@ -1,7 +1,6 @@
 # Gate an explicit evidence baseline in a project
 
-This is unreleased development functionality. Install the reviewed source checkout
-as described in the quickstart; published RC3 packages do not contain this command.
+This command is included in RC4; earlier RC3 packages do not contain it.
 
 `rak evidence check` applies a narrow mechanical policy to the same bounded,
 confined impact calculation. It checks every Artifact in the graph, including

@@ -76,7 +76,11 @@ def _run(args: argparse.Namespace) -> int:
     if args.command == "evidence":
         from .evidence import exit_code, run
 
-        if args.evidence_command == "init":
+        if args.evidence_command == "wizard":
+            from .evidence.wizard import wizard
+
+            result = wizard(root=args.root, output=args.out)
+        elif args.evidence_command == "init":
             from .evidence.initialize import initialize
 
             result = initialize(args.manifest, output=args.out, root=args.root,
@@ -86,7 +90,11 @@ def _run(args: argparse.Namespace) -> int:
                          root=args.root, output=args.out,
                          expected_graph_sha256=getattr(args, "graph_sha256", None),
                          allow_unresolved_claims=tuple(getattr(args, "allow_unresolved_claim", ())))
-        if args.output_format == "human":
+        if args.output_format == "markdown":
+            from .evidence.markdown import render_markdown
+
+            print(render_markdown(result), end="")
+        elif args.output_format == "human":
             from .evidence.human import render_human
 
             print(render_human(result))
@@ -302,7 +310,12 @@ def build_parser() -> argparse.ArgumentParser:
                                    metavar="CLAIM_ID", help="exact unresolved Claim ID; repeat as needed")
         operation.add_argument("--root", help="explicit local artifact/output root; defaults to graph directory")
         operation.add_argument("--out", help="new report inside root; existing files are never overwritten")
-        operation.add_argument("--format", dest="output_format", choices=("human", "json"), default="json")
+        operation.add_argument("--format", dest="output_format", choices=("human", "json", "markdown"), default="json")
+
+    evidence_wizard = evidence_commands.add_parser("wizard", help="author an explicit asset list with guided prompts")
+    evidence_wizard.add_argument("--root", default=".")
+    evidence_wizard.add_argument("--out", default="assets.json")
+    evidence_wizard.add_argument("--format", dest="output_format", choices=("human", "json", "markdown"), default="human")
 
     evidence_init = evidence_commands.add_parser("init", help="create a graph from your explicit asset list")
     evidence_init.add_argument("--manifest", required=True, help="user-confirmed asset-list JSON")
@@ -310,7 +323,7 @@ def build_parser() -> argparse.ArgumentParser:
     evidence_init.add_argument("--root", help="artifact/output root; defaults to manifest directory")
     evidence_init.add_argument("--namespace", default="project")
     evidence_init.add_argument("--version", default="1")
-    evidence_init.add_argument("--format", dest="output_format", choices=("human", "json"), default="human")
+    evidence_init.add_argument("--format", dest="output_format", choices=("human", "json", "markdown"), default="human")
 
     audit = commands.add_parser("audit", help="audit a repository for mechanical release blockers")
     audit.add_argument("path", nargs="?", default=".")

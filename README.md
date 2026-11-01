@@ -1,55 +1,99 @@
 # ResearchAuditKit
 
-ResearchAuditKit is a local-first release-engineering and integrity toolkit for ML research repositories.
+**Know which research claims need review when your artifacts change.**
 
-**Experimental — release candidate v0.1.0rc3 — GitHub prerelease — no stable release**
+Track explicitly listed result files, connect them to your own claims, and see
+review paths when files change or disappear. Runs locally without executing your
+project, uploading files, calling a model or requiring a GPU.
+
+**Experimental — release candidate v0.1.0rc4 — GitHub prerelease — no stable release**
 
 [![CI](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml/badge.svg)](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](pyproject.toml)
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-## Audit and freeze an ML repository before public release
+## Install
 
 The [GitHub Releases page](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases)
-is the distribution authority. After the `v0.1.0-rc.3`
-prerelease is published, install its wheel from the versioned release and verify
-it against the accompanying `SHA256SUMS` and `RC3_RELEASE_MANIFEST.json`:
+is the distribution authority. Verify the RC4 release assets against its SHA256SUMS,
+then install in your Python environment:
 
 ```bash
-python -m pip install \
-  "https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/download/v0.1.0-rc.3/research_audit_kit-0.1.0rc3-py3-none-any.whl"
-rak --version  # rak 0.1.0rc3
+python -m pip install "https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/download/v0.1.0-rc.4/research_audit_kit-0.1.0rc4-py3-none-any.whl"
+rak --version  # rak 0.1.0rc4
 ```
 
-Before publication, install the reviewed source checkout directly; its
-distribution identity is already the release candidate `0.1.0rc3`:
+ResearchAuditKit is not distributed through PyPI or TestPyPI. Install may fetch
+PyYAML; evidence checks themselves are local. For a reviewed source checkout:
 
 ```bash
 python -m pip install -e .
+```
+
+## First project: list → capture → check
+
+From your project directory, start the guide:
+
+```bash
+rak evidence wizard
+```
+
+Name a result file and enter its relative path. Optionally write a claim and
+explicitly name the assets supporting or contradicting it. Preview and confirm.
+The guide writes a new `assets.json`; it never scans your project or reads assets.
+
+```bash
+rak evidence init --manifest assets.json --out graph.json --format json
+```
+
+Save the receipt's `graph_content_sha256` separately as your reviewed baseline
+anchor. Replace `SAVED_DIGEST` and the optional claim ID below with your values:
+
+```bash
+rak evidence check graph.json --graph-sha256 SAVED_DIGEST --allow-unresolved-claim urn:rak:project:claim:main@1 --format markdown --out check.json
+```
+
+Omit the allowance if you declared no claim. It accepts only that exact Claim's
+unresolved declaration; other missing or unresolved evidence still blocks.
+Outputs are exclusive new files; use a new report name for each local rerun.
+
+A changed result file produces this kind of report (synthetic example):
+
+| Problem file | Observation | Claim to review |
+| --- | --- | --- |
+| results.csv | IDENTITY_MISMATCH | main@1 |
+
+Declared path: results.csv → listed evidence → main@1.
+Review the file change and declaration before deliberately updating the baseline.
+Matching bytes do not establish claim truth. Relationships are supplied by you.
+
+[Actual synthetic demo report](examples/evidence_graph_demo/expected_guided_report.md) ·
+[Five-minute guide and GitHub Job Summary](docs/evidence_onboarding.md) ·
+[Anchored CI checks](docs/evidence_check.md) ·
+[Replayable synthetic demo](examples/evidence_graph_demo/README.md)
+
+## Audit and freeze an ML repository before public release
+
+The existing repository audit remains available with no required configuration:
+
+<!-- quickstart-commands:start -->
+```bash
+python -m pip install -e .
+rak --version
 rak audit .
+rak audit examples/audit_demo/pass_repo
+rak audit examples/audit_demo/warning_repo
+set +e
+rak audit examples/audit_demo/blocker_repo
+RAK_BLOCKER_CODE=$?
+set -e
+test "$RAK_BLOCKER_CODE" -eq 2
 ```
+<!-- quickstart-commands:end -->
 
-`rak audit` inventories local files, applies universally observable checks, detects an optional `.rak/policy.yaml`, and reports mechanical warnings or release blockers. It does not execute repository code, upload source, call a network service, use a model, or require a GPU.
-
-> **Publication status:** source version alone does not establish public
-> availability. Verify that [`v0.1.0-rc.3`](https://github.com/ernestoleo777-dotcom/ResearchAuditKit/releases/tag/v0.1.0-rc.3)
-> exists as a published GitHub prerelease before treating `rak audit` or the
-> Action as released. RC2 remains historical and does not contain either
-> interface. No stable, PyPI, or TestPyPI release exists.
-
-Real terminal output from the committed `pass_repo` fixture:
-
-```text
-ResearchAuditKit audit
-Target: pass_repo
-Policy: built-in (rak-generic-release-v1)
-Result: PASS
-Findings: PASS=6 WARNING=0 RELEASE_BLOCKER=0 NOT_APPLICABLE=2 UNRESOLVED=0
-- No warnings, unresolved checks, or release blockers.
-Boundary: PASS is mechanical only; it is not scientific correctness or certification.
-```
-
-`PASS` means only that the applicable local mechanical checks passed. It is not scientific correctness, reproducibility certification, paper validation, peer review, or an acceptance recommendation.
+`rak audit` inventories local files and applies mechanical checks and an optional
+`.rak/policy.yaml`. PASS is not scientific correctness or reproducibility certification.
+See the [audit quickstart](docs/quickstart.md).
 
 ## Research-release lifecycle
 
@@ -114,11 +158,11 @@ The composite Action self-provisions a fixed Python runtime and hash-locked
 PyYAML dependency, runs only `rak audit`, writes a GitHub Job Summary, preserves
 CLI exit status, requests no token, and does not install or execute target code.
 Bootstrap requires official Action and package infrastructure; the audit itself
-remains local and uploads no repository content. After confirming the RC3
+remains local and uploads no repository content. After confirming the RC4
 prerelease exists, use the exact versioned ref:
 
 ```yaml
-- uses: ernestoleo777-dotcom/ResearchAuditKit@v0.1.0-rc.3
+- uses: ernestoleo777-dotcom/ResearchAuditKit@v0.1.0-rc.4
   with:
     path: .
     fail-on: release-blocker
@@ -186,7 +230,7 @@ integration evidence](docs/public_integrations.md).
 
 ResearchAuditKit is an experimental, consumer-driven engineering asset. Licensed under the Apache License, Version 2.0. It has no stable release and is not distributed through PyPI or TestPyPI. Reports may reveal local filenames and hashes; review generated files before sharing them.
 
-## Evidence Graph B1 (local development)
+## Evidence graph
 
 `rak evidence` adds an explicit, versioned evidence graph alongside the existing audit commands.
 Use `rak evidence validate graph.json`, `rak evidence trace CLAIM_ID --graph graph.json`,
@@ -197,4 +241,4 @@ Start with [asset-list initialization and readable reports](docs/evidence_onboar
 or replay the [synthetic CLI demo](examples/evidence_graph_demo/README.md).
 Use [anchored project checks](docs/evidence_check.md) to gate listed file identities in CI while retaining unresolved claim declarations.
 See [Evidence Graph B1](docs/evidence_graph.md) for paths, limits, exits and uncertainty.
-This local implementation does not announce a new release.
+The evidence commands are included in RC4.
